@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-eslint-rules",
+    "tslint-config-prettier"
+  ],
+  "linterOptions": {"exclude": ["config/**/*.js", "node_modules/**/*.ts", "coverage/lcov-report/*.js"]},
+  "rules": {
+    "forin": false,
+    "interface-name": false,
+    "object-literal-sort-keys": false,
+    "only-arrow-functions": false,
+    "quotemark": [true, "single", "jsx-double"],
+    "jsx-boolean-value": false,
+    "jsx-no-lambda": false,
+    "no-submodule-imports": false,
+    "no-console": false,
+    "no-empty": false,
+    "member-access": [true, "no-public"],
+    "no-implicit-dependencies": false
+  }
+}
+
