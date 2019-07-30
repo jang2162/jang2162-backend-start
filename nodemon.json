@@ -1,0 +1,14 @@
+{
+  "watch": [
+    "src",
+    "libraries",
+    "environments",
+    "index.ts"
+  ],
+  "env": {
+    "NODE_ENV": "development",
+    "NODE_PATH": "libraries",
+    "ENV_PATH":  "./environments/dev.json"
+  },
+  "exec": "ts-node src/index.ts"
+}
