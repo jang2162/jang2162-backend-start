@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "*": [
         "node_modules/*",
         "libraries/*"
       ],
-      "@/*": [
-        "src/*"
+      "@*": [
+        "src*"
       ]
     },
     "target": "es5",
@@ -17,6 +17,7 @@
     "removeComments": true,
     "strict": true,
     "allowJs": true,
+    "inlineSourceMap": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,

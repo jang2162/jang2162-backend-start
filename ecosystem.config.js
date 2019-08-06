@@ -9,7 +9,6 @@ module.exports = {
     max_memory_restart: '2G',
     env: {
       NODE_ENV: 'production',
-      NODE_PATH: 'libraries',
       ENV_PATH: './environments/prod.json'
     }
   }]
