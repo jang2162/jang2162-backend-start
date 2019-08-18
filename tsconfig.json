@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "*": [
         "node_modules/*",
@@ -8,6 +8,9 @@
       ],
       "@*": [
         "src*"
+      ],
+      "@gql*": [
+        "src/graphql*"
       ]
     },
     "target": "es5",
@@ -27,9 +30,13 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "preserveConstEnums": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./libraries/@types"
+    ],
     "forceConsistentCasingInFileNames": true,
     "noEmit": false
   },
   "exclude": [ "node_modules" ],
-  "include": [ "src/**/*.ts" ]
+  "include": [ "**/*.ts" ]
 }

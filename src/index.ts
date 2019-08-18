@@ -2,11 +2,9 @@ import {ApolloServer} from 'apollo-server-express';
 import express from 'express'
 import http from 'http';
 import env from 'json-env';
-import {resolvers, typeDefs} from './schema';
+import apollo from './apollo';
 
 const app = express();
-const apollo = new ApolloServer({ typeDefs, resolvers });
-
 apollo.applyMiddleware({ app }); // app is from an existing express app
 const server = http.createServer(app);
 apollo.installSubscriptionHandlers(server);
