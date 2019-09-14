@@ -1,6 +1,6 @@
 import {gql} from 'apollo-server-core';
 
-export default gql`
+export const TestSchema = gql`
     input TestInput {
         name: String!
         hobby: String

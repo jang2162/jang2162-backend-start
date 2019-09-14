@@ -37,7 +37,7 @@ const sampleData: Test[] = [
     }
 ];
 
-export default {
+export const TestResolver = {
     Query: {
         tests: createResolver<any, Test[]>((source, args,context) => {
             return sampleData

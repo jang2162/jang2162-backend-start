@@ -31,7 +31,6 @@ module.exports = {
         extensions: [ '.tsx', '.ts', '.js' ],
         alias: {
             '@': path.resolve(__dirname, 'src'),
-            '@gql': path.resolve(__dirname, 'src/graphql'),
         }
     },
     externals: nodeModules

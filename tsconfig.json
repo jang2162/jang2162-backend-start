@@ -8,9 +8,6 @@
       ],
       "@*": [
         "src*"
-      ],
-      "@gql*": [
-        "src/graphql*"
       ]
     },
     "target": "es5",

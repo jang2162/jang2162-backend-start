@@ -1,8 +1,8 @@
 import {logger} from '@/lib/ApolloUtil';
-import express from 'express';
 import {ApolloServer} from 'apollo-server-express';
-import resolvers from './graphql/resolvers';
-import typeDefs from './graphql/typeDefs';
+import express from 'express';
+import resolvers from './app/resolvers';
+import typeDefs from './app/typeDefs';
 
 export interface ApolloContext {
     req: express.Request,
