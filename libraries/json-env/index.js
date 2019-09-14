@@ -11,10 +11,11 @@ function get(key, defaultValue) {
     var curVal = envData;
     for (var _i = 0, keyArr_1 = keyArr; _i < keyArr_1.length; _i++) {
         var keyItem = keyArr_1[_i];
-        if (keyItem in curVal) {
-            curVal = curVal[keyItem];
-        }
-        else {
+        if (keyItem.toLocaleLowerCase() in curVal) {
+            curVal = curVal[keyItem.toLocaleLowerCase()];
+        } else if (keyItem.toLocaleLowerCase() in curVal) {
+            curVal = curVal[keyItem.toLocaleLowerCase()];
+        } else {
             return defaultValue;
         }
     }

@@ -12,8 +12,10 @@ function get(key?: string, defaultValue?: any): any {
     const keyArr = key.split('.');
     let curVal: any = envData;
     for (const keyItem of keyArr) {
-        if (keyItem in curVal) {
-            curVal = curVal[keyItem];
+        if (keyItem.toLocaleLowerCase() in curVal) {
+            curVal = curVal[keyItem.toLocaleLowerCase()];
+        } else if (keyItem.toLocaleLowerCase() in curVal) {
+            curVal = curVal[keyItem.toLocaleLowerCase()];
         } else {
             return defaultValue;
         }
