@@ -3,7 +3,8 @@ import winston, {format} from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
 const loggerMapper: {[k: string]: Logger} = {};
-export function getLogger(name: string = '_default') {
+export function getLogger(name: string = '_DEFAULT') {
+    name = name.toLocaleUpperCase();
     if (name in loggerMapper) {
         return loggerMapper[name];
     }
