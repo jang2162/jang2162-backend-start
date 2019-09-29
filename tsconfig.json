@@ -1,18 +1,19 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "*": [
         "node_modules/*",
         "libraries/*"
       ],
-      "@*": [
-        "src*"
+      "@/*": [
+        "src/*"
       ]
     },
-    "target": "es5",
+    "target": "es6",
     "module": "commonjs",
-    "lib": [ "dom","es6" ],
+    "moduleResolution": "node",
+    "lib": [ "es6", "esnext", "es2015" ],
     "outDir": "dist",
     "removeComments": true,
     "strict": true,
@@ -20,6 +21,7 @@
     "inlineSourceMap": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noUnusedLocals": false,

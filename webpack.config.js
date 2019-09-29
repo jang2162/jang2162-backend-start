@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const nodeModules = {};
 fs.readdirSync('node_modules')
@@ -19,6 +20,11 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
+            },
+            {
+                test: /\.(graphql|gql)$/,
+                exclude: /node_modules/,
+                loader: 'graphql-tag/loader'
             }
         ]
     },
@@ -27,8 +33,9 @@ module.exports = {
         path: path.resolve(__dirname, 'dist')
     },
     resolve: {
+        plugins: [new TsconfigPathsPlugin()],
         modules: ['node_modules', 'libraries'],
-        extensions: [ '.tsx', '.ts', '.js' ],
+        extensions: [ '.tsx', '.ts', '.js', '.graphql'],
         alias: {
             '@': path.resolve(__dirname, 'src'),
         }

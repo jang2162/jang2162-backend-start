@@ -1,0 +1,27 @@
+input SampleUserInput {
+    name: String!
+    hobby: String
+}
+
+type SampleUser {
+    id: ID!
+    name: String!
+    hobby: String
+    posts: [SamplePost]
+}
+
+type SamplePost {
+    id: ID!
+    subject: String!
+    content: String
+    writer: SampleUser
+}
+
+extend type Query {
+    sampleUsers: [SampleUser]
+    samplePosts: [SamplePost]
+}
+
+extend type Mutation {
+    addSampleUser(test: SampleUserInput!): SampleUser
+}

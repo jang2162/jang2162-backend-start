@@ -2,20 +2,20 @@ import env from 'json-env';
 import winston, {format} from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
-const loggerMapper: {[k: string]: Logger} = {};
-export function getLogger(name: string = '_DEFAULT') {
+const loggerMapper: {[k: string]: Logger<any>} = {};
+export function getLogger<SUB_DATA = string>(name: string = '_DEFAULT', logger?: Logger<SUB_DATA>): Logger<SUB_DATA> {
     name = name.toLocaleUpperCase();
     if (name in loggerMapper) {
         return loggerMapper[name];
     }
-    return loggerMapper[name] = new Logger(name);
+    return loggerMapper[name] = logger || new Logger<SUB_DATA>(name);
 }
 
-class Logger<SUB_DATA = string> {
+export class Logger<SUB_DATA = string> {
     curLogger: winston.Logger;
     constructor(
         label: string = '_DEFAULT',
-        private readonly dataConverter?: (level: 'debug' | 'info' | 'warn' | 'error', message: string, subData?: SUB_DATA) => {[optionName: string]: any},
+        private readonly dataConverter?: (level: 'debug' | 'info' | 'warn' | 'error', message: string, subData: SUB_DATA) => {[optionName: string]: any},
         private readonly consoleFormat?: (data: ({message: string, level: string, [optionName: string]: any})) => string
     ) {
         this.dataConverter = dataConverter;
@@ -56,7 +56,7 @@ class Logger<SUB_DATA = string> {
     }
 
     log(level: 'debug' | 'info' | 'warn' | 'error', message: string, subData?: SUB_DATA): void {
-        if (this.dataConverter) {
+        if (subData && this.dataConverter) {
             this.curLogger.log({
                 ...this.dataConverter(level, message, subData),
                 level,

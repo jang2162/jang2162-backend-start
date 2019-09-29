@@ -16,6 +16,7 @@
     "no-submodule-imports": false,
     "no-console": false,
     "no-empty": false,
+    "no-return-await": false,
     "member-access": [true, "no-public"],
     "no-implicit-dependencies": false
   }

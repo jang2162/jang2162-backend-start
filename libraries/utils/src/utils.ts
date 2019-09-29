@@ -36,3 +36,4 @@ export const rangeIter = (startOrEnd: number, end?: number, step?: number) => {
 };
 
 export const isEmpty = (obj: any) => Object.entries(obj).length === 0 && obj.constructor === Object;
+
