@@ -1,6 +1,6 @@
 import {GraphQLDate, GraphQLDateTime} from 'graphql-iso-date';
 
-export const initResolver = {
+export default {
     Date: GraphQLDate,
     DateTime: GraphQLDateTime,
 };

@@ -10,5 +10,5 @@
     "ENV_PATH":  "./environments/dev.json"
   },
   "ext": "*",
-  "exec": "graphql-codegen && ts-node -r tsconfig-paths/register src/index.ts"
+  "exec": "ts-node -r tsconfig-paths/register src/index.ts"
 }

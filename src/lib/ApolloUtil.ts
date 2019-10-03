@@ -1,15 +1,27 @@
-import {LogProvider} from '@/app/common/LogProvider';
-import {ModuleContext} from '@graphql-modules/core';
+import {GRAPHQL_LOGGER, GraphQLLogger} from '@/app/common/logger/logger.module';
+import {ModuleContext, ModuleSessionInfo} from '@graphql-modules/core';
 import {Injector} from '@graphql-modules/di';
 import {GraphQLResolveInfo} from 'graphql';
+import {isEmpty} from 'utils';
 
 
-export function createResolver<Arguments = any, Result = any, Source = any>(
-    cb: (source: Source, args: Arguments, injector: Injector, info: GraphQLResolveInfo) => Result | Promise<Result>
+export function simpleResolve<Arguments = any, Result = any, Source = any>(
+    cb: (data: {source: Source, args: Arguments, injector: Injector, info: GraphQLResolveInfo}) => Result | Promise<Result>
 ) {
     return (source: Source, args: Arguments, context: ModuleContext, info: GraphQLResolveInfo) => {
-        context.injector.get(LogProvider).log(info);
-        return cb(source, args, context.injector, info);
+        const logger = context.injector.get<GraphQLLogger>(GRAPHQL_LOGGER);
+        const moduleSessionInfo = context.injector.get<ModuleSessionInfo>(ModuleSessionInfo);
+        const type = info.parentType.name;
+        if (type === 'Query' || type === 'Mutation' || type === 'Subscription') {
+            logger.info(`${type}: '${info.fieldName}' called.`, {
+                fieldName: info.fieldName,
+                type,
+                query: moduleSessionInfo.session.req.body.query,
+                params: isEmpty(info.variableValues) ? undefined : info.variableValues
+            });
+        }
+
+        return cb({source, args, injector: context.injector, info});
     }
 }
 

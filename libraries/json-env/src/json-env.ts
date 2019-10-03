@@ -14,8 +14,8 @@ function get(key?: string, defaultValue?: any): any {
     for (const keyItem of keyArr) {
         if (keyItem.toLocaleLowerCase() in curVal) {
             curVal = curVal[keyItem.toLocaleLowerCase()];
-        } else if (keyItem.toLocaleLowerCase() in curVal) {
-            curVal = curVal[keyItem.toLocaleLowerCase()];
+        } else if (keyItem.toLocaleUpperCase() in curVal) {
+            curVal = curVal[keyItem.toLocaleUpperCase()];
         } else {
             return defaultValue;
         }

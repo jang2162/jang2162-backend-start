@@ -8,17 +8,18 @@
   "rules": {
     "forin": false,
     "interface-name": false,
-    "object-literal-sort-keys": false,
-    "only-arrow-functions": false,
-    "quotemark": [true, "single", "jsx-double"],
     "jsx-boolean-value": false,
     "jsx-no-lambda": false,
+    "member-access": [true, "no-public"],
     "no-submodule-imports": false,
     "no-console": false,
     "no-empty": false,
     "no-return-await": false,
-    "member-access": [true, "no-public"],
-    "no-implicit-dependencies": false
+    "no-implicit-dependencies": false,
+    "object-literal-sort-keys": false,
+    "only-arrow-functions": false,
+    "quotemark": [true, "single", "jsx-double"],
+    "unified-signatures": false
   }
 }
 

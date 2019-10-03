@@ -1,7 +1,9 @@
+import 'reflect-metadata';
+import 'graphql-import-node';
+
 import express from 'express'
 import http from 'http';
 import env from 'json-env';
-import 'reflect-metadata';
 import apollo from './apollo';
 
 const app = express();

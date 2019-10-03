@@ -1,11 +1,11 @@
-import rootModule from '@/app/modules';
-import getLogger from '@/lib/LoggerUtil';
+import appModule from '@/app/app.modules';
+import {Logger} from '@/lib/Logger';
 import {ApolloServer} from 'apollo-server-express';
 
-const logger = getLogger('APOLLO_ERROR');
+const logger = new Logger('APOLLO_ERROR');
 const apollo = new ApolloServer({
     modules: [
-        rootModule
+        appModule
     ],
     context: session =>session,
     formatError: error => {

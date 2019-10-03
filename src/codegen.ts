@@ -1,2 +1,5 @@
-import modules from '@/app/modules';
-export const schema = modules.typeDefs;
+import 'graphql-import-node';
+import 'reflect-metadata';
+
+import modules from '@/app/app.modules';
+export default modules.typeDefs;

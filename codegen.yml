@@ -6,6 +6,7 @@ require:
 generates:
   ./src/generated-models.ts:
     plugins:
+      - add: /* tslint:ignore */
       - typescript
       - typescript-resolvers
     config:

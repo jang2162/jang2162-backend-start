@@ -13,8 +13,8 @@ function get(key, defaultValue) {
         var keyItem = keyArr_1[_i];
         if (keyItem.toLocaleLowerCase() in curVal) {
             curVal = curVal[keyItem.toLocaleLowerCase()];
-        } else if (keyItem.toLocaleLowerCase() in curVal) {
-            curVal = curVal[keyItem.toLocaleLowerCase()];
+        } else if (keyItem.toLocaleUpperCase() in curVal) {
+            curVal = curVal[keyItem.toLocaleUpperCase()];
         } else {
             return defaultValue;
         }

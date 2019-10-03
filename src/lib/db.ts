@@ -1,9 +1,9 @@
-import getLogger from '@/lib/LoggerUtil';
+import {Logger} from '@/lib/Logger';
 import env from 'json-env';
 import {Pool, PoolClient, QueryConfig, QueryResult} from 'pg';
 import {range} from 'utils';
 
-const logger = getLogger('DB');
+const logger = new Logger('DB');
 const pool = new Pool({
     host: env.get('db.host'),
     port: env.get('db.port'),
