@@ -4,10 +4,8 @@ import {Inject, Injectable, ProviderScope} from '@graphql-modules/di';
 import {Pool, PoolClient, QueryConfig, QueryResult} from 'pg';
 import SQL from 'sql-template-strings';
 import {range} from 'utils';
-import {DB_LOGGER} from './database.module';
 import Timeout = NodeJS.Timeout;
 
-const logger = new Logger('DB');
 
 @Injectable({
     scope: ProviderScope.Session
@@ -16,10 +14,9 @@ export class DatabaseProvider implements OnRequest, OnResponse {
     private client?: PoolClient;
     private queryList: Array<{text:string, duration:number}> = [];
     private timeout?: Timeout;
-    private logger = logger;
 
     constructor(
-        // @Inject(DB_LOGGER) private logger: Logger,
+        @Inject(Logger) private logger: Logger,
         private pool: Pool,
     ) {}
 

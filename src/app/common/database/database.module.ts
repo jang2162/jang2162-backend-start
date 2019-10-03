@@ -4,7 +4,6 @@ import env from 'json-env';
 import {Pool} from 'pg';
 import {DatabaseProvider} from './database.provider';
 
-export const DB_LOGGER = Symbol('DB_LOGGER');
 export const databaseModule = new GraphQLModule({
     providers: [
         {
@@ -17,10 +16,10 @@ export const databaseModule = new GraphQLModule({
                 password: env.get('db.password')
             }),
         },
-        // {
-        //     provide: DB_LOGGER,
-        //     useFactory: () => new Logger('DB')
-        // },
+        {
+            provide: Logger,
+            useFactory: () => new Logger('DB')
+        },
         DatabaseProvider,
     ],
 });
