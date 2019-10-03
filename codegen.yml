@@ -11,3 +11,8 @@ generates:
       - typescript-resolvers
     config:
       contextType: '@graphql-modules/core#ModuleContext'
+      scalars:
+        ID: number
+        Date: Date
+        DateTime: Date
+        Time: Date

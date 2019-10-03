@@ -3,7 +3,7 @@ import {OnRequest, OnResponse} from '@graphql-modules/core';
 import {Inject, Injectable, ProviderScope} from '@graphql-modules/di';
 import {Pool, PoolClient, QueryConfig, QueryResult} from 'pg';
 import SQL from 'sql-template-strings';
-import {range} from 'utils';
+import {DbLogger} from './database.module';
 import Timeout = NodeJS.Timeout;
 
 
@@ -16,7 +16,7 @@ export class DatabaseProvider implements OnRequest, OnResponse {
     private timeout?: Timeout;
 
     constructor(
-        @Inject(Logger) private logger: Logger,
+        @Inject(Logger) private logger: DbLogger,
         private pool: Pool,
     ) {}
 
@@ -43,11 +43,12 @@ export class DatabaseProvider implements OnRequest, OnResponse {
 
     async query(queryText: string, params?: any[]): Promise<QueryResult>;
     async query(queryConfig: QueryConfig): Promise<QueryResult>;
-    async query(queryTextOrConfig: string | QueryConfig, params: any[] = []): Promise<QueryResult>{
+    async query(queryTextOrConfig: string | QueryConfig, params?: any[]): Promise<QueryResult>{
         if(this.queryList.length === 0) {
             this.timeout = setTimeout(() => {
-                this.logger.warn('A client has been checked out for more than 5 seconds!');
-                this.logger.warn(`QueryList: [\n${this.queryList.map(a=>`{\n\tDuration => ${a.duration}ms,\n\tText => ${a.text}`).join('\n')}]`);
+                this.logger.warn('A client has been checked out for more than 5 seconds!\n' +
+                    `QueryList: [\n${this.queryList.map(a=>`{\n\tDuration => ${a.duration}ms,\n\tText => ${a.text}`).join('\n')}]`
+                );
             }, 5000);
         }
 
@@ -61,15 +62,17 @@ export class DatabaseProvider implements OnRequest, OnResponse {
             result = await client.query(queryTextOrConfig, params);
         } else {
             item.text = queryTextOrConfig.text;
+            params = queryTextOrConfig.values;
             result = await client.query(queryTextOrConfig);
         }
 
         item.duration = Date.now() - start;
-        this.logger.debug(`executed query\n${item.text}\nDuration: (${item.duration}ms)  RowCount: ${result.rowCount}${
-            params && params.length > 0 ?
-                `\nParams: (${range(params.length).map(idx => `$${idx+1}(${typeof params[idx]})=>${params[idx]}`).join(', ')})`
-                :''
-        }`);
+        this.logger.debug('query executed.', {
+            queryText: item.text,
+            params: params &&  params.length > 0 ? params : undefined,
+            duration: item.duration,
+            rowCount: result.rowCount
+        });
 
         return result;
     }

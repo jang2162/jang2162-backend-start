@@ -1,12 +1,12 @@
 input SampleUserInput {
     name: String!
-    hobby: String
+    birthday: Date
 }
 
 type SampleUser {
     id: ID!
     name: String!
-    hobby: String
+    birthday: Date
     posts: [SamplePost]
 }
 
@@ -14,11 +14,13 @@ type SamplePost {
     id: ID!
     subject: String!
     content: String
-    writer: SampleUser
+    writer: SampleUser!
+    writer_id: ID!
 }
 
 extend type Query {
     sampleUsers: [SampleUser]
+    sampleUserById(id: ID!): SampleUser
     samplePosts: [SamplePost]
 }
 

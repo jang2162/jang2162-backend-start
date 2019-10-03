@@ -2,17 +2,29 @@ import env from 'json-env';
 import winston, {format} from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
-export class Logger<SUB_DATA = string> {
+interface LogData<SUB_DATA> {
+    level: 'debug' | 'info' | 'warn' | 'error',
+    message: string
+    label: string,
+    timestamp: string,
+    subData: SUB_DATA
+}
+
+export class Logger<SUB_DATA = {subLabel?: string}> {
     curLogger: winston.Logger;
     constructor(
         private label: string = '_DEFAULT',
-        private readonly dataConverter?: (level: 'debug' | 'info' | 'warn' | 'error', message: string, subData: SUB_DATA) => {[optionName: string]: any},
-        private readonly consoleFormat?: (data: ({message: string, level: string, [optionName: string]: any})) => string
+        private readonly consoleFormat?: (data: LogData<SUB_DATA> | any ) => string
     ) {
-        this.dataConverter = dataConverter;
         const defaultLevel = env.getString(`log.${label}.level`, env.getBool('production', false) ? 'error' : 'info');
         const consoleLevel = env.getString(`log.${label}.consoleLevel`, defaultLevel);
         const fileLevel = env.getString(`log.${label}.fileLevel`, defaultLevel);
+
+        if (!this.consoleFormat) {
+            this.consoleFormat = ({ level, message, subData, timestamp }) =>
+                `${timestamp} [${label}${subData && subData.subLabel ? `:${subData.subLabel}`:''}] ${level}: ${message}`
+        }
+
         this.curLogger =  winston.createLogger({
             level: defaultLevel,
             transports: [
@@ -21,12 +33,7 @@ export class Logger<SUB_DATA = string> {
                     format: format.combine(
                         format.label({ label }),
                         format.timestamp(),
-                        format.printf(
-                            this.consoleFormat ||
-                            (
-                                ({ level, message, subLabel, timestamp }) => `${timestamp} [${label}${subLabel ? `:${subLabel}`:''}] ${level}: ${message}`
-                            )
-                        )
+                        format.printf(this.consoleFormat)
                     )
                 }),
                 new DailyRotateFile({
@@ -47,21 +54,10 @@ export class Logger<SUB_DATA = string> {
     }
 
     log(level: 'debug' | 'info' | 'warn' | 'error', message: string, subData?: SUB_DATA): void {
-        if (subData && this.dataConverter) {
+        if (subData){
             this.curLogger.log({
-                ...this.dataConverter(level, message, subData),
-                level,
-                message
+                level, message, subData
             })
-        } else if (subData){
-            if (typeof subData === 'string' || typeof subData === 'number') {
-                this.curLogger.log({level, message, subLabel: subData})
-            } else if (typeof subData === 'object'){
-                this.curLogger.log({
-                    ...subData,
-                    level, message
-                })
-            }
         } else {
             this.curLogger.log({level, message})
         }

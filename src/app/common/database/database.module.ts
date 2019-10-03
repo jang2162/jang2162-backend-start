@@ -2,7 +2,17 @@ import {Logger} from '@/lib/Logger';
 import {GraphQLModule} from '@graphql-modules/core';
 import env from 'json-env';
 import {Pool} from 'pg';
+import {range} from 'utils';
 import {DatabaseProvider} from './database.provider';
+
+interface DbLoggerSubData {
+    queryText: string
+    params?: any[],
+    rowCount: number,
+    duration: number,
+}
+
+export type DbLogger = Logger<DbLoggerSubData>;
 
 export const databaseModule = new GraphQLModule({
     providers: [
@@ -18,7 +28,16 @@ export const databaseModule = new GraphQLModule({
         },
         {
             provide: Logger,
-            useFactory: () => new Logger('DB')
+            useFactory: () => new Logger<DbLoggerSubData>('DB',
+                ({ level, message, subData, timestamp }) => `${timestamp} [DB] ${level}: ${
+                level === 'debug' 
+                    ? `executed query\n${subData.queryText}\nDuration: (${subData.duration}ms)  RowCount: ${subData.rowCount}${
+                        subData.params && subData.params.length > 0 ?
+                            `\nParams: (${range(subData.params.length).map(idx => `$${idx+1}=>${ subData.params[idx]}`).join(', ')})`
+                            :''
+                    }` 
+                    : message}`
+            )
         },
         DatabaseProvider,
     ],

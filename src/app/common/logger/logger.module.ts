@@ -1,24 +1,23 @@
 import {Logger} from '@/lib/Logger';
 import {GraphQLModule} from '@graphql-modules/core';
 
-interface GraphQLLoggerGeneric {
+interface GraphQLLoggerSubData {
     type: string,
     fieldName: string,
     query: string,
-    params?: any
+    params?: any,
 }
 
 export const GRAPHQL_LOGGER = Symbol('GRAPHQL_LOGGER');
-export type GraphQLLogger = Logger<GraphQLLoggerGeneric>;
+export type GraphQLLogger = Logger<GraphQLLoggerSubData>;
 
 export const loggerModule = new GraphQLModule({
     providers: [
         {
             provide: GRAPHQL_LOGGER,
-            useFactory: () => new Logger<GraphQLLoggerGeneric>('APOLLO',
-                undefined,
-                data => `${data.timestamp} [APOLLO:${data.type}] ${data.level}: ${data.message} [[\n${data.query}]] ${
-                    data.params ? `=> (Params: ${JSON.stringify(data.params)})` : ''
+            useFactory: () => new Logger<GraphQLLoggerSubData>('APOLLO',
+                ({ level, message, subData, timestamp }) => `${timestamp} [APOLLO:${subData.type}] ${level}: ${message} [[\n${subData.query}]] ${
+                    subData.params ? `=> (Params: ${JSON.stringify(subData.params)})` : ''
                 }`
             )
         }

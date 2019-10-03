@@ -9,6 +9,6 @@
     "NODE_PATH": "libraries",
     "ENV_PATH":  "./environments/dev.json"
   },
-  "ext": "*",
+  "ext": "*.ts",
   "exec": "ts-node -r tsconfig-paths/register src/index.ts"
 }
