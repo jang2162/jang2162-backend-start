@@ -4,9 +4,8 @@ import {ApolloServer} from 'apollo-server-express';
 
 const logger = new Logger('APOLLO_ERROR');
 const apollo = new ApolloServer({
-    modules: [
-        appModule
-    ],
+    typeDefs: appModule.typeDefs,
+    resolvers: appModule.resolvers,
     context: session =>session,
     formatError: error => {
         logger.error(error.message, error.extensions && error.extensions.code);

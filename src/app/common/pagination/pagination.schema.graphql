@@ -1,0 +1,29 @@
+type PageInfo {
+    totalCount: Int!
+    next: String
+    prev: String
+    hasNext: Boolean!
+    hasPrev: Boolean!
+    sortBy: String!
+    sort: SORT_TYPE!
+    direction: DIRECTION_TYPE!
+}
+
+input PageInput {
+    cursor: String = ""
+    size: Int = 15
+    sortBy: String = "ID"
+    sort: SORT_TYPE = DESC
+    direction: DIRECTION_TYPE = NEXT
+}
+
+
+enum SORT_TYPE {
+    ASC
+    DESC
+}
+
+enum DIRECTION_TYPE {
+    NEXT
+    PREV
+}

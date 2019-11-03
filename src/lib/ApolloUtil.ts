@@ -6,7 +6,7 @@ import {isEmpty} from 'utils';
 
 
 export function simpleResolve<Arguments = any, Result = any, Source = any>(
-    cb: (data: {source: Source, args: Arguments, injector: Injector, info: GraphQLResolveInfo}) => Result | Promise<Result>
+    cb: (data: {source: Source, args: Arguments, injector: Injector, info: GraphQLResolveInfo}) => Result  | Promise<Result>
 ) {
     return (source: Source, args: Arguments, context: ModuleContext, info: GraphQLResolveInfo) => {
         const logger = context.injector.get<GraphQLLogger>(GRAPHQL_LOGGER);
@@ -30,3 +30,4 @@ export const orderByIdArray = (arr: any[], idArr: Array<string|number>, getIdFn:
     arr.forEach(item => map[getIdFn(item)] = item);
     return idArr.map(id => map[id]);
 };
+

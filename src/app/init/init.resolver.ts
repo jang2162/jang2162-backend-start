@@ -1,7 +1,7 @@
-import {GraphQLDate, GraphQLDateTime, GraphQLTime} from 'graphql-iso-date';
+import dateTimeScalar from './scalar/date-time.scalar';
+import dateScalar from './scalar/date.scalar';
 
 export default {
-    Date: GraphQLDate,
-    DateTime: GraphQLDateTime,
-    Time: GraphQLTime,
+    Date: dateScalar,
+    DateTime: dateTimeScalar,
 };

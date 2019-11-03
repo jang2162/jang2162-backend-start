@@ -1,5 +1,5 @@
-import 'reflect-metadata';
 import 'graphql-import-node';
+import 'reflect-metadata';
 
 import express from 'express'
 import http from 'http';

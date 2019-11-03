@@ -1,42 +1,46 @@
 import {
-    MutationAddSampleUserArgs,
-    QuerySampleUserByIdArgs,
+    MutationAddSampleUserArgs, QuerySamplePostByIdArgs,
+    QuerySamplePostsArgs,
+    QuerySampleUserByIdArgs, QuerySampleUsersArgs,
     Resolvers,
-    SamplePost,
-    SampleUser
+    SamplePost, SamplePostConnection,
+    SampleUser, SampleUserConnection, SampleUserPostsArgs
 } from '@/generated-models';
 import {simpleResolve} from '@/lib/ApolloUtil';
 import {SampleProvider} from './sample.provider';
 
 const resolvers: Resolvers = {
     Query: {
-        sampleUsers: simpleResolve<any, SampleUser[]>(async ({injector}) =>
-            injector.get<SampleProvider>(SampleProvider).sampleUserList()
+        sampleUsers: simpleResolve<QuerySampleUsersArgs, SampleUserConnection>(({injector, args}) =>
+            injector.get<SampleProvider>(SampleProvider).sampleUserConnection(args.form)
         ),
 
-        sampleUserById: simpleResolve<QuerySampleUserByIdArgs, SampleUser>(async ({args, injector}) =>
+        sampleUserById: simpleResolve<QuerySampleUserByIdArgs, SampleUser>(({args, injector}) =>
             injector.get<SampleProvider>(SampleProvider).sampleUserById(args.id)
         ),
 
-        samplePosts: simpleResolve<any, SamplePost[]>(async ({injector}) =>
-            injector.get<SampleProvider>(SampleProvider).samplePostList()
-        )
+        samplePosts: simpleResolve<QuerySamplePostsArgs, SamplePostConnection>(({injector, args}) =>
+            injector.get<SampleProvider>(SampleProvider).samplePostConnection(args.form)
+        ),
+
+        samplePostById: simpleResolve<QuerySamplePostByIdArgs, SamplePost>(({args, injector}) =>
+            injector.get<SampleProvider>(SampleProvider).samplePostById(args.id)
+        ),
     },
     Mutation: {
-        addSampleUser: simpleResolve<MutationAddSampleUserArgs, SampleUser>(async ({args, injector}) =>
-            injector.get<SampleProvider>(SampleProvider).insertSampleUser(args.test)
+        addSampleUser: simpleResolve<MutationAddSampleUserArgs, SampleUser>(({args, injector}) =>
+            injector.get<SampleProvider>(SampleProvider).insertSampleUser(args.user)
         )
     },
 
     SampleUser: {
-        posts: simpleResolve<any, any, SampleUser>(({injector, source}) => {
-            const provider = injector.get<SampleProvider>(SampleProvider);
-            return [];
-        })
+        posts: simpleResolve<SampleUserPostsArgs, any, SampleUser>(({injector, source, args}) =>
+            injector.get<SampleProvider>(SampleProvider).samplePostConnection({page: args.page, userId: source.id})
+        )
     },
 
     SamplePost: {
-        writer: simpleResolve<any, SampleUser, SamplePost>(async ({injector, source}) =>
+        writer: simpleResolve<any, SampleUser, SamplePost>(({injector, source}) =>
             injector.get<SampleProvider>(SampleProvider).sampleUserById(source.writer_id)
         )
     }

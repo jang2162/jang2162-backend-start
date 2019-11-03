@@ -1,6 +1,5 @@
 scalar Date
 scalar DateTime
-scalar Time
 
 type Query
 type Mutation

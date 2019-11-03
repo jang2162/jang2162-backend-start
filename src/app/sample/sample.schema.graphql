@@ -1,15 +1,28 @@
+# SAMPLE USER
+type SampleUser {
+    id: ID!
+    name: String!
+    birthday: Date
+    posts(page: PageInput = {}): SamplePostConnection
+}
+
+input SampleUserForm {
+    page: PageInput = {}
+    name: String = ""
+}
+
 input SampleUserInput {
     name: String!
     birthday: Date
 }
 
-type SampleUser {
-    id: ID!
-    name: String!
-    birthday: Date
-    posts: [SamplePost]
+type SampleUserConnection {
+    pageInfo: PageInfo!
+    list: [SampleUser!]
 }
 
+
+# SAMPLE POST
 type SamplePost {
     id: ID!
     subject: String!
@@ -18,12 +31,26 @@ type SamplePost {
     writer_id: ID!
 }
 
+input SamplePostForm {
+    page: PageInput = {}
+    searchKeyword: String = ""
+    userId: String = ""
+}
+
+type SamplePostConnection {
+    pageInfo: PageInfo!
+    list: [SamplePost!]!
+}
+
+
+# COMMON
 extend type Query {
-    sampleUsers: [SampleUser]
+    sampleUsers(form: SampleUserForm = {}): SampleUserConnection!
     sampleUserById(id: ID!): SampleUser
-    samplePosts: [SamplePost]
+    samplePosts(form: SamplePostForm = {}): SamplePostConnection!
+    samplePostById(id: ID!): SamplePost
 }
 
 extend type Mutation {
-    addSampleUser(test: SampleUserInput!): SampleUser
+    addSampleUser(user: SampleUserInput!): SampleUser
 }

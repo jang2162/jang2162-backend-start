@@ -10,9 +10,9 @@ generates:
       - typescript
       - typescript-resolvers
     config:
+      maybeValue: T | null | undefined
       contextType: '@graphql-modules/core#ModuleContext'
       scalars:
-        ID: number
         Date: Date
         DateTime: Date
         Time: Date

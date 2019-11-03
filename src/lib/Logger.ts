@@ -14,16 +14,11 @@ export class Logger<SUB_DATA = {subLabel?: string}> {
     curLogger: winston.Logger;
     constructor(
         private label: string = '_DEFAULT',
-        private readonly consoleFormat?: (data: LogData<SUB_DATA> | any ) => string
+        consoleFormat?: (data: LogData<SUB_DATA> | any ) => string
     ) {
         const defaultLevel = env.getString(`log.${label}.level`, env.getBool('production', false) ? 'error' : 'info');
         const consoleLevel = env.getString(`log.${label}.consoleLevel`, defaultLevel);
         const fileLevel = env.getString(`log.${label}.fileLevel`, defaultLevel);
-
-        if (!this.consoleFormat) {
-            this.consoleFormat = ({ level, message, subData, timestamp }) =>
-                `${timestamp} [${label}${subData && subData.subLabel ? `:${subData.subLabel}`:''}] ${level}: ${message}`
-        }
 
         this.curLogger =  winston.createLogger({
             level: defaultLevel,
@@ -33,7 +28,10 @@ export class Logger<SUB_DATA = {subLabel?: string}> {
                     format: format.combine(
                         format.label({ label }),
                         format.timestamp(),
-                        format.printf(this.consoleFormat)
+                        format.printf(info1 => (
+                            consoleFormat ? consoleFormat(info1) :
+                            `${info1.timestamp} [${label}${info1.subData && info1.subData.subLabel ? `:${info1.subData.subLabel}`:''}] ${info1.level}: ${info1.message}`
+                        ).split('\n').join('\n    ').trim())
                     )
                 }),
                 new DailyRotateFile({

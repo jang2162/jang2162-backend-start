@@ -1,71 +1,82 @@
 import {DatabaseProvider} from '@/app/common/database/database.provider';
-import {SamplePost, SampleUser, SampleUserInput} from '@/generated-models';
+import {PaginationUtilProvider} from '@/app/common/pagination/pagination-util.provider';
+import {
+    Maybe,
+    SamplePost,
+    SamplePostConnection,
+    SamplePostForm,
+    SampleUser,
+    SampleUserConnection,
+    SampleUserForm, SampleUserInput
+    } from '@/generated-models';
 import {orderByIdArray} from '@/lib/ApolloUtil';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
 import DataLoader from 'dataloader';
-import SQL from 'sql-template-strings';
-
 
 @Injectable({
     scope: ProviderScope.Session
 })
 export class SampleProvider {
 
-    // private sampleUserPostsDataLoader = new DataLoader<number, SamplePost[]>(keys => this.sampleUserPostsBatch(keys));
-    private sampleUserDataLoader = new DataLoader<number, SampleUser>(keys => this.sampleUserBatch(keys));
-    private samplePostDataLoader = new DataLoader<number, SamplePost>(keys => this.samplePostBatch(keys));
+    private sampleUserDataLoader = new DataLoader<string, SampleUser>(keys => this.sampleUserBatch(keys));
+    private samplePostDataLoader = new DataLoader<string, SamplePost>(keys => this.samplePostBatch(keys));
 
     constructor(
         private db: DatabaseProvider,
+        private pageUtil: PaginationUtilProvider,
     ){}
 
-    async sampleUserPostsBatch(idArr: number[]) {
-        const res = await this.db.query(`
-            SELECT * FROM test_data WHERE id = ANY($1::int[]);
-        `, [idArr]);
-        return orderByIdArray(res.rows, idArr);
+    async samplePostBatch(idArr: string[]) {
+        const builder = this.db.knex('sample_post').whereIn('id', idArr);
+        const res = await this.db.exec(builder);
+        return orderByIdArray(res, idArr);
     }
 
-    async samplePostBatch(idArr: number[]) {
-        const res = await this.db.query(`
-            SELECT * FROM test_data WHERE id = ANY($1::int[]);
-        `, [idArr]);
-        return orderByIdArray(res.rows, idArr);
+    async sampleUserBatch(idArr: string[]) {
+        const builder = this.db.knex('sample_user').whereIn('id', idArr);
+        const res = await this.db.exec(builder);
+        return orderByIdArray(res, idArr);
     }
 
-    async sampleUserBatch(idArr: number[]) {
-        const res = await this.db.query(`
-            SELECT * FROM test_data WHERE id = ANY($1::int[]);
-        `, [idArr]);
-        return orderByIdArray(res.rows, idArr);
+    async sampleUserConnection(form: Maybe<SampleUserForm>): Promise<SampleUserConnection> {
+        if (!form) {
+            throw Error();
+        }
+
+        const builder = this.db.knex('sample_user')
+            .select('*');
+        return this.pageUtil.getConnection(builder, form.page);
     }
 
-    async sampleUserList() {
-        const res = await this.db.query(`
-            SELECT * FROM sample_user;
-        `);
-        return res.rows;
-    }
-
-    async sampleUserById(id: number) {
+    async sampleUserById(id: string) {
         return this.sampleUserDataLoader.load(id);
     }
 
-    async samplePostList() {
-        const res = await this.db.query(`
-            SELECT * FROM test_data;
-        `);
-        return res.rows;
+    async insertSampleUser(test: SampleUserInput) {
+        const builder = this.db.knex('sample_user').insert({
+            name: test.name,
+            birthday: test.birthday,
+        }).returning('*');
+
+        const res = await this.db.exec(builder);
+        return res[0];
     }
 
-    async insertSampleUser(test: SampleUserInput) {
-        try {
-            const res = await this.db.query(`
-                INSERT INTO sample_user (name, birthday) VALUES ($1, $2) RETURNING *;
-            `, [test.name, test.birthday]);
-            return res.rows[0];
-        } catch (e) {
-            throw e;
+    async samplePostConnection(form: Maybe<SamplePostForm>): Promise<SamplePostConnection> {
+        if (!form) {
+            throw Error();
         }
+        const builder = this.db.knex('sample_post')
+            .select('*');
+
+        if (form.userId) {
+            builder.where('writer_id', form.userId);
+        }
+
+        return this.pageUtil.getConnection(builder, form.page);
+    }
+
+    async samplePostById(id: string) {
+        return this.samplePostDataLoader.load(id);
     }
 }
