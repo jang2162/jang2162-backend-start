@@ -12,7 +12,7 @@ export async function up(knex: Knex): Promise<any> {
         .createTable('sample_post', function (table) {
             table.comment('예제용 게시글 테이블');
             table.increments('id').comment('id');
-            table.integer('writer_id', 100).notNullable().comment('작성자 id');
+            table.integer('writer_id').notNullable().comment('작성자 id');
             table.string('subject', 100).notNullable().comment('제목');
             table.text('content').notNullable().comment('내용');
             table.dateTime('reg_date').defaultTo(knex.fn.now()).comment('작성일');

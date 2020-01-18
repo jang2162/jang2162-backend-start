@@ -10,12 +10,21 @@ function get(key, defaultValue) {
     var keyArr = key.split('.');
     var curVal = envData;
     for (var _i = 0, keyArr_1 = keyArr; _i < keyArr_1.length; _i++) {
-        var keyItem = keyArr_1[_i];
-        if (keyItem.toLocaleLowerCase() in curVal) {
-            curVal = curVal[keyItem.toLocaleLowerCase()];
-        } else if (keyItem.toLocaleUpperCase() in curVal) {
-            curVal = curVal[keyItem.toLocaleUpperCase()];
-        } else {
+        var itemKey = keyArr_1[_i];
+        if (typeof curVal === 'object') {
+            var flag = false;
+            for (var curKey in curVal) {
+                if (curVal.hasOwnProperty(curKey) && itemKey.toLocaleLowerCase() === curKey.toLocaleLowerCase()) {
+                    curVal = curVal[curKey];
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                return defaultValue;
+            }
+        }
+        else {
             return defaultValue;
         }
     }
@@ -29,7 +38,7 @@ function getNumber(key, defaultValue) {
 }
 function getString(key, defaultValue) {
     var res = get(key, defaultValue);
-    return typeof res === 'object' ? JSON.stringify(res) : get(key, defaultValue) + '';
+    return typeof res === 'object' ? JSON.stringify(res) : res + '';
 }
 exports.env = {
     get: get, getBool: getBool, getNumber: getNumber, getString: getString

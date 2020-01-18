@@ -1,0 +1,8 @@
+type authToken {
+    accessToken: String!
+    refreshToken: String!
+}
+
+extend type Mutation {
+    authentication(id: String!, pw: String!): authToken!
+}

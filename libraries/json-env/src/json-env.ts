@@ -11,16 +11,24 @@ function get(key?: string, defaultValue?: any): any {
 
     const keyArr = key.split('.');
     let curVal: any = envData;
-    for (const keyItem of keyArr) {
-        if (keyItem.toLocaleLowerCase() in curVal) {
-            curVal = curVal[keyItem.toLocaleLowerCase()];
-        } else if (keyItem.toLocaleUpperCase() in curVal) {
-            curVal = curVal[keyItem.toLocaleUpperCase()];
+    for (const itemKey of keyArr) {
+        if (typeof curVal === 'object') {
+            let flag = false;
+            for (const curKey in curVal) {
+                if (curVal.hasOwnProperty(curKey) && itemKey.toLocaleLowerCase() === curKey.toLocaleLowerCase()) {
+                    curVal = curVal[curKey];
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (!flag) {
+                return defaultValue
+            }
         } else {
-            return defaultValue;
+            return defaultValue
         }
     }
-
     return clone(curVal);
 }
 
@@ -34,7 +42,7 @@ function getNumber(key: string, defaultValue?: number) {
 
 function getString(key: string, defaultValue?: string) {
     const res = get(key, defaultValue);
-    return typeof res === 'object' ? JSON.stringify(res) : get(key, defaultValue) + '';
+    return typeof res === 'object' ? JSON.stringify(res) : res + '';
 }
 
 export const env = {

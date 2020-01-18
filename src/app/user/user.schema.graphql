@@ -1,0 +1,34 @@
+type User {
+    id: ID!
+    loginId: String!
+    name: String!
+    birthday: Date
+    createDate: Date!
+}
+
+input UserForm {
+    page: PageInput = {}
+    name: String = ""
+}
+
+input UserInput {
+    name: String!
+    loginId: String!
+    password: String!
+    birthday: Date
+}
+
+type UserConnection {
+    pageInfo: PageInfo!
+    list: [User!]
+}
+
+# COMMON
+extend type Query {
+    users(form: UserForm = {}): UserConnection!
+    userById(id: ID!): User
+}
+
+extend type Mutation {
+    addUser(user: UserInput!): User!
+}

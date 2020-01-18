@@ -1,5 +1,6 @@
 import {
-    MutationAddSampleUserArgs, QuerySamplePostByIdArgs,
+    AuthToken,
+    MutationAddSampleUserArgs, MutationAuthenticationArgs, QuerySamplePostByIdArgs,
     QuerySamplePostsArgs,
     QuerySampleUserByIdArgs, QuerySampleUsersArgs,
     Resolvers,
