@@ -64,7 +64,13 @@ export class DatabaseProvider implements OnRequest, OnResponse {
         }
     }
 
-    onQuery(data: any) {
+    async exec<T=any>(builder: Knex.QueryBuilder<T, any>): Promise<T> {
+        return new Promise<T>((resolve, reject) =>
+            builder.then(value => resolve(value)).catch(reason => reject(reason))
+        )
+    }
+
+    private onQuery(data: any) {
         if(this.queryList.length === 0) {
             this.timeout = setTimeout(() => {
                 this.logger.warn('A client has been checked out for more than 5 seconds!\n' +
@@ -81,7 +87,7 @@ export class DatabaseProvider implements OnRequest, OnResponse {
         });
     }
 
-    onQueryResponse(response: any, data: any, queryBuilder: any) {
+    private onQueryResponse(response: any, data: any, queryBuilder: any) {
         const item = this.queryList.find(value => value.id === data.__knexQueryUid);
         if (item) {
             item.duration = Date.now() - item.start;
@@ -94,17 +100,11 @@ export class DatabaseProvider implements OnRequest, OnResponse {
         }
     }
 
-    onQueryError(error: any, obj: any) {
+    private onQueryError(error: any, obj: any) {
         this.logger.error(error.message, {
             code: error.code,
             position: error.position,
             queryText: obj.sql,
         });
-    }
-
-    async exec<T=any>(builder: Knex.QueryBuilder<T, any>): Promise<T> {
-        return new Promise<T>((resolve, reject) =>
-            builder.then(value => resolve(value)).catch(reason => reject(reason))
-        )
     }
 }

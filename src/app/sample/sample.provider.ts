@@ -12,7 +12,6 @@ import {
     } from '@/generated-models';
 import {orderByIdArray} from '@/lib/ApolloUtil';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
-import {compare, genSalt, genSaltSync, hash, hashSync} from 'bcrypt'
 import DataLoader from 'dataloader';
 
 @Injectable({
@@ -51,6 +50,7 @@ export class SampleProvider {
     }
 
     async sampleUserById(id: string) {
+        console.log(id);
         return this.sampleUserDataLoader.load(id);
     }
 

@@ -44,7 +44,7 @@ export class UserProvider {
 
     async userBatch(idArr: string[]) {
         const builder = this.db.knex('user').whereIn('id', idArr)
-            .select(['id', 'login_id', 'loginId', 'name', 'birthday', 'create_date createDate']);
+            .select(['id', 'login_id loginId', 'name', 'birthday', 'create_date createDate']);
         const res = await this.db.exec(builder);
         return orderByIdArray(res, idArr);
     }
@@ -54,7 +54,7 @@ export class UserProvider {
             throw Error();
         }
         const builder = this.db.knex('user')
-            .select(['id', 'login_id', 'loginId', 'name', 'birthday', 'create_date createDate']);
+            .select(['id', 'login_id loginId', 'name', 'birthday', 'create_date createDate']);
         return this.pageUtil.getConnection(builder, form.page);
     }
 
@@ -68,7 +68,7 @@ export class UserProvider {
             login_id: user.loginId,
             password: await hash(user.password, 10),
             birthday: user.birthday,
-        }).returning(['id', 'login_id', 'loginId', 'name', 'birthday', 'create_date createDate']);
+        }).returning(['id', 'login_id as loginId', 'name', 'birthday', 'create_date as createDate']);
 
         const res = await this.db.exec(builder);
         return res[0];
