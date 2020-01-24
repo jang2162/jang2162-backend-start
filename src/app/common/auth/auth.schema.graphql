@@ -3,6 +3,11 @@ type authToken {
     refreshToken: String!
 }
 
+type accessToken {
+    token: String!
+}
+
 extend type Mutation {
     authentication(id: String!, pw: String!): authToken!
+    refreshToken(refreshToken: String!): accessToken!
 }

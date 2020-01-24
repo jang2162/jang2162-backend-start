@@ -1,4 +1,4 @@
-import {AccessToken, AuthProvider} from '@/app/common/auth/auth.provider';
+import {IAccessToken, AuthProvider} from '@/app/common/auth/auth.provider';
 import {RoleProvider} from '@/app/common/auth/role.provider';
 import {SimpleResolveMiddleware} from '@/lib/ApolloUtil';
 import {ModuleSessionInfo} from '@graphql-modules/core';
@@ -37,7 +37,19 @@ export class AuthInfoProvider {
                 throw new ApolloError('', 'ACCESS_TOKEN_INVALID');
             }
         } else {
-            return this.payload as AccessToken
+            return this.payload as IAccessToken
+        }
+    }
+
+    tokenRefresh(refreshToken: string) {
+        if (this.err) {
+            if (this.err === 1) {
+                return this.authProvider.refresh(this.payload as IAccessToken, refreshToken);
+            } else {
+                throw new ApolloError('', 'ACCESS_TOKEN_INVALID');
+            }
+        } else {
+            throw new ApolloError('', 'ACCESS_TOKEN_NOT_EXPIRED');
         }
     }
 }

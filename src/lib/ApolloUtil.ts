@@ -30,7 +30,7 @@ export const skipLogMiddleware: SimpleResolveMiddleware = {
 };
 
 export class SimpleResolver<Arguments = {}, Result = any, Source = any> {
-    private middlewareList:SimpleResolveMiddleware[] = [];
+    private readonly middlewareList:SimpleResolveMiddleware[] = [];
     constructor(middleware?: SimpleResolveMiddleware | SimpleResolveMiddleware[]) {
         if (middleware) {
             this.middlewareList = this.middlewareList.concat(middleware);
