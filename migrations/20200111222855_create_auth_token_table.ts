@@ -12,6 +12,7 @@ export async function up(knex: Knex): Promise<any> {
             table.string('access_key', 32).comment('권한토큰 비교키');
             table.string('salt', 22).comment('salt');
             table.foreign('user_id').references('user.id');
+            table.integer('disabled').notNullable().defaultTo(0).comment('사용 여부');
         });
 }
 

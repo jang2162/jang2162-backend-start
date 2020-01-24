@@ -84,11 +84,13 @@ export class AuthProvider {
             this.db.knex.raw('EXTRACT(epoch FROM (NOW() - last_date))::int refresh_interval'),
             'access_key',
             'salt'
-        ]).where('refresh_key', refreshTokenPayload.jti);
+        ]).where('refresh_key', refreshTokenPayload.jti)
+            .where('disabled', 0);
         const authData = await this.db.exec(tokenSelectQuery);
         const saltSelectQuery = this.db.knex('user').first(this.db.knex.raw('SUBSTR(password, 8, 22) salt'))
             .where('id', accessTokenPayload.uid);
         const saltRow = await this.db.exec(saltSelectQuery);
+
         if (!saltRow || !saltRow.salt || !authData || authData.user_id !== accessTokenPayload.uid) {
             throw new ApolloError('', 'UNKNOWN_ERROR');
         }
@@ -102,6 +104,10 @@ export class AuthProvider {
         }
 
         if (authData.access_key !== accessTokenPayload.jti) {
+            const tokenDisableQuery = this.db.knex('auth_token').update({
+                disabled: 1
+            }).where('refresh_key', refreshTokenPayload.jti);
+            await this.db.exec(tokenDisableQuery);
             throw new ApolloError('', 'ACCESS_KEY_IS_OLD');
         }
 
