@@ -5,6 +5,14 @@ import env from 'json-env';
 import {sign, verify} from 'jsonwebtoken'
 import uuid4 from 'uuid/v4';
 
+export interface AccessToken {
+    uid: number,
+    rol: number[],
+    exp: number,
+    iss: string,
+    sub: string,
+    jti: string,
+}
 
 @Injectable()
 export class AuthProvider {
@@ -39,10 +47,6 @@ export class AuthProvider {
             jwtid: accessKey,
             noTimestamp: true
         });
-
-        console.log(verify(accessToken, this.secret));
-        console.log(new Date().getTime());
-        console.log(new Date().getTime() + 900000);
 
         const refreshToken = sign({}, this.secret, {
             issuer: this.issuer,
@@ -81,8 +85,6 @@ export class AuthProvider {
                 err = 2;
             }
         }
-
         return {payload, err};
-
     }
 }

@@ -50,7 +50,6 @@ export class SampleProvider {
     }
 
     async sampleUserById(id: string) {
-        console.log(id);
         return this.sampleUserDataLoader.load(id);
     }
 

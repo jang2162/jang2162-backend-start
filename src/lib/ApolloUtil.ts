@@ -43,7 +43,6 @@ export class SimpleResolver<Arguments = {}, Result = any, Source = any> {
     build(cb: SimpleResolveCallback<Arguments, Result , Source>) {
         return async (source: Source, args: Arguments, context: ModuleContext, info: GraphQLResolveInfo) => {
             const data = {source, args, injector: context.injector, info};
-            console.log(this.middlewareList);
             for (const middleware of this.middlewareList) {
                 await middleware.run(data);
             }
