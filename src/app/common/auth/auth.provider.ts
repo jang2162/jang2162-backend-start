@@ -133,6 +133,13 @@ export class AuthProvider {
         return {token}
     }
 
+    async invalidate(accessTokenPayload: IAccessToken) {
+        const tokenDisableQuery = this.db.knex('auth_token').update({
+            disabled: 1
+        }).where('access_key', accessTokenPayload.jti);
+        await this.db.exec(tokenDisableQuery);
+    }
+
     verify(token: string) {
         let payload = null;
         let err = 0; // 0 정상, 1: 만료, 2: 검증불가

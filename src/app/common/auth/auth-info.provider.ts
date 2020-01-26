@@ -52,6 +52,19 @@ export class AuthInfoProvider {
             throw new ApolloError('', 'ACCESS_TOKEN_NOT_EXPIRED');
         }
     }
+
+    tokenInvalidate() {
+        if (this.err) {
+            if (this.err === 1) {
+                throw new ApolloError('', 'ACCESS_TOKEN_EXPIRED');
+
+            } else {
+                throw new ApolloError('', 'ACCESS_TOKEN_INVALID');
+            }
+        } else {
+            return this.authProvider.invalidate(this.payload);
+        }
+    }
 }
 
 export const authFilterMiddleware = {

@@ -11,6 +11,9 @@ const resolvers: Resolvers = {
         refreshToken: new SimpleResolver<MutationRefreshTokenArgs, AccessToken>().build(({injector, args}) =>
             injector.get<AuthInfoProvider>(AuthInfoProvider).tokenRefresh(args.refreshToken)
         ),
+        invalidate: new SimpleResolver().build(({injector}) =>
+            injector.get<AuthInfoProvider>(AuthInfoProvider).tokenInvalidate()
+        )
     },
 };
 
