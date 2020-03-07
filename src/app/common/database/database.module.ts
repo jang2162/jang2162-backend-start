@@ -1,5 +1,6 @@
-import {Logger} from '@/lib/Logger';
+import {createLogger} from '@/lib/createLogger';
 import {GraphQLModule} from '@graphql-modules/core';
+import {Logger} from 'custom-logger';
 import {range} from 'utils';
 import {DatabaseProvider} from './database.provider';
 
@@ -21,7 +22,7 @@ export const databaseModule = new GraphQLModule({
     providers: [
         {
             provide: Logger,
-            useFactory: () => new Logger<DbLoggerSubData>('DB',
+            useFactory: () => createLogger<DbLoggerSubData>('DB',
                 ({ level, message, subData, timestamp }) => `${timestamp} [DB] ${level}: ${
                 level === 'debug' 
                     ? `executed query\nQuery: ${subData.queryText}\nDuration: ${subData.duration}ms\nRowCount: ${subData.rowCount}${

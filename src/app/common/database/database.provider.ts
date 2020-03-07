@@ -1,13 +1,14 @@
-import {Logger} from '@/lib/Logger';
+import {createLogger} from '@/lib/createLogger';
 import { OnRequest, OnResponse} from '@graphql-modules/core';
 import {Inject, Injectable, ProviderScope} from '@graphql-modules/di';
+import {Logger} from 'custom-logger';
 import env from 'json-env';
 import Knex from 'knex';
 import {DbLogger} from './database.module';
 import Timeout = NodeJS.Timeout;
 
 
-const knexLogger = new Logger('KNEX');
+const knexLogger = createLogger('KNEX');
 const knex = Knex({
     client: 'pg',
     connection: {

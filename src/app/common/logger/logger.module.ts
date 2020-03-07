@@ -1,5 +1,6 @@
-import {Logger} from '@/lib/Logger';
+import {createLogger} from '@/lib/createLogger';
 import {GraphQLModule} from '@graphql-modules/core';
+import {Logger} from 'custom-logger';
 
 interface GraphQLLoggerSubData {
     type: string,
@@ -15,7 +16,7 @@ export const loggerModule = new GraphQLModule({
     providers: [
         {
             provide: GRAPHQL_LOGGER,
-            useFactory: () => new Logger<GraphQLLoggerSubData>('APOLLO',
+            useFactory: () => createLogger<GraphQLLoggerSubData>('APOLLO',
                 ({ level, message, subData, timestamp }) => `${timestamp} [APOLLO:${subData.type}] ${level}: ${message} [[\n${subData.query}]] ${
                     subData.params ? `=> (Params: ${JSON.stringify(subData.params)})` : ''
                 }`

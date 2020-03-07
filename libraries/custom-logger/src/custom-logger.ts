@@ -1,9 +1,10 @@
-import env from 'json-env';
 import winston, {format} from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
 interface LogData<SUB_DATA> {
-    level: 'debug' | 'info' | 'warn' | 'error',
+    level: LogLevel,
     message: string
     label: string,
     timestamp: string,
@@ -13,15 +14,21 @@ interface LogData<SUB_DATA> {
 export class Logger<SUB_DATA = {subLabel?: string}> {
     curLogger: winston.Logger;
     constructor(
-        private label: string = '_DEFAULT',
-        consoleFormat?: (data: LogData<SUB_DATA> | any ) => string
+        private options: {
+            label: string,
+            defaultLevel: LogLevel,
+            dirname: string
+            consoleLevel?: LogLevel,
+            fileLevel?: LogLevel,
+            consoleFormat?: (data: LogData<SUB_DATA> | any ) => string
+        },
     ) {
-        const defaultLevel = env.getString(`log.${label}.level`, env.getBool('production', false) ? 'error' : 'info');
-        const consoleLevel = env.getString(`log.${label}.consoleLevel`, defaultLevel);
-        const fileLevel = env.getString(`log.${label}.fileLevel`, defaultLevel);
+        const label = options.label;
+        const consoleLevel = options.consoleLevel || options.defaultLevel;
+        const fileLevel = options.fileLevel || options.defaultLevel;
 
         this.curLogger =  winston.createLogger({
-            level: defaultLevel,
+            level: options.defaultLevel,
             transports: [
                 new winston.transports.Console({
                     level: consoleLevel,
@@ -29,14 +36,14 @@ export class Logger<SUB_DATA = {subLabel?: string}> {
                         format.label({ label }),
                         format.timestamp(),
                         format.printf(info1 => (
-                            consoleFormat ? consoleFormat(info1) :
-                            `${info1.timestamp} [${label}${info1.subData && info1.subData.subLabel ? `:${info1.subData.subLabel}`:''}] ${info1.level}: ${info1.message}`
+                            options.consoleFormat ? options.consoleFormat(info1) :
+                                `${info1.timestamp} [${label}${info1.subData && info1.subData.subLabel ? `:${info1.subData.subLabel}`:''}] ${info1.level}: ${info1.message}`
                         ).split('\n').join('\n    ').trim())
                     )
                 }),
                 new DailyRotateFile({
                     level: fileLevel,
-                    dirname: env.getString(`log.${label}.path`, './logs'),
+                    dirname: options.dirname,
                     filename: `${label}-%DATE%.log`,
                     datePattern: 'YYYY-MM-DD',
                     maxSize: '30m',
@@ -77,4 +84,3 @@ export class Logger<SUB_DATA = {subLabel?: string}> {
         this.log('error', message, subData)
     }
 }
-

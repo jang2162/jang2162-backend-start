@@ -1,8 +1,8 @@
 import appModule from '@/app/app.modules';
-import {Logger} from '@/lib/Logger';
+import {createLogger} from '@/lib/createLogger';
 import {ApolloServer} from 'apollo-server-express';
 
-const logger = new Logger<{path: any, code: any}>('APOLLO_ERROR', ({ message, subData, timestamp }) =>
+const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', ({ message, subData, timestamp }) =>
     `${timestamp} [APOLLO_ERROR]: (${subData.path}${subData.code ? ', ' + subData.code : ''}) ${message}`
 );
 const apollo = new ApolloServer({
