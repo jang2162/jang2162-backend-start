@@ -1,11 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var clone_1 = require("clone");
 var fs_1 = require("fs");
+var cache = {};
 var envData = JSON.parse(fs_1.readFileSync(process.env.ENV_PATH || './environments/dev.json', 'utf8').toString());
 function get(key, defaultValue) {
     if (!key) {
         return envData;
+    }
+    key = key.toLocaleLowerCase();
+    if (cache.hasOwnProperty(key)) {
+        return typeof cache[key] === 'object' ? JSON.parse(JSON.stringify(cache[key])) : cache[key];
     }
     var keyArr = key.split('.');
     var curVal = envData;
@@ -14,7 +18,7 @@ function get(key, defaultValue) {
         if (typeof curVal === 'object') {
             var flag = false;
             for (var curKey in curVal) {
-                if (curVal.hasOwnProperty(curKey) && itemKey.toLocaleLowerCase() === curKey.toLocaleLowerCase()) {
+                if (curVal.hasOwnProperty(curKey) && itemKey === curKey.toLocaleLowerCase()) {
                     curVal = curVal[curKey];
                     flag = true;
                     break;
@@ -28,7 +32,11 @@ function get(key, defaultValue) {
             return defaultValue;
         }
     }
-    return clone_1(curVal);
+    if (typeof curVal === 'object') {
+        curVal = JSON.parse(JSON.stringify(curVal));
+    }
+    cache[key.toLocaleLowerCase()] = curVal;
+    return curVal;
 }
 function getBool(key, defaultValue) {
     return !!get(key, defaultValue);

@@ -1,13 +1,17 @@
-import clone from 'clone';
 import {readFileSync} from 'fs';
 
 export interface EnvI {
     [k: string]: any
 }
 
+const cache: {[k: string]: any} = {};
 const envData: EnvI = JSON.parse(readFileSync(process.env.ENV_PATH || './environments/dev.json', 'utf8').toString());
 function get(key?: string, defaultValue?: any): any {
     if (!key) { return envData; }
+    key = key.toLocaleLowerCase();
+    if (cache.hasOwnProperty(key)) {
+        return typeof cache[key] === 'object' ? JSON.parse(JSON.stringify(cache[key])) : cache[key];
+    }
 
     const keyArr = key.split('.');
     let curVal: any = envData;
@@ -15,7 +19,7 @@ function get(key?: string, defaultValue?: any): any {
         if (typeof curVal === 'object') {
             let flag = false;
             for (const curKey in curVal) {
-                if (curVal.hasOwnProperty(curKey) && itemKey.toLocaleLowerCase() === curKey.toLocaleLowerCase()) {
+                if (curVal.hasOwnProperty(curKey) && itemKey === curKey.toLocaleLowerCase()) {
                     curVal = curVal[curKey];
                     flag = true;
                     break;
@@ -29,7 +33,12 @@ function get(key?: string, defaultValue?: any): any {
             return defaultValue
         }
     }
-    return clone(curVal);
+
+    if (typeof curVal === 'object') {
+        curVal = JSON.parse(JSON.stringify(curVal));
+    }
+
+    cache[key.toLocaleLowerCase()] = curVal;
 }
 
 function getBool(key: string, defaultValue?: boolean) {
