@@ -5,7 +5,7 @@ import {
     MutationAuthenticationArgs,
     Resolvers, User,
 } from '@/generated-models';
-import {SimpleResolver} from '@/lib/ApolloUtil';
+import {SimpleResolver} from '@/lib/apolloUtil';
 import {UserProvider} from './user.provider';
 
 const resolvers: Resolvers = {

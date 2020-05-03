@@ -10,7 +10,7 @@ import {
     SampleUserConnection,
     SampleUserForm, SampleUserInput
     } from '@/generated-models';
-import {orderByIdArray} from '@/lib/ApolloUtil';
+import {orderByIdArray} from '@/lib/apolloUtil';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
 import DataLoader from 'dataloader';
 
@@ -28,14 +28,14 @@ export class SampleProvider {
     ){}
 
     async samplePostBatch(idArr: string[]) {
-        const builder = this.db.knex('sample_post').whereIn('id', idArr);
-        const res = await this.db.exec(builder);
+        const trx = await this.db.getTrx();
+        const res = await trx('sample_post').whereIn('id', idArr);
         return orderByIdArray(res, idArr);
     }
 
     async sampleUserBatch(idArr: string[]) {
-        const builder = this.db.knex('sample_user').whereIn('id', idArr);
-        const res = await this.db.exec(builder);
+        const trx = await this.db.getTrx();
+        const res = await trx('sample_user').whereIn('id', idArr);
         return orderByIdArray(res, idArr);
     }
 
@@ -43,8 +43,8 @@ export class SampleProvider {
         if (!form) {
             throw Error();
         }
-
-        const builder = this.db.knex('sample_user')
+        const trx = await this.db.getTrx();
+        const builder = trx('sample_user')
             .select('*');
         return this.pageUtil.getConnection(builder, form.page);
     }
@@ -54,12 +54,11 @@ export class SampleProvider {
     }
 
     async insertSampleUser(test: SampleUserInput) {
-        const builder = this.db.knex('sample_user').insert({
+        const trx = await this.db.getTrx();
+        const res = await trx('sample_user').insert({
             name: test.name,
             birthday: test.birthday,
         }).returning('*');
-
-        const res = await this.db.exec(builder);
         return res[0];
     }
 
@@ -67,7 +66,8 @@ export class SampleProvider {
         if (!form) {
             throw Error();
         }
-        const builder = this.db.knex('sample_post')
+        const trx = await this.db.getTrx();
+        const builder = trx('sample_post')
             .select('*');
 
         if (form.userId) {

@@ -4,7 +4,7 @@ import {
     MutationRefreshTokenArgs,
     Resolvers
 } from '@/generated-models';
-import {SimpleResolver} from '@/lib/ApolloUtil';
+import {SimpleResolver} from '@/lib/apolloUtil';
 
 const resolvers: Resolvers = {
     Mutation: {

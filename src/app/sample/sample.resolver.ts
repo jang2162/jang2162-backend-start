@@ -8,7 +8,7 @@ import {
     SamplePost, SamplePostConnection,
     SampleUser, SampleUserConnection, SampleUserPostsArgs
 } from '@/generated-models';
-import {SimpleResolver} from '@/lib/ApolloUtil';
+import {SimpleResolver} from '@/lib/apolloUtil';
 import {SampleProvider} from './sample.provider';
 
 const resolvers: Resolvers = {

@@ -39,6 +39,7 @@ const knex = Knex({
 })
 export class DatabaseProvider implements OnRequest, OnResponse {
     readonly knex: Knex = knex;
+    private trx?: Knex.Transaction;
     private queryList: Array<{text:string, duration:number, id: string, start: number, params?: any[]}> = [];
     private timeout?: Timeout;
     private startListener: any;
@@ -54,11 +55,18 @@ export class DatabaseProvider implements OnRequest, OnResponse {
                 .on('query-response', (response, obj, queryBuilder) => this.onQueryResponse(response, obj, queryBuilder))
                 .on('query-error', (error, obj) => this.onQueryError(error, obj))
         };
-        this.knex.client.on('start', this.startListener);
     }
 
-    onResponse() {
-        this.knex.client.removeListener('start', this.startListener);
+    async getTrx() {
+        if (!this.trx) {
+            this.trx = await (await this.knex.transaction());
+            this.trx.client.on('start', this.startListener);
+        }
+        return this.trx
+    }
+
+    async onResponse() {
+        (await this.getTrx()).client.removeListener('start', this.startListener);
 
         if (this.timeout) {
             clearTimeout(this.timeout);

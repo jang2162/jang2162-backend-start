@@ -1,6 +1,6 @@
-import {IAccessToken, AuthProvider} from '@/app/common/auth/auth.provider';
+import {AuthProvider, IAccessToken} from '@/app/common/auth/auth.provider';
 import {RoleProvider} from '@/app/common/auth/role.provider';
-import {SimpleResolveMiddleware} from '@/lib/ApolloUtil';
+import {SimpleResolveMiddleware} from '@/lib/apolloUtil';
 import {ModuleSessionInfo} from '@graphql-modules/core';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
 import {ApolloError} from 'apollo-server-errors';

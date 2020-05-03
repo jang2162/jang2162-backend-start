@@ -1,4 +1,5 @@
 import {AuthProvider} from '@/app/common/auth/auth.provider';
+import {ROLE_USER, RoleProvider} from '@/app/common/auth/role.provider';
 import {DatabaseProvider} from '@/app/common/database/database.provider';
 import {PaginationUtilProvider} from '@/app/common/pagination/pagination-util.provider';
 import {
@@ -8,7 +9,7 @@ import {
     UserForm,
     UserInput
 } from '@/generated-models';
-import {orderByIdArray} from '@/lib/ApolloUtil';
+import {orderByIdArray} from '@/lib/apolloUtil';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
 import {ApolloError} from 'apollo-server-errors';
 import {compare, genSalt, hash} from 'bcrypt'
@@ -24,12 +25,13 @@ export class UserProvider {
     constructor(
         private db: DatabaseProvider,
         private pageUtil: PaginationUtilProvider,
-        private authProvider: AuthProvider
+        private authProvider: AuthProvider,
+        private roleProvider: RoleProvider,
     ){}
 
     async authentication(id: string, pw: string) {
-        const builder = this.db.knex('user').where('login_id', id);
-        const res = await this.db.exec(builder);
+        const trx = await this.db.getTrx();
+        const res = await trx('user').where('login_id', id);
         if (res.length > 0) {
             const user = res[0];
             if (await compare(pw, user.password)) {
@@ -43,9 +45,9 @@ export class UserProvider {
     }
 
     async userBatch(idArr: string[]) {
-        const builder = this.db.knex('user').whereIn('id', idArr)
+        const trx = await this.db.getTrx();
+        const res = await trx('user').whereIn('id', idArr)
             .select(['id', 'login_id loginId', 'name', 'birthday', 'create_date createDate']);
-        const res = await this.db.exec(builder);
         return orderByIdArray(res, idArr);
     }
 
@@ -53,7 +55,8 @@ export class UserProvider {
         if (!form) {
             throw Error();
         }
-        const builder = this.db.knex('user')
+        const trx = await this.db.getTrx();
+        const builder = trx('user')
             .select(['id', 'login_id loginId', 'name', 'birthday', 'create_date createDate']);
         return this.pageUtil.getConnection(builder, form.page);
     }
@@ -63,14 +66,19 @@ export class UserProvider {
     }
 
     async insertUser(user: UserInput): Promise<User> {
-        const builder = this.db.knex('user').insert({
+        const trx = await this.db.getTrx();
+        const res = await trx('user').insert({
             name: user.name,
             login_id: user.loginId,
             password: await hash(user.password, 10),
             birthday: user.birthday,
         }).returning(['id', 'login_id as loginId', 'name', 'birthday', 'create_date as createDate']);
 
-        const res = await this.db.exec(builder);
+        if (!res[0] || !res[0].id) {
+            throw new Error('USER_INSERT_ERROR');
+        } else {
+            await this.roleProvider.addRole(res[0].id, ROLE_USER);
+        }
         return res[0];
     }
 }
