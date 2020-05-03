@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  postgres:
+    container_name: backend-start-postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: backend-start
+      POSTGRES_PASSWORD: backend-start
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+  
+  pgadmin:
+    container_name: backend-start-pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: backend-start
+      PGADMIN_DEFAULT_PASSWORD: backend-start
+    volumes:
+       - pgadmin:/root/.pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:
