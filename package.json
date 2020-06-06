@@ -16,7 +16,7 @@
   "dependencies": {
     "@graphql-modules/core": "^0.7.12",
     "@types/uuid": "^3.4.6",
-    "apollo-server-express": "^2.7.2",
+    "apollo-server-express": "^2.14.2",
     "bcrypt": "^3.0.7",
     "clone": "^2.1.2",
     "cross-env": "^5.2.0",
