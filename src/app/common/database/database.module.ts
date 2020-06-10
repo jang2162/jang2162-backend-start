@@ -1,3 +1,4 @@
+import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
 import {createLogger} from '@/lib/createLogger';
 import {GraphQLModule} from '@graphql-modules/core';
 import {Logger} from 'custom-logger';
@@ -37,5 +38,6 @@ export const databaseModule = new GraphQLModule({
             )
         },
         DatabaseProvider,
+        DatabaseTransactionProvider,
     ],
 });

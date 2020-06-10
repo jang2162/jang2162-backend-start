@@ -1,4 +1,4 @@
-import {DatabaseProvider} from '@/app/common/database/database.provider';
+import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
 import {AccessToken, AuthToken} from '@/generated-models';
 import {Injectable} from '@graphql-modules/di';
 import {ApolloError} from 'apollo-server-errors';
@@ -29,11 +29,11 @@ export class AuthProvider {
     private issuer = env.getString('jwt.issuer', '') || undefined;
 
     constructor(
-        private db: DatabaseProvider,
+        private dbTran: DatabaseTransactionProvider,
     ){}
 
     async authentication(uid: number, salt: string): Promise<AuthToken> {
-        const trx = await this.db.getTrx();
+        const {trx, release} = await this.dbTran.getTransaction();
         const refreshKey = uuid4().replace(/-/g, '');
         const accessKey = uuid4().replace(/-/g, '');
         const roles = (await trx('user_role').where('user_id', uid)).map((item: any) => item.role_id);
@@ -60,7 +60,7 @@ export class AuthProvider {
             jwtid: refreshKey,
             noTimestamp: true
         });
-
+        await release();
         return {
             refreshToken,
             accessToken
@@ -68,7 +68,7 @@ export class AuthProvider {
     }
 
     async refresh(accessTokenPayload: IAccessToken, refreshToken: string): Promise<AccessToken> {
-        const trx = await this.db.getTrx();
+        const {trx, release} = await this.dbTran.getTransaction();
         let refreshTokenPayload;
         try {
             refreshTokenPayload = verify(refreshToken, this.secret, {
@@ -81,12 +81,12 @@ export class AuthProvider {
 
         const authData = await trx('auth_token').first([
             'user_id',
-            this.db.knex.raw('EXTRACT(epoch FROM (NOW() - last_date))::int refresh_interval'),
+            this.dbTran.knex.raw('EXTRACT(epoch FROM (NOW() - last_date))::int refresh_interval'),
             'access_key',
             'salt'
         ]).where('refresh_key', refreshTokenPayload.jti)
             .where('disabled', 0);
-        const saltRow = await trx('user').first(this.db.knex.raw('SUBSTR(password, 8, 22) salt'))
+        const saltRow = await trx('user').first(this.dbTran.knex.raw('SUBSTR(password, 8, 22) salt'))
             .where('id', accessTokenPayload.uid);
 
         if (!saltRow || !saltRow.salt || !authData || authData.user_id !== accessTokenPayload.uid) {
@@ -112,7 +112,7 @@ export class AuthProvider {
         const roles = (await trx('user_role').where('user_id', accessTokenPayload.uid)).map((item: any) => item.role_id);
         await trx('auth_token').update({
             access_key: accessKey,
-            last_date: this.db.knex.fn.now()
+            last_date: this.dbTran.knex.fn.now()
         }).where('refresh_key', refreshTokenPayload.jti);
         const token = sign({
             uid: accessTokenPayload.uid,
@@ -124,15 +124,16 @@ export class AuthProvider {
             jwtid: accessKey,
             noTimestamp: true
         });
-
+        await release();
         return {token}
     }
 
     async invalidate(accessTokenPayload: IAccessToken) {
-        const trx = await this.db.getTrx();
+        const {trx, release} = await this.dbTran.getTransaction();
         await trx('auth_token').update({
             disabled: 1
         }).where('access_key', accessTokenPayload.jti);
+        await release();
     }
 
     verify(token: string) {

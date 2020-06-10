@@ -28,13 +28,13 @@ export class SampleProvider {
     ){}
 
     async samplePostBatch(idArr: string[]) {
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
         const res = await trx('sample_post').whereIn('id', idArr);
         return orderByIdArray(res, idArr);
     }
 
     async sampleUserBatch(idArr: string[]) {
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
         const res = await trx('sample_user').whereIn('id', idArr);
         return orderByIdArray(res, idArr);
     }
@@ -43,7 +43,7 @@ export class SampleProvider {
         if (!form) {
             throw Error();
         }
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
         const builder = trx('sample_user')
             .select('*');
         return this.pageUtil.getConnection(builder, form.page);
@@ -54,7 +54,7 @@ export class SampleProvider {
     }
 
     async insertSampleUser(test: SampleUserInput) {
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
         const res = await trx('sample_user').insert({
             name: test.name,
             birthday: test.birthday,
@@ -66,7 +66,7 @@ export class SampleProvider {
         if (!form) {
             throw Error();
         }
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
         const builder = trx('sample_post')
             .select('*');
 

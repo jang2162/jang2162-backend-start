@@ -1,4 +1,4 @@
-import {DatabaseProvider} from '@/app/common/database/database.provider';
+import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
 import {Injectable} from '@graphql-modules/di';
 
 
@@ -11,7 +11,7 @@ export class RoleProvider {
     private roleIdMapper: {[k:string]: number} = {};
 
     constructor(
-        private db: DatabaseProvider,
+        private dbTran: DatabaseTransactionProvider,
     ){
         this.loadRole().then();
     }
@@ -31,20 +31,22 @@ export class RoleProvider {
     }
 
     async addRole(userId: string, role: string) {
-        const trx = await this.db.getTrx();
+        const {trx, release} = await this.dbTran.getTransaction();
         await trx('user_role').insert({
             user_id: userId,
             role_id: this.roleIdMapper[role]
         });
+        await release();
     }
 
     private async loadRole() {
-        const trx = await this.db.getTrx();
+        const {trx, release} = await this.dbTran.getTransaction();
         const res = await trx('role_info');
         this.roleIdMapper = {};
         for (const item of res) {
             this.roleIdMapper[item.name] = item.id;
         }
         this.roleLoaded = true;
+        await release();
     }
 }

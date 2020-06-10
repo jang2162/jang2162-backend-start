@@ -1,4 +1,7 @@
+import {DatabaseProvider} from '@/app/common/database/database.provider';
+import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
 import {GRAPHQL_LOGGER, GraphQLLogger} from '@/app/common/logger/logger.module';
+import {SampleProvider} from '@/app/sample/sample.provider';
 import {ModuleContext, ModuleSessionInfo} from '@graphql-modules/core';
 import {Injector} from '@graphql-modules/di';
 import {GraphQLResolveInfo} from 'graphql';
@@ -43,10 +46,20 @@ export class SimpleResolver<Arguments = {}, Result = any, Source = any> {
     build(cb: SimpleResolveCallback<Arguments, Result , Source>) {
         return async (source: Source, args: Arguments, context: ModuleContext, info: GraphQLResolveInfo) => {
             const data = {source, args, injector: context.injector, info};
-            for (const middleware of this.middlewareList) {
-                await middleware.run(data);
+            const trx = context.injector.get<DatabaseProvider>(DatabaseProvider).getConn();
+            try {
+                for (const middleware of this.middlewareList) {
+                    await middleware.run(data);
+                }
+                const res = await cb(data);
+                const a = await trx.commit();
+                console.log(a);
+                return res;
+            } catch (e) {
+                await trx.rollback();
+                throw e;
             }
-            return cb(data);
+
         }
     }
 }

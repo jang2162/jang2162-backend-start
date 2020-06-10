@@ -2,17 +2,11 @@ import {AuthProvider} from '@/app/common/auth/auth.provider';
 import {ROLE_USER, RoleProvider} from '@/app/common/auth/role.provider';
 import {DatabaseProvider} from '@/app/common/database/database.provider';
 import {PaginationUtilProvider} from '@/app/common/pagination/pagination-util.provider';
-import {
-    Maybe,
-    User,
-    UserConnection,
-    UserForm,
-    UserInput
-} from '@/generated-models';
+import {Maybe, User, UserConnection, UserForm, UserInput} from '@/generated-models';
 import {orderByIdArray} from '@/lib/apolloUtil';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
 import {ApolloError} from 'apollo-server-errors';
-import {compare, genSalt, hash} from 'bcrypt'
+import {compare, hash} from 'bcrypt'
 import DataLoader from 'dataloader';
 
 @Injectable({
@@ -30,7 +24,8 @@ export class UserProvider {
     ){}
 
     async authentication(id: string, pw: string) {
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
+
         const res = await trx('user').where('login_id', id);
         if (res.length > 0) {
             const user = res[0];
@@ -45,7 +40,7 @@ export class UserProvider {
     }
 
     async userBatch(idArr: string[]) {
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
         const res = await trx('user').whereIn('id', idArr)
             .select(['id', 'login_id loginId', 'name', 'birthday', 'create_date createDate']);
         return orderByIdArray(res, idArr);
@@ -55,7 +50,7 @@ export class UserProvider {
         if (!form) {
             throw Error();
         }
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
         const builder = trx('user')
             .select(['id', 'login_id loginId', 'name', 'birthday', 'create_date createDate']);
         return this.pageUtil.getConnection(builder, form.page);
@@ -66,7 +61,7 @@ export class UserProvider {
     }
 
     async insertUser(user: UserInput): Promise<User> {
-        const trx = await this.db.getTrx();
+        const trx = await this.db.getConn();
         const res = await trx('user').insert({
             name: user.name,
             login_id: user.loginId,
