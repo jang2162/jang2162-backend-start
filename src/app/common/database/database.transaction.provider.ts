@@ -83,9 +83,11 @@ export class DatabaseTransactionProvider  {
         trx.on('start', startListener)
         return {
             trx,
-            release: async () => {
-                if (!trx.isCompleted()) {
+            release: async (err: boolean = false) => {
+                if (!err) {
                     await trx.commit();
+                } else {
+                    await trx.rollback();
                 }
                 trx.client.removeListener('start', startListener);
                 if (timeout) {

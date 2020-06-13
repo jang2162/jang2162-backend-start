@@ -10,8 +10,8 @@ import Knex from 'knex';
 })
 export class DatabaseProvider implements OnRequest, OnResponse {
     readonly knex: Knex;
-    private transactionInfo?: { trx: Knex.Transaction, release: () => void};
-
+    private transactionInfo?: { trx: Knex.Transaction, release: (err: boolean) => void};
+    private err = false;
     constructor(
         @Inject(DatabaseTransactionProvider) private databaseTransactionProvider: DatabaseTransactionProvider,
     ) {
@@ -24,9 +24,14 @@ export class DatabaseProvider implements OnRequest, OnResponse {
 
     async onResponse(){
         if (this.transactionInfo) {
-            await this.transactionInfo.release();
+            await this.transactionInfo.release(this.err);
+        } else {
+            throw new ApolloError('DatabaseProviderError');
         }
-        throw new ApolloError('DatabaseProviderError');
+    }
+
+    setError(error: boolean) {
+        this.err = error;
     }
 
     getConn() {

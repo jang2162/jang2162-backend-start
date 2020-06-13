@@ -46,17 +46,14 @@ export class SimpleResolver<Arguments = {}, Result = any, Source = any> {
     build(cb: SimpleResolveCallback<Arguments, Result , Source>) {
         return async (source: Source, args: Arguments, context: ModuleContext, info: GraphQLResolveInfo) => {
             const data = {source, args, injector: context.injector, info};
-            const trx = context.injector.get<DatabaseProvider>(DatabaseProvider).getConn();
+            const databaseProvider = context.injector.get<DatabaseProvider>(DatabaseProvider);
             try {
                 for (const middleware of this.middlewareList) {
                     await middleware.run(data);
                 }
-                const res = await cb(data);
-                const a = await trx.commit();
-                console.log(a);
-                return res;
+                return await cb(data);
             } catch (e) {
-                await trx.rollback();
+                databaseProvider.setError(true);
                 throw e;
             }
 
