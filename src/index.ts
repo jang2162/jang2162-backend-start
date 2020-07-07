@@ -1,12 +1,18 @@
 import 'graphql-import-node';
 import 'reflect-metadata';
 
+import cors from 'cors';
 import express from 'express'
 import http from 'http';
 import env from 'json-env';
 import apollo from './apollo';
 
 const app = express();
+
+if (env.getBool('cors', false)) {
+    app.use(cors());
+}
+
 apollo.applyMiddleware({ app }); // app is from an existing express app
 const server = http.createServer(app);
 apollo.installSubscriptionHandlers(server);

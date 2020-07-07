@@ -32,7 +32,7 @@ module.exports = ({ types: t } /*: { types: Types } */) => {
                             } else if (parent.isMemberExpression()) {
                                 let property = parent.get('property');
                                 let methodName = property.node.name;
-                                let method = jsonEnv[methodName];
+                                let method = jsonEnv['env'][methodName];
 
                                 if (!method) {
                                     throw property.buildCodeFrameError('Method does not exist: ' + methodName);
