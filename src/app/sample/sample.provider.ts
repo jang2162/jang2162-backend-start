@@ -12,6 +12,7 @@ import {
     } from '@/generated-models';
 import {orderByIdArray} from '@/lib/apolloUtil';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
+import {genSalt} from 'bcrypt';
 import DataLoader from 'dataloader';
 
 @Injectable({

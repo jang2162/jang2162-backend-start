@@ -1,7 +1,6 @@
 import {authFilterMiddleware} from '@/app/common/auth/auth-info.provider';
 import {
-    AuthToken,
-    MutationAddSampleUserArgs, MutationAuthenticationArgs, QuerySamplePostByIdArgs,
+    MutationAddSampleUserArgs, QuerySamplePostByIdArgs,
     QuerySamplePostsArgs,
     QuerySampleUserByIdArgs, QuerySampleUsersArgs,
     Resolvers,

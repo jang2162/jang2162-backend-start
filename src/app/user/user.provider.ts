@@ -1,3 +1,4 @@
+import {AuthInfoProvider} from '@/app/common/auth/auth-info.provider';
 import {AuthProvider} from '@/app/common/auth/auth.provider';
 import {ROLE_USER, RoleProvider} from '@/app/common/auth/role.provider';
 import {DatabaseProvider} from '@/app/common/database/database.provider';
@@ -20,6 +21,7 @@ export class UserProvider {
         private db: DatabaseProvider,
         private pageUtil: PaginationUtilProvider,
         private authProvider: AuthProvider,
+        private authInfoProvider: AuthInfoProvider,
         private roleProvider: RoleProvider,
     ){}
 
@@ -30,7 +32,7 @@ export class UserProvider {
         if (res.length > 0) {
             const user = res[0];
             if (await compare(pw, user.password)) {
-                return this.authProvider.authentication(res[0].id, res[0].password.slice(7, 29));
+                return await this.authInfoProvider.authentication(res[0].id, res[0].password.slice(0, 29));
             } else {
                 throw new ApolloError('', 'PASSWORD_NOT_MATCH');
             }
@@ -69,10 +71,10 @@ export class UserProvider {
             birthday: user.birthday,
         }).returning(['id', 'login_id as loginId', 'name', 'birthday', 'create_date as createDate']);
 
-        if (!res[0] || !res[0].id) {
-            throw new Error('USER_INSERT_ERROR');
-        } else {
+        if (res?.[0]?.id) {
             await this.roleProvider.addRole(res[0].id, ROLE_USER);
+        } else {
+            throw new Error('USER_INSERT_ERROR');
         }
         return res[0];
     }

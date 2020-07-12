@@ -1,6 +1,6 @@
 import {authFilterMiddleware} from '@/app/common/auth/auth-info.provider';
 import {
-    AuthToken,
+    AccessToken,
     MutationAddUserArgs,
     MutationAuthenticationArgs,
     Resolvers, User,
@@ -12,7 +12,7 @@ const resolvers: Resolvers = {
     Query: {
     },
     Mutation: {
-        authentication: new SimpleResolver<MutationAuthenticationArgs, AuthToken>().build(({injector, args}) =>
+        authentication: new SimpleResolver<MutationAuthenticationArgs, AccessToken>().build(({injector, args}) =>
             injector.get<UserProvider>(UserProvider).authentication(args.id, args.pw)
         ),
         addUser: new SimpleResolver<MutationAddUserArgs, User>(authFilterMiddleware.role('ROLE_ADMIN'))

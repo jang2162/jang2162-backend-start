@@ -1,5 +1,4 @@
 import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
-import {AccessToken, AuthToken} from '@/generated-models';
 import {Injectable} from '@graphql-modules/di';
 import {ApolloError} from 'apollo-server-errors';
 import env from 'json-env';
@@ -13,12 +12,7 @@ export interface IAccessToken {
     iss: string,
     sub: string,
     jti: string,
-}
-
-export interface IRefreshToken {
-    iss: string,
-    sub: string,
-    jti: string,
+    rfk: string,
 }
 
 @Injectable()
@@ -32,7 +26,7 @@ export class AuthProvider {
         private dbTran: DatabaseTransactionProvider,
     ){}
 
-    async authentication(uid: number, salt: string): Promise<AuthToken> {
+    async authentication(uid: number, salt: string) {
         const {trx, release} = await this.dbTran.getTransaction();
         const refreshKey = uuid4().replace(/-/g, '');
         const accessKey = uuid4().replace(/-/g, '');
@@ -45,7 +39,8 @@ export class AuthProvider {
         });
         const accessToken = sign({
             uid,
-            rol: roles
+            rol: roles,
+            rfk: refreshKey
         }, this.secret, {
             issuer: this.issuer,
             subject: 'ACCESS_TOKEN',
@@ -54,42 +49,26 @@ export class AuthProvider {
             noTimestamp: true
         });
 
-        const refreshToken = sign({}, this.secret, {
-            issuer: this.issuer,
-            subject: 'REFRESH_TOKEN',
-            jwtid: refreshKey,
-            noTimestamp: true
-        });
         await release();
         return {
-            refreshToken,
-            accessToken
+            token: accessToken
         }
     }
 
-    async refresh(accessTokenPayload: IAccessToken, refreshToken: string): Promise<AccessToken> {
+    async refresh(accessTokenPayload: IAccessToken) {
         const {trx, release} = await this.dbTran.getTransaction();
-        let refreshTokenPayload;
-        try {
-            refreshTokenPayload = verify(refreshToken, this.secret, {
-                issuer: this.issuer,
-                subject: 'REFRESH_TOKEN',
-            }) as IRefreshToken;
-        } catch (e) {
-            throw new ApolloError('', 'REFRESH_TOKEN_INVALID');
-        }
 
         const authData = await trx('auth_token').first([
             'user_id',
             this.dbTran.knex.raw('EXTRACT(epoch FROM (NOW() - last_date))::int refresh_interval'),
             'access_key',
             'salt'
-        ]).where('refresh_key', refreshTokenPayload.jti)
+        ]).where('refresh_key', accessTokenPayload.rfk)
             .where('disabled', 0);
-        const saltRow = await trx('user').first(this.dbTran.knex.raw('SUBSTR(password, 8, 22) salt'))
+        const saltRow = await trx('user').first(this.dbTran.knex.raw('SUBSTR(password, 0, 29) salt'))
             .where('id', accessTokenPayload.uid);
 
-        if (!saltRow || !saltRow.salt || !authData || authData.user_id !== accessTokenPayload.uid) {
+        if (!(saltRow?.salt) || !authData || authData.user_id !== accessTokenPayload.uid) {
             throw new ApolloError('', 'UNKNOWN_ERROR');
         }
 
@@ -104,7 +83,7 @@ export class AuthProvider {
         if (authData.access_key !== accessTokenPayload.jti) {
             await trx('auth_token').update({
                 disabled: 1
-            }).where('refresh_key', refreshTokenPayload.jti);
+            }).where('refresh_key', accessTokenPayload.rfk);
             throw new ApolloError('', 'ACCESS_KEY_IS_OLD');
         }
 
@@ -113,10 +92,11 @@ export class AuthProvider {
         await trx('auth_token').update({
             access_key: accessKey,
             last_date: this.dbTran.knex.fn.now()
-        }).where('refresh_key', refreshTokenPayload.jti);
+        }).where('refresh_key', accessTokenPayload.rfk);
         const token = sign({
             uid: accessTokenPayload.uid,
-            rol: roles
+            rol: roles,
+            rfk: accessTokenPayload.rfk,
         }, this.secret, {
             issuer: this.issuer,
             subject: 'ACCESS_TOKEN',

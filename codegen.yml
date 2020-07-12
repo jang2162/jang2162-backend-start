@@ -15,4 +15,3 @@ generates:
       scalars:
         Date: Date
         DateTime: Date
-        Time: Date

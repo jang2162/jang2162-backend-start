@@ -1,5 +1,6 @@
 import {AuthProvider, IAccessToken} from '@/app/common/auth/auth.provider';
 import {RoleProvider} from '@/app/common/auth/role.provider';
+import {AccessToken} from '@/generated-models';
 import {SimpleResolveMiddleware} from '@/lib/apolloUtil';
 import {ModuleSessionInfo} from '@graphql-modules/core';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
@@ -41,10 +42,18 @@ export class AuthInfoProvider {
         }
     }
 
-    tokenRefresh(refreshToken: string) {
+    async authentication(uid: number, salt: string) {
+        const accessToken = await this.authProvider.authentication(uid, salt);
+        await this.setTokenToCookie(accessToken);
+        return accessToken;
+    }
+
+    async tokenRefresh() {
         if (this.err) {
             if (this.err === 1) {
-                return this.authProvider.refresh(this.payload as IAccessToken, refreshToken);
+                const accessToken = await this.authProvider.refresh(this.payload as IAccessToken);
+                await this.setTokenToCookie(accessToken);
+                return accessToken;
             } else {
                 throw new ApolloError('', 'ACCESS_TOKEN_INVALID');
             }
@@ -64,6 +73,10 @@ export class AuthInfoProvider {
         } else {
             return this.authProvider.invalidate(this.payload);
         }
+    }
+
+    private setTokenToCookie (accessToken: AccessToken ) {
+        console.log(this.moduleSessionInfo);
     }
 }
 

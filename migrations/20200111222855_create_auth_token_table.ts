@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<any> {
             table.dateTime('last_date').defaultTo(knex.fn.now()).comment('최종발급일');
             table.string('refresh_key', 32).unique().comment('고유키');
             table.string('access_key', 32).unique().comment('권한토큰 비교키');
-            table.string('salt', 22).comment('salt');
+            table.string('salt', 30).comment('salt');
             table.foreign('user_id').references('user.id');
             table.integer('disabled').notNullable().defaultTo(0).comment('사용 여부');
         });
