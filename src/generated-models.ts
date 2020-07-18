@@ -28,7 +28,6 @@ export type Query = {
   userById?: Maybe<User>;
 };
 
-
 export type QuerySampleUsersArgs = {
   form?: Maybe<SampleUserForm>;
 };
@@ -60,8 +59,8 @@ export type QueryUserByIdArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  authentication: AccessToken;
-  refreshToken: AccessToken;
+  authentication?: Maybe<Scalars['String']>;
+  refreshToken?: Maybe<Scalars['String']>;
   invalidate?: Maybe<Scalars['String']>;
   addSampleUser?: Maybe<SampleUser>;
   addUser: User;
@@ -343,8 +342,8 @@ export type QueryResolvers<ContextType = ModuleContext, ParentType extends Resol
 };
 
 export type MutationResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  authentication?: Resolver<ResolversTypes['accessToken'], ParentType, ContextType, RequireFields<MutationAuthenticationArgs, 'id' | 'pw'>>;
-  refreshToken?: Resolver<ResolversTypes['accessToken'], ParentType, ContextType>;
+  authentication?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationAuthenticationArgs, 'id' | 'pw'>>;
+  refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   invalidate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   addSampleUser?: Resolver<Maybe<ResolversTypes['SampleUser']>, ParentType, ContextType, RequireFields<MutationAddSampleUserArgs, 'user'>>;
   addUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAddUserArgs, 'user'>>;

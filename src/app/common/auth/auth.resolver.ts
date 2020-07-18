@@ -7,7 +7,7 @@ import {SimpleResolver} from '@/lib/apolloUtil';
 
 const resolvers: Resolvers = {
     Mutation: {
-        refreshToken: new SimpleResolver<any, AccessToken>().build(({injector}) =>
+        refreshToken: new SimpleResolver().build(({injector}) =>
             injector.get<AuthInfoProvider>(AuthInfoProvider).tokenRefresh()
         ),
         invalidate: new SimpleResolver().build(({injector}) =>

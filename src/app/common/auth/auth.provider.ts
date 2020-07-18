@@ -1,6 +1,8 @@
 import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
+import {AccessToken} from '@/generated-models';
 import {Injectable} from '@graphql-modules/di';
 import {ApolloError} from 'apollo-server-errors';
+import {Response} from 'express';
 import env from 'json-env';
 import {sign, verify} from 'jsonwebtoken'
 import uuid4 from 'uuid/v4';
@@ -19,6 +21,8 @@ export interface IAccessToken {
 export class AuthProvider {
     private expiredIn = env.getNumber('jwt.expiredIn', 600);
     private refreshExpiredIn = env.getNumber('jwt.refreshExpiredIn', 1209600);
+    private cookieDomain = env.getString('jwt.cookieDomain', '');
+    private isCookieSecure = env.getBool('production');
     private secret = env.getString('jwt.secret');
     private issuer = env.getString('jwt.issuer', '') || undefined;
 
@@ -26,7 +30,7 @@ export class AuthProvider {
         private dbTran: DatabaseTransactionProvider,
     ){}
 
-    async authentication(uid: number, salt: string) {
+    async authentication(response: Response, uid: number, salt: string) {
         const {trx, release} = await this.dbTran.getTransaction();
         const refreshKey = uuid4().replace(/-/g, '');
         const accessKey = uuid4().replace(/-/g, '');
@@ -50,12 +54,16 @@ export class AuthProvider {
         });
 
         await release();
-        return {
-            token: accessToken
-        }
+        response.cookie('token', accessToken, {
+            secure: this.isCookieSecure,
+            domain: this.cookieDomain,
+            expires: new Date(Date.now() + this.refreshExpiredIn * 1000),
+            httpOnly: true,
+            sameSite: 'Lax'
+        });
     }
 
-    async refresh(accessTokenPayload: IAccessToken) {
+    async refresh(response: Response, accessTokenPayload: IAccessToken) {
         const {trx, release} = await this.dbTran.getTransaction();
 
         const authData = await trx('auth_token').first([
@@ -65,7 +73,7 @@ export class AuthProvider {
             'salt'
         ]).where('refresh_key', accessTokenPayload.rfk)
             .where('disabled', 0);
-        const saltRow = await trx('user').first(this.dbTran.knex.raw('SUBSTR(password, 0, 29) salt'))
+        const saltRow = await trx('user').first(this.dbTran.knex.raw('SUBSTR(password, 0, 30) salt'))
             .where('id', accessTokenPayload.uid);
 
         if (!(saltRow?.salt) || !authData || authData.user_id !== accessTokenPayload.uid) {
@@ -105,14 +113,26 @@ export class AuthProvider {
             noTimestamp: true
         });
         await release();
-        return {token}
+        response.cookie('token', token, {
+            secure: this.isCookieSecure,
+            domain: this.cookieDomain,
+            expires: new Date(Date.now() + this.refreshExpiredIn * 1000),
+            httpOnly: true,
+            sameSite: 'Lax'
+        });
     }
 
-    async invalidate(accessTokenPayload: IAccessToken) {
+    async invalidate(response: Response, accessTokenPayload: IAccessToken) {
         const {trx, release} = await this.dbTran.getTransaction();
         await trx('auth_token').update({
             disabled: 1
         }).where('access_key', accessTokenPayload.jti);
+        response.clearCookie('token', {
+            secure: this.isCookieSecure,
+            domain: this.cookieDomain,
+            httpOnly: true,
+            sameSite: 'Lax'
+        })
         await release();
     }
 

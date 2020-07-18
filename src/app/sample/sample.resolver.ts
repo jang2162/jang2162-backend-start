@@ -1,4 +1,5 @@
 import {authFilterMiddleware} from '@/app/common/auth/auth-info.provider';
+import {ROLE_ADMIN, ROLE_USER} from '@/app/common/auth/role.provider';
 import {
     MutationAddSampleUserArgs, QuerySamplePostByIdArgs,
     QuerySamplePostsArgs,
@@ -12,7 +13,7 @@ import {SampleProvider} from './sample.provider';
 
 const resolvers: Resolvers = {
     Query: {
-        sampleUsers: new SimpleResolver<QuerySampleUsersArgs>(authFilterMiddleware.role('ROLE_ADMIN')).build(({injector, args}) =>
+        sampleUsers: new SimpleResolver<QuerySampleUsersArgs>(authFilterMiddleware.role(ROLE_ADMIN)).build(({injector, args}) =>
             injector.get<SampleProvider>(SampleProvider).sampleUserConnection(args.form)
         ),
 
@@ -20,7 +21,7 @@ const resolvers: Resolvers = {
             injector.get<SampleProvider>(SampleProvider).sampleUserById(args.id)
         ),
 
-        samplePosts: new SimpleResolver<QuerySamplePostsArgs>().build(({injector, args}) =>
+        samplePosts: new SimpleResolver<QuerySamplePostsArgs>(authFilterMiddleware.role(ROLE_USER)).build(({injector, args}) =>
             injector.get<SampleProvider>(SampleProvider).samplePostConnection(args.form)
         ),
 

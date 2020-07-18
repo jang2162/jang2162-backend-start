@@ -32,7 +32,7 @@ export class UserProvider {
         if (res.length > 0) {
             const user = res[0];
             if (await compare(pw, user.password)) {
-                return await this.authInfoProvider.authentication(res[0].id, res[0].password.slice(0, 29));
+                await this.authInfoProvider.authentication(res[0].id, res[0].password.slice(0, 29));
             } else {
                 throw new ApolloError('', 'PASSWORD_NOT_MATCH');
             }

@@ -1,6 +1,5 @@
 import {AuthProvider, IAccessToken} from '@/app/common/auth/auth.provider';
 import {RoleProvider} from '@/app/common/auth/role.provider';
-import {AccessToken} from '@/generated-models';
 import {SimpleResolveMiddleware} from '@/lib/apolloUtil';
 import {ModuleSessionInfo} from '@graphql-modules/core';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
@@ -18,13 +17,9 @@ export class AuthInfoProvider {
         private moduleSessionInfo: ModuleSessionInfo,
         private authProvider: AuthProvider,
     ) {
-        const authorization: string = moduleSessionInfo.session.req &&
-            moduleSessionInfo.session.req.headers &&
-            moduleSessionInfo.session.req.headers.authorization || '';
-        const res = /^Bearer (.*)$/.exec(authorization);
-
-        if (res && res.length === 2) {
-            const tokenParse = authProvider.verify(res[1]);
+        const token: string = moduleSessionInfo?.session?.req?.cookies?.token ?? '';
+        if (token) {
+            const tokenParse = authProvider.verify(token);
             this.err = tokenParse.err;
             this.payload = tokenParse.payload;
         }
@@ -43,17 +38,13 @@ export class AuthInfoProvider {
     }
 
     async authentication(uid: number, salt: string) {
-        const accessToken = await this.authProvider.authentication(uid, salt);
-        await this.setTokenToCookie(accessToken);
-        return accessToken;
+        await this.authProvider.authentication(this.moduleSessionInfo.session.res, uid, salt);
     }
 
     async tokenRefresh() {
         if (this.err) {
             if (this.err === 1) {
-                const accessToken = await this.authProvider.refresh(this.payload as IAccessToken);
-                await this.setTokenToCookie(accessToken);
-                return accessToken;
+                return await this.authProvider.refresh(this.moduleSessionInfo.session.res, this.payload as IAccessToken);
             } else {
                 throw new ApolloError('', 'ACCESS_TOKEN_INVALID');
             }
@@ -71,12 +62,8 @@ export class AuthInfoProvider {
                 throw new ApolloError('', 'ACCESS_TOKEN_INVALID');
             }
         } else {
-            return this.authProvider.invalidate(this.payload);
+            return this.authProvider.invalidate(this.moduleSessionInfo.session.res, this.payload as IAccessToken);
         }
-    }
-
-    private setTokenToCookie (accessToken: AccessToken ) {
-        console.log(this.moduleSessionInfo);
     }
 }
 
