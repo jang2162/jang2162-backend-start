@@ -2,7 +2,6 @@ import 'graphql-import-node';
 import 'reflect-metadata';
 
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import express from 'express'
 import http from 'http';
 import env from 'json-env';
@@ -10,11 +9,15 @@ import apollo from './apollo';
 
 const app = express();
 app.use(cookieParser())
-if (env.getBool('cors', false)) {
-    app.use(cors());
-}
 
-apollo.applyMiddleware({ app }); // app is from an existing express app
+apollo.applyMiddleware({
+    app,
+    cors: {
+        origin: env.getString('cors.origin', ''),
+        credentials: true,
+    },
+}); // app is from an existing express app
+
 const server = http.createServer(app);
 
 apollo.installSubscriptionHandlers(server);

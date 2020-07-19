@@ -8,7 +8,7 @@ const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', ({ message, 
 const apollo = new ApolloServer({
     typeDefs: appModule.typeDefs,
     resolvers: appModule.resolvers,
-    context: session =>session,
+    context: session => session,
     formatError: error => {
         logger.error(error.message, {
             path: error.path,

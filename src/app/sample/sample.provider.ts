@@ -1,4 +1,3 @@
-import {AuthProvider} from '@/app/common/auth/auth.provider';
 import {DatabaseProvider} from '@/app/common/database/database.provider';
 import {PaginationUtilProvider} from '@/app/common/pagination/pagination-util.provider';
 import {
@@ -11,8 +10,8 @@ import {
     SampleUserForm, SampleUserInput
     } from '@/generated-models';
 import {orderByIdArray} from '@/lib/apolloUtil';
+import {ModuleSessionInfo} from '@graphql-modules/core';
 import {Injectable, ProviderScope} from '@graphql-modules/di';
-import {genSalt} from 'bcrypt';
 import DataLoader from 'dataloader';
 
 @Injectable({

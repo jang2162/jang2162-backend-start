@@ -6,7 +6,7 @@ import {
     QuerySampleUserByIdArgs, QuerySampleUsersArgs,
     Resolvers,
     SamplePost, SamplePostConnection,
-    SampleUser, SampleUserConnection, SampleUserPostsArgs
+    SampleUser, SampleUserPostsArgs
 } from '@/generated-models';
 import {SimpleResolver} from '@/lib/apolloUtil';
 import {SampleProvider} from './sample.provider';
@@ -17,7 +17,7 @@ const resolvers: Resolvers = {
             injector.get<SampleProvider>(SampleProvider).sampleUserConnection(args.form)
         ),
 
-        sampleUserById: new SimpleResolver<QuerySampleUserByIdArgs>().build(({args, injector}) =>
+        sampleUserById: new SimpleResolver<QuerySampleUserByIdArgs>(authFilterMiddleware.role(ROLE_USER)).build(({args, injector}) =>
             injector.get<SampleProvider>(SampleProvider).sampleUserById(args.id)
         ),
 
