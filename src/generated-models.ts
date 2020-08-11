@@ -28,6 +28,7 @@ export type Query = {
   userById?: Maybe<User>;
 };
 
+
 export type QuerySampleUsersArgs = {
   form?: Maybe<SampleUserForm>;
 };

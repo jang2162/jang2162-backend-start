@@ -35,6 +35,7 @@ input SamplePostForm {
     page: PageInput = {}
     searchKeyword: String = ""
     userId: String = ""
+    date: Date
 }
 
 type SamplePostConnection {
