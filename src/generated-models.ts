@@ -160,6 +160,7 @@ export type SamplePostForm = {
   page?: Maybe<PageInput>;
   searchKeyword?: Maybe<Scalars['String']>;
   userId?: Maybe<Scalars['String']>;
+  date?: Maybe<Scalars['Date']>;
 };
 
 export type SamplePostConnection = {
