@@ -1,4 +1,3 @@
-/* tslint:ignore */
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { ModuleContext } from '@graphql-modules/core';
 export type Maybe<T> = T | null | undefined;
