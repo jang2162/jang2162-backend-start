@@ -41,7 +41,7 @@ export class UserProvider {
         }
     }
 
-    async userBatch(idArr: string[]) {
+    async userBatch(idArr: readonly string[]) {
         const trx = await this.db.getConn();
         const res = await trx('user').whereIn('id', idArr)
             .select(['id', 'login_id loginId', 'name', 'birthday', 'create_date createDate']);

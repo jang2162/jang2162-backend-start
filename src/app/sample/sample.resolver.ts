@@ -21,7 +21,7 @@ const resolvers: Resolvers = {
             injector.get<SampleProvider>(SampleProvider).sampleUserById(args.id)
         ),
 
-        samplePosts: new SimpleResolver<QuerySamplePostsArgs>(authFilterMiddleware.role(ROLE_USER)).build(({injector, args}) =>
+        samplePosts: new SimpleResolver<QuerySamplePostsArgs>().build(({injector, args}) =>
             injector.get<SampleProvider>(SampleProvider).samplePostConnection(args.form)
         ),
 
@@ -37,12 +37,17 @@ const resolvers: Resolvers = {
 
     SampleUser: {
         posts: new SimpleResolver<SampleUserPostsArgs, SamplePostConnection, SampleUser>().build(({injector, source, args}) =>
-            injector.get<SampleProvider>(SampleProvider).samplePostConnection({page: args.page, userId: source.id})
+            injector.get<SampleProvider>(SampleProvider).samplePostConnection({
+                page: args.page,
+                date4: [],
+                date6: [],
+                userId: source.id
+            })
         )
     },
 
     SamplePost: {
-        writer: new SimpleResolver<{}, SampleUser, SamplePost>().build(({injector, source}) =>
+        writer: new SimpleResolver<unknown, SampleUser, SamplePost>().build(({injector, source}) =>
                 injector.get<SampleProvider>(SampleProvider).sampleUserById(source.writer_id)
         )
     }

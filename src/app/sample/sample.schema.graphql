@@ -21,7 +21,6 @@ type SampleUserConnection {
     list: [SampleUser!]
 }
 
-
 # SAMPLE POST
 type SamplePost {
     id: ID!
@@ -31,11 +30,20 @@ type SamplePost {
     writer_id: ID!
 }
 
+input DateTest {
+    dt: Date!
+}
+
 input SamplePostForm {
     page: PageInput = {}
     searchKeyword: String = ""
     userId: String = ""
-    date: Date
+    date1: DateTest
+    date2: [DateTest]
+    date3: [Date]
+    date4: [Date]!
+    date5: [Date!]
+    date6: [Date!]!
 }
 
 type SamplePostConnection {

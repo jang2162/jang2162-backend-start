@@ -21,7 +21,6 @@ export function parseDate(value: number | string | moment.Moment | Date) {
         );
     }
     return value
-
 }
 
 export default new GraphQLScalarType({

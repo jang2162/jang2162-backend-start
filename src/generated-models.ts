@@ -1,9 +1,8 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { ModuleContext } from '@graphql-modules/core';
 export type Maybe<T> = T | null | undefined;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
-
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -155,11 +154,20 @@ export type SamplePost = {
   writer_id: Scalars['ID'];
 };
 
+export type DateTest = {
+  dt: Scalars['Date'];
+};
+
 export type SamplePostForm = {
   page?: Maybe<PageInput>;
   searchKeyword?: Maybe<Scalars['String']>;
   userId?: Maybe<Scalars['String']>;
-  date?: Maybe<Scalars['Date']>;
+  date1?: Maybe<DateTest>;
+  date2?: Maybe<Array<Maybe<DateTest>>>;
+  date3?: Maybe<Array<Maybe<Scalars['Date']>>>;
+  date4: Array<Maybe<Scalars['Date']>>;
+  date5?: Maybe<Array<Scalars['Date']>>;
+  date6: Array<Scalars['Date']>;
 };
 
 export type SamplePostConnection = {
@@ -259,7 +267,7 @@ export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}> = (obj: T, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
@@ -291,6 +299,7 @@ export type ResolversTypes = {
   SampleUserInput: SampleUserInput;
   SampleUserConnection: ResolverTypeWrapper<SampleUserConnection>;
   SamplePost: ResolverTypeWrapper<SamplePost>;
+  DateTest: DateTest;
   SamplePostForm: SamplePostForm;
   SamplePostConnection: ResolverTypeWrapper<SamplePostConnection>;
   User: ResolverTypeWrapper<User>;
@@ -317,6 +326,7 @@ export type ResolversParentTypes = {
   SampleUserInput: SampleUserInput;
   SampleUserConnection: SampleUserConnection;
   SamplePost: SamplePost;
+  DateTest: DateTest;
   SamplePostForm: SamplePostForm;
   SamplePostConnection: SamplePostConnection;
   User: User;
@@ -336,7 +346,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 export type QueryResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   sampleUsers?: Resolver<ResolversTypes['SampleUserConnection'], ParentType, ContextType, RequireFields<QuerySampleUsersArgs, 'form'>>;
   sampleUserById?: Resolver<Maybe<ResolversTypes['SampleUser']>, ParentType, ContextType, RequireFields<QuerySampleUserByIdArgs, 'id'>>;
-  samplePosts?: Resolver<ResolversTypes['SamplePostConnection'], ParentType, ContextType, RequireFields<QuerySamplePostsArgs, 'form'>>;
+  samplePosts?: Resolver<ResolversTypes['SamplePostConnection'], ParentType, ContextType, RequireFields<QuerySamplePostsArgs, never>>;
   samplePostById?: Resolver<Maybe<ResolversTypes['SamplePost']>, ParentType, ContextType, RequireFields<QuerySamplePostByIdArgs, 'id'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'form'>>;
   userById?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByIdArgs, 'id'>>;
@@ -352,7 +362,7 @@ export type MutationResolvers<ContextType = ModuleContext, ParentType extends Re
 
 export type AccessTokenResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['accessToken'] = ResolversParentTypes['accessToken']> = {
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PageInfoResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
@@ -364,7 +374,7 @@ export type PageInfoResolvers<ContextType = ModuleContext, ParentType extends Re
   sortBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sort?: Resolver<ResolversTypes['SORT_TYPE'], ParentType, ContextType>;
   direction?: Resolver<ResolversTypes['DIRECTION_TYPE'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SampleUserResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['SampleUser'] = ResolversParentTypes['SampleUser']> = {
@@ -372,13 +382,13 @@ export type SampleUserResolvers<ContextType = ModuleContext, ParentType extends 
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   birthday?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<ResolversTypes['SamplePostConnection']>, ParentType, ContextType, RequireFields<SampleUserPostsArgs, 'page'>>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SampleUserConnectionResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['SampleUserConnection'] = ResolversParentTypes['SampleUserConnection']> = {
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   list?: Resolver<Maybe<Array<ResolversTypes['SampleUser']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SamplePostResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['SamplePost'] = ResolversParentTypes['SamplePost']> = {
@@ -387,13 +397,13 @@ export type SamplePostResolvers<ContextType = ModuleContext, ParentType extends 
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   writer?: Resolver<ResolversTypes['SampleUser'], ParentType, ContextType>;
   writer_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SamplePostConnectionResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['SamplePostConnection'] = ResolversParentTypes['SamplePostConnection']> = {
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   list?: Resolver<Array<ResolversTypes['SamplePost']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -402,13 +412,13 @@ export type UserResolvers<ContextType = ModuleContext, ParentType extends Resolv
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   birthday?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   createDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserConnectionResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection']> = {
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   list?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = ModuleContext> = {

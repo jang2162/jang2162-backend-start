@@ -27,13 +27,13 @@ export class SampleProvider {
         private pageUtil: PaginationUtilProvider,
     ){}
 
-    async samplePostBatch(idArr: string[]) {
+    async samplePostBatch(idArr: readonly string[]) {
         const trx = await this.db.getConn();
         const res = await trx('sample_post').whereIn('id', idArr);
         return orderByIdArray(res, idArr);
     }
 
-    async sampleUserBatch(idArr: string[]) {
+    async sampleUserBatch(idArr: readonly string[]) {
         const trx = await this.db.getConn();
         const res = await trx('sample_user').whereIn('id', idArr);
         return orderByIdArray(res, idArr);

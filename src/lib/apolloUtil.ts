@@ -32,7 +32,7 @@ export const skipLogMiddleware: SimpleResolveMiddleware = {
     run() {}
 };
 
-export class SimpleResolver<Arguments = {}, Result = any, Source = any> {
+export class SimpleResolver<Arguments, Result = any, Source = any> {
     private readonly middlewareList:SimpleResolveMiddleware[] = [];
     constructor(middleware?: SimpleResolveMiddleware | SimpleResolveMiddleware[]) {
         if (middleware) {
@@ -61,7 +61,7 @@ export class SimpleResolver<Arguments = {}, Result = any, Source = any> {
     }
 }
 
-export const orderByIdArray = (arr: any[], idArr: Array<string|number>, getIdFn: (item: any) => string|number = item => item.id) => {
+export const orderByIdArray = (arr: any[], idArr: ReadonlyArray<string|number>, getIdFn: (item: any) => string|number = item => item.id) => {
     const map: {[k:string]: any} = {};
     arr.forEach(item => map[getIdFn(item)] = item);
     return idArr.map(id => map[id]);

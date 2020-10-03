@@ -1,14 +1,15 @@
 import 'graphql-import-node';
 import 'reflect-metadata';
 
+import http from 'http';
 import cookieParser from 'cookie-parser';
 import express from 'express'
-import http from 'http';
 import env from 'json-env';
 import apollo from './apollo';
 
 const app = express();
-app.use(cookieParser())
+const cp = cookieParser();
+app.use(cp);
 
 apollo.applyMiddleware({
     app,

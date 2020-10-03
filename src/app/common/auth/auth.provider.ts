@@ -4,7 +4,7 @@ import {ApolloError} from 'apollo-server-errors';
 import {Response} from 'express';
 import env from 'json-env';
 import {sign, verify} from 'jsonwebtoken'
-import uuid4 from 'uuid/v4';
+import { v4 as uuid4 } from 'uuid';
 
 export interface IAccessToken {
     uid: number,
@@ -64,7 +64,7 @@ export class AuthProvider {
             domain: this.cookieDomain,
             expires: new Date(Date.now() + this.refreshExpiredIn * 1000),
             httpOnly: true,
-            sameSite: 'Lax'
+            sameSite: 'lax'
         });
 
     }
@@ -130,7 +130,7 @@ export class AuthProvider {
             domain: this.cookieDomain,
             expires: new Date(Date.now() + this.refreshExpiredIn * 1000),
             httpOnly: true,
-            sameSite: 'Lax'
+            sameSite: 'lax'
         });
     }
 
@@ -152,6 +152,7 @@ export class AuthProvider {
         let payload = null;
         let err = 0; // 0 정상, 1: 만료, 2: 검증불가
         try {
+            console.log(token);
             payload = verify(token, this.secret, {
                 issuer: this.issuer,
                 subject: 'ACCESS_TOKEN',
