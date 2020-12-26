@@ -1,11 +1,12 @@
 import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
-import {Injectable} from '@graphql-modules/di';
-
+import {Injectable} from 'graphql-modules';
 
 export const ROLE_USER = 'ROLE_USER';
 export const ROLE_ADMIN = 'ROLE_ADMIN';
 
-@Injectable()
+@Injectable({
+    global: true
+})
 export class RoleProvider {
     private roleLoaded = false;
     private roleIdMapper: {[k:string]: number} = {};

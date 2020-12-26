@@ -1,5 +1,5 @@
 import {Direction_Type, Maybe, PageInfo, PageInput, Sort_Type} from '@/generated-models';
-import {Injectable} from '@graphql-modules/di';
+import {Injectable} from 'graphql-modules';
 import { Base64 } from 'js-base64';
 import Knex from 'knex';
 
@@ -11,7 +11,9 @@ interface PageFullInput {
     direction: Direction_Type;
 }
 
-@Injectable()
+@Injectable({
+    global: true
+})
 export class PaginationUtilProvider {
     static pageInputCheck(pageInput: Maybe<PageInput>): PageFullInput {
         if (!pageInput) {

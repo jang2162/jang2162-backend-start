@@ -1,7 +1,9 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { ModuleContext } from '@graphql-modules/core';
+import { ModuleContext } from '@/utils/apolloUtil';
 export type Maybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -14,61 +16,18 @@ export type Scalars = {
   DateTime: Date;
 };
 
-
-
-export type Query = {
-  __typename?: 'Query';
-  sampleUsers: SampleUserConnection;
-  sampleUserById?: Maybe<SampleUser>;
-  samplePosts: SamplePostConnection;
-  samplePostById?: Maybe<SamplePost>;
-  users: UserConnection;
-  userById?: Maybe<User>;
-};
-
-
-export type QuerySampleUsersArgs = {
-  form?: Maybe<SampleUserForm>;
-};
-
-
-export type QuerySampleUserByIdArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QuerySamplePostsArgs = {
-  form?: Maybe<SamplePostForm>;
-};
-
-
-export type QuerySamplePostByIdArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryUsersArgs = {
-  form?: Maybe<UserForm>;
-};
-
-
-export type QueryUserByIdArgs = {
-  id: Scalars['ID'];
+export type AccessToken = {
+  __typename?: 'accessToken';
+  token: Scalars['String'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  authentication?: Maybe<Scalars['String']>;
-  refreshToken?: Maybe<Scalars['String']>;
-  invalidate?: Maybe<Scalars['String']>;
   addSampleUser?: Maybe<SampleUser>;
   addUser: User;
-};
-
-
-export type MutationAuthenticationArgs = {
-  id: Scalars['String'];
-  pw: Scalars['String'];
+  authentication?: Maybe<Scalars['String']>;
+  invalidate?: Maybe<Scalars['String']>;
+  refreshToken?: Maybe<Scalars['String']>;
 };
 
 
@@ -81,9 +40,10 @@ export type MutationAddUserArgs = {
   user: UserInput;
 };
 
-export type AccessToken = {
-  __typename?: 'accessToken';
-  token: Scalars['String'];
+
+export type MutationAuthenticationArgs = {
+  id: Scalars['String'];
+  pw: Scalars['String'];
 };
 
 export type PageInfo = {
@@ -115,6 +75,48 @@ export enum Direction_Type {
   Next = 'NEXT',
   Prev = 'PREV'
 }
+
+
+
+export type Query = {
+  __typename?: 'Query';
+  samplePostById?: Maybe<SamplePost>;
+  samplePosts: SamplePostConnection;
+  sampleUserById?: Maybe<SampleUser>;
+  sampleUsers: SampleUserConnection;
+  userById?: Maybe<User>;
+  users: UserConnection;
+};
+
+
+export type QuerySamplePostByIdArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QuerySamplePostsArgs = {
+  form?: Maybe<SamplePostForm>;
+};
+
+
+export type QuerySampleUserByIdArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QuerySampleUsersArgs = {
+  form?: Maybe<SampleUserForm>;
+};
+
+
+export type QueryUserByIdArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryUsersArgs = {
+  form?: Maybe<UserForm>;
+};
 
 export type SampleUser = {
   __typename?: 'SampleUser';
@@ -165,9 +167,9 @@ export type SamplePostForm = {
   date1?: Maybe<DateTest>;
   date2?: Maybe<Array<Maybe<DateTest>>>;
   date3?: Maybe<Array<Maybe<Scalars['Date']>>>;
-  date4: Array<Maybe<Scalars['Date']>>;
+  date4?: Array<Maybe<Scalars['Date']>>;
   date5?: Maybe<Array<Scalars['Date']>>;
-  date6: Array<Scalars['Date']>;
+  date6?: Array<Scalars['Date']>;
 };
 
 export type SamplePostConnection = {
@@ -281,19 +283,19 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Date: ResolverTypeWrapper<Scalars['Date']>;
-  DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
-  Query: ResolverTypeWrapper<{}>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
-  Mutation: ResolverTypeWrapper<{}>;
-  String: ResolverTypeWrapper<Scalars['String']>;
   accessToken: ResolverTypeWrapper<AccessToken>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  Mutation: ResolverTypeWrapper<{}>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   PageInput: PageInput;
   SORT_TYPE: Sort_Type;
   DIRECTION_TYPE: Direction_Type;
+  Date: ResolverTypeWrapper<Scalars['Date']>;
+  DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
+  Query: ResolverTypeWrapper<{}>;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
   SampleUser: ResolverTypeWrapper<SampleUser>;
   SampleUserForm: SampleUserForm;
   SampleUserInput: SampleUserInput;
@@ -310,17 +312,17 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Date: Scalars['Date'];
-  DateTime: Scalars['DateTime'];
-  Query: {};
-  ID: Scalars['ID'];
-  Mutation: {};
-  String: Scalars['String'];
   accessToken: AccessToken;
+  String: Scalars['String'];
+  Mutation: {};
   PageInfo: PageInfo;
   Int: Scalars['Int'];
   Boolean: Scalars['Boolean'];
   PageInput: PageInput;
+  Date: Scalars['Date'];
+  DateTime: Scalars['DateTime'];
+  Query: {};
+  ID: Scalars['ID'];
   SampleUser: SampleUser;
   SampleUserForm: SampleUserForm;
   SampleUserInput: SampleUserInput;
@@ -335,34 +337,17 @@ export type ResolversParentTypes = {
   UserConnection: UserConnection;
 };
 
-export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
-  name: 'Date';
-}
-
-export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
-  name: 'DateTime';
-}
-
-export type QueryResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  sampleUsers?: Resolver<ResolversTypes['SampleUserConnection'], ParentType, ContextType, RequireFields<QuerySampleUsersArgs, 'form'>>;
-  sampleUserById?: Resolver<Maybe<ResolversTypes['SampleUser']>, ParentType, ContextType, RequireFields<QuerySampleUserByIdArgs, 'id'>>;
-  samplePosts?: Resolver<ResolversTypes['SamplePostConnection'], ParentType, ContextType, RequireFields<QuerySamplePostsArgs, never>>;
-  samplePostById?: Resolver<Maybe<ResolversTypes['SamplePost']>, ParentType, ContextType, RequireFields<QuerySamplePostByIdArgs, 'id'>>;
-  users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'form'>>;
-  userById?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByIdArgs, 'id'>>;
-};
-
-export type MutationResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  authentication?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationAuthenticationArgs, 'id' | 'pw'>>;
-  refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  invalidate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  addSampleUser?: Resolver<Maybe<ResolversTypes['SampleUser']>, ParentType, ContextType, RequireFields<MutationAddSampleUserArgs, 'user'>>;
-  addUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAddUserArgs, 'user'>>;
-};
-
 export type AccessTokenResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['accessToken'] = ResolversParentTypes['accessToken']> = {
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addSampleUser?: Resolver<Maybe<ResolversTypes['SampleUser']>, ParentType, ContextType, RequireFields<MutationAddSampleUserArgs, 'user'>>;
+  addUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAddUserArgs, 'user'>>;
+  authentication?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationAuthenticationArgs, 'id' | 'pw'>>;
+  invalidate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type PageInfoResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
@@ -375,6 +360,23 @@ export type PageInfoResolvers<ContextType = ModuleContext, ParentType extends Re
   sort?: Resolver<ResolversTypes['SORT_TYPE'], ParentType, ContextType>;
   direction?: Resolver<ResolversTypes['DIRECTION_TYPE'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
+
+export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+  name: 'DateTime';
+}
+
+export type QueryResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  samplePostById?: Resolver<Maybe<ResolversTypes['SamplePost']>, ParentType, ContextType, RequireFields<QuerySamplePostByIdArgs, 'id'>>;
+  samplePosts?: Resolver<ResolversTypes['SamplePostConnection'], ParentType, ContextType, RequireFields<QuerySamplePostsArgs, 'form'>>;
+  sampleUserById?: Resolver<Maybe<ResolversTypes['SampleUser']>, ParentType, ContextType, RequireFields<QuerySampleUserByIdArgs, 'id'>>;
+  sampleUsers?: Resolver<ResolversTypes['SampleUserConnection'], ParentType, ContextType, RequireFields<QuerySampleUsersArgs, 'form'>>;
+  userById?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByIdArgs, 'id'>>;
+  users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'form'>>;
 };
 
 export type SampleUserResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['SampleUser'] = ResolversParentTypes['SampleUser']> = {
@@ -422,12 +424,12 @@ export type UserConnectionResolvers<ContextType = ModuleContext, ParentType exte
 };
 
 export type Resolvers<ContextType = ModuleContext> = {
+  accessToken?: AccessTokenResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  PageInfo?: PageInfoResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
   Query?: QueryResolvers<ContextType>;
-  Mutation?: MutationResolvers<ContextType>;
-  accessToken?: AccessTokenResolvers<ContextType>;
-  PageInfo?: PageInfoResolvers<ContextType>;
   SampleUser?: SampleUserResolvers<ContextType>;
   SampleUserConnection?: SampleUserConnectionResolvers<ContextType>;
   SamplePost?: SamplePostResolvers<ContextType>;

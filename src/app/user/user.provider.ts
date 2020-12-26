@@ -4,14 +4,14 @@ import {ROLE_USER, RoleProvider} from '@/app/common/auth/role.provider';
 import {DatabaseProvider} from '@/app/common/database/database.provider';
 import {PaginationUtilProvider} from '@/app/common/pagination/pagination-util.provider';
 import {Maybe, User, UserConnection, UserForm, UserInput} from '@/generated-models';
-import {orderByIdArray} from '@/lib/apolloUtil';
-import {Injectable, ProviderScope} from '@graphql-modules/di';
+import {orderByIdArray} from '@/utils/apolloUtil';
 import {ApolloError} from 'apollo-server-errors';
 import {compare, hash} from 'bcrypt'
 import DataLoader from 'dataloader';
+import {Injectable, Scope} from 'graphql-modules';
 
 @Injectable({
-    scope: ProviderScope.Session
+    scope: Scope.Operation
 })
 export class UserProvider {
 

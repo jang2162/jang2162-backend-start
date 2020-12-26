@@ -1,16 +1,26 @@
-import {commonModule} from '@/app/common/common.module';
-import {GraphQLModule} from '@graphql-modules/core';
+import {authFilterMiddleware} from '@/app/common/auth/auth-info.provider';
+import {ROLE_ADMIN} from '@/app/common/auth/role.provider';
+import {Resolvers} from '@/generated-models';
+import {createModule} from 'graphql-modules';
 import {UserProvider} from './user.provider';
-import resolvers from './user.resolver';
 import * as typeDefs from './user.schema.graphql';
 
-export const userModule = new GraphQLModule({
+export const userModule = createModule({
+    id: 'user-module',
     typeDefs,
-    resolvers,
     providers: [
         UserProvider
     ],
-    imports: [
-        commonModule,
-    ]
+    middlewares: {
+        Mutation: {
+            addUser: [authFilterMiddleware.role(ROLE_ADMIN)]
+        }
+    },
+    resolvers: {
+        Query: {
+        },
+        Mutation: {
+            addUser: (parent, args, {injector}) =>  injector.get<UserProvider>(UserProvider).insertUser(args.user)
+        },
+    } as Resolvers,
 });

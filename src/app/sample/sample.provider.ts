@@ -9,13 +9,12 @@ import {
     SampleUserConnection,
     SampleUserForm, SampleUserInput
     } from '@/generated-models';
-import {orderByIdArray} from '@/lib/apolloUtil';
-import {ModuleSessionInfo} from '@graphql-modules/core';
-import {Injectable, ProviderScope} from '@graphql-modules/di';
+import {orderByIdArray} from '@/utils/apolloUtil';
 import DataLoader from 'dataloader';
+import {Injectable, Scope} from 'graphql-modules';
 
 @Injectable({
-    scope: ProviderScope.Session
+    scope: Scope.Operation
 })
 export class SampleProvider {
 

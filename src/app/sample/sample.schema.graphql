@@ -41,9 +41,9 @@ input SamplePostForm {
     date1: DateTest
     date2: [DateTest]
     date3: [Date]
-    date4: [Date]!
+    date4: [Date]! = []
     date5: [Date!]
-    date6: [Date!]!
+    date6: [Date!]! = []
 }
 
 type SamplePostConnection {

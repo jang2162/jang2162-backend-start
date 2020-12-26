@@ -1,7 +1,7 @@
 import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
-import {Injectable} from '@graphql-modules/di';
 import {ApolloError} from 'apollo-server-errors';
 import {Response} from 'express';
+import {Injectable} from 'graphql-modules';
 import env from 'json-env';
 import {sign, verify} from 'jsonwebtoken'
 import { v4 as uuid4 } from 'uuid';
@@ -16,7 +16,9 @@ export interface IAccessToken {
     rfk: string,
 }
 
-@Injectable()
+@Injectable({
+    global: true
+})
 export class AuthProvider {
     private expiredIn = env.getNumber('jwt.expiredIn', 600);
     private refreshExpiredIn = env.getNumber('jwt.refreshExpiredIn', 1209600);
@@ -55,7 +57,7 @@ export class AuthProvider {
             });
             await release();
         } catch (e) {
-            await release();
+            await release(true);
             throw e;
         }
 
@@ -119,12 +121,11 @@ export class AuthProvider {
                 jwtid: accessKey,
                 noTimestamp: true
             });
-        } catch (e) {
             await release();
+        } catch (e) {
+            await release(true);
             throw e;
         }
-
-        await release();
         response.cookie('token', token, {
             secure: this.isCookieSecure,
             domain: this.cookieDomain,
@@ -136,23 +137,26 @@ export class AuthProvider {
 
     async invalidate(response: Response, accessTokenPayload: IAccessToken) {
         const {trx, release} = await this.dbTran.getTransaction();
-        await trx('auth_token').update({
-            disabled: 1
-        }).where('access_key', accessTokenPayload.jti);
-        response.clearCookie('token', {
-            secure: this.isCookieSecure,
-            domain: this.cookieDomain,
-            httpOnly: true,
-            sameSite: 'Lax'
-        })
-        await release();
+        try {
+            await trx('auth_token').update({
+                disabled: 1
+            }).where('access_key', accessTokenPayload.jti);
+            response.clearCookie('token', {
+                secure: this.isCookieSecure,
+                domain: this.cookieDomain,
+                httpOnly: true,
+                sameSite: 'Lax'
+            });
+            await release(true);
+        } catch (e) {
+            await release(true);
+        }
     }
 
     verify(token: string) {
         let payload = null;
         let err = 0; // 0 정상, 1: 만료, 2: 검증불가
         try {
-            console.log(token);
             payload = verify(token, this.secret, {
                 issuer: this.issuer,
                 subject: 'ACCESS_TOKEN',

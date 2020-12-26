@@ -1,5 +1,5 @@
 overwrite: true
-schema: ./src/codegen.ts
+schema: 'src/**/*.graphql'
 require:
   - ts-node/register/transpile-only
   - tsconfig-paths/register
@@ -10,7 +10,7 @@ generates:
       - typescript-resolvers
     config:
       maybeValue: T | null | undefined
-      contextType: '@graphql-modules/core#ModuleContext'
+      contextType: '@/utils/apolloUtil#ModuleContext'
       scalars:
         Date: Date
         DateTime: Date
