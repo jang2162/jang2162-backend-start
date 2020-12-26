@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-console.log(process.env.NODE_ENV);
-console.log(process.env);
+
+
 const nodeModules = {};
 fs.readdirSync('node_modules')
     .filter(function(x) {

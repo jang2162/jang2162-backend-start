@@ -16,8 +16,7 @@
         "eslint-plugin-prefer-arrow",
         "eslint-plugin-import",
         "eslint-plugin-jsdoc",
-        "@typescript-eslint",
-        "@typescript-eslint/tslint"
+        "@typescript-eslint"
     ],
     "rules": {
         "@typescript-eslint/no-explicit-any": "off",
