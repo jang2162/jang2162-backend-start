@@ -4,7 +4,7 @@
   "scripts": {
     "gql-gen": "graphql-codegen",
     "dev": "npx ts-node -r tsconfig-paths/register src/index.ts",
-    "build": "gql-gen && webpack --mode=production",
+    "build": "gql-gen && rimraf dist/ && tsc -p tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist && copyfiles -u 1 src/**/*.graphql dist",
     "start": "npm run build && pm2 start ecosystem.config.js",
     "restart": "npm run build && pm2 restart ecosystem.config.js",
     "stop": "pm2 stop ecosystem.config.js"
@@ -19,6 +19,7 @@
     "cookie-parser": "^1.4.5",
     "cross-env": "^7.0.2",
     "dataloader": "^2.0.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "graphql": "^15.4.0",
     "graphql-import-node": "^0.0.4",
@@ -27,6 +28,7 @@
     "js-base64": "^3.5.2",
     "jsonwebtoken": "^8.5.1",
     "knex": "0.21.1",
+    "nunjucks": "jang2162/nunjucks",
     "pg": "^8.5.1",
     "pm2": "^4.5.0",
     "reflect-metadata": "^0.1.13",
@@ -53,19 +55,19 @@
     "@typescript-eslint/eslint-plugin": "^4.3.0",
     "@typescript-eslint/eslint-plugin-tslint": "^4.3.0",
     "@typescript-eslint/parser": "^4.3.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^7.10.0",
     "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsdoc": "^30.6.3",
     "eslint-plugin-prefer-arrow": "^1.2.2",
     "eslint-plugin-react": "^7.21.3",
-    "ts-loader": "^8.0.4",
-    "ts-node": "^9.0.0",
+    "rimraf": "^3.0.2",
     "ts-invariant": "^0.6.0",
+    "ts-loader": "^8.0.17",
+    "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
-    "tsconfig-paths-webpack-plugin": "^3.3.0",
-    "typescript": "^4.0.3",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "tscpaths": "^0.0.9",
+    "typescript": "^4.1.5"
   }
 }

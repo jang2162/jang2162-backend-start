@@ -1,8 +1,8 @@
 import {APOLLO_LOGGER, ApolloLogger} from '@/app/apollo-logger.provider';
 import {DatabaseProvider} from '@/app/common/database/database.provider';
-import {ExpressContext} from 'apollo-server-express/src/ApolloServer';
+import {isEmpty} from '@/utils/tools';
+import {ExpressContext} from 'apollo-server-express/dist/ApolloServer';
 import {CONTEXT, Injector, Middleware} from 'graphql-modules';
-import {isEmpty} from 'utils';
 
 export type ModuleContext = ExpressContext & {
     injector: Injector;

@@ -1,8 +1,8 @@
 import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
+import {Env} from '@/env';
 import {ApolloError} from 'apollo-server-errors';
 import {Response} from 'express';
 import {Injectable} from 'graphql-modules';
-import env from 'json-env';
 import {sign, verify} from 'jsonwebtoken'
 import { v4 as uuid4 } from 'uuid';
 
@@ -20,12 +20,6 @@ export interface IAccessToken {
     global: true
 })
 export class AuthProvider {
-    private expiredIn = env.getNumber('jwt.expiredIn', 600);
-    private refreshExpiredIn = env.getNumber('jwt.refreshExpiredIn', 1209600);
-    private cookieDomain = env.getString('jwt.cookieDomain', '');
-    private isCookieSecure = env.getBool('production');
-    private secret = env.getString('jwt.secret');
-    private issuer = env.getString('jwt.issuer', '') || undefined;
 
     constructor(
         private dbTran: DatabaseTransactionProvider,
@@ -48,10 +42,10 @@ export class AuthProvider {
                 uid,
                 rol: roles,
                 rfk: refreshKey
-            }, this.secret, {
-                issuer: this.issuer,
+            }, Env.JWT_SECRET, {
+                issuer: Env.JWT_ISSUER,
                 subject: 'ACCESS_TOKEN',
-                expiresIn: this.expiredIn,
+                expiresIn: Env.JWT_EXPIRED_IN,
                 jwtid: accessKey,
                 noTimestamp: true
             });
@@ -62,9 +56,9 @@ export class AuthProvider {
         }
 
         response.cookie('token', accessToken, {
-            secure: this.isCookieSecure,
-            domain: this.cookieDomain,
-            expires: new Date(Date.now() + this.refreshExpiredIn * 1000),
+            secure: Env.NODE_ENV === 'production',
+            domain: Env.JWT_COOKIE_DOMAIN,
+            expires: new Date(Date.now() + Env.JWT_REFRESH_EXPIRED_IN * 1000),
             httpOnly: true,
             sameSite: 'lax'
         });
@@ -93,7 +87,7 @@ export class AuthProvider {
                 throw new ApolloError('', 'SALT_VALUE_CHANGED');
             }
 
-            if (authData.refresh_interval > this.refreshExpiredIn) {
+            if (authData.refresh_interval > Env.JWT_REFRESH_EXPIRED_IN) {
                 throw new ApolloError('', 'REFRESH_TOO_LATE');
             }
 
@@ -114,10 +108,10 @@ export class AuthProvider {
                 uid: accessTokenPayload.uid,
                 rol: roles,
                 rfk: accessTokenPayload.rfk,
-            }, this.secret, {
-                issuer: this.issuer,
+            }, Env.JWT_SECRET, {
+                issuer: Env.JWT_ISSUER,
                 subject: 'ACCESS_TOKEN',
-                expiresIn: this.expiredIn,
+                expiresIn: Env.JWT_EXPIRED_IN,
                 jwtid: accessKey,
                 noTimestamp: true
             });
@@ -127,9 +121,9 @@ export class AuthProvider {
             throw e;
         }
         response.cookie('token', token, {
-            secure: this.isCookieSecure,
-            domain: this.cookieDomain,
-            expires: new Date(Date.now() + this.refreshExpiredIn * 1000),
+            secure: Env.NODE_ENV === 'production',
+            domain: Env.JWT_COOKIE_DOMAIN,
+            expires: new Date(Date.now() + Env.JWT_REFRESH_EXPIRED_IN * 1000),
             httpOnly: true,
             sameSite: 'lax'
         });
@@ -142,8 +136,8 @@ export class AuthProvider {
                 disabled: 1
             }).where('access_key', accessTokenPayload.jti);
             response.clearCookie('token', {
-                secure: this.isCookieSecure,
-                domain: this.cookieDomain,
+                secure: Env.NODE_ENV === 'production',
+                domain: Env.JWT_COOKIE_DOMAIN,
                 httpOnly: true,
                 sameSite: 'Lax'
             });
@@ -157,15 +151,15 @@ export class AuthProvider {
         let payload = null;
         let err = 0; // 0 정상, 1: 만료, 2: 검증불가
         try {
-            payload = verify(token, this.secret, {
-                issuer: this.issuer,
+            payload = verify(token, Env.JWT_SECRET, {
+                issuer: Env.JWT_ISSUER,
                 subject: 'ACCESS_TOKEN',
             });
         } catch (e) {
             if (e.name === 'TokenExpiredError') {
                 try {
-                    payload = verify(token, this.secret, {
-                        issuer: this.issuer,
+                    payload = verify(token, Env.JWT_SECRET, {
+                        issuer: Env.JWT_ISSUER,
                         subject: 'ACCESS_TOKEN',
                         ignoreExpiration: true
                     });

@@ -1,13 +1,9 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "paths": {
-      "*": [
-        "node_modules/*",
-        "libraries/*"
-      ],
       "@/*": [
-        "src/*"
+        "*"
       ]
     },
     "target": "es6",
@@ -17,7 +13,6 @@
     "outDir": "dist",
     "removeComments": true,
     "strict": true,
-    "allowJs": true,
     "inlineSourceMap": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
@@ -30,16 +25,12 @@
     "resolveJsonModule": true,
     "preserveConstEnums": true,
     "typeRoots": [
-      "./node_modules/@types",
-      "./libraries/@types"
+      "./node_modules/@types"
     ],
     "forceConsistentCasingInFileNames": true,
     "noEmit": false
   },
-  "exclude": [ "node_modules" ],
   "include": [
-    "**/*.ts" ,
     "src/**/*"
-
   ]
 }

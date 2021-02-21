@@ -1,13 +1,13 @@
-import env from './libraries/json-env';
+import {Env} from '@/env';
 
 const knexfile = {
     client: 'pg',
     connection: {
-        host: env.get('db.host'),
-        port: env.get('db.port'),
-        database: env.get('db.name'),
-        user: env.get('db.user'),
-        password: env.get('db.password')
+        host: Env.DB_HOST,
+        port: Env.DB_PORT,
+        database: Env.DB_NAME,
+        user: Env.DB_USER,
+        password: Env.DB_PASSWORD,
     },
     migrations: {
         extension: 'ts'

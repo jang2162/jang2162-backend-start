@@ -1,9 +1,18 @@
 import application from '@/app/application';
-import {createLogger} from '@/utils/createLogger';
+import {Env} from '@/env';
+import {createLogger, loggerEnvUtil} from '@/utils/createLogger';
 import {ApolloServer} from 'apollo-server-express';
 
-const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', ({ message, subData, timestamp }) =>
-    `${timestamp} [APOLLO_ERROR]: (${subData.path}${subData.code ? ', ' + subData.code : ''}) ${message}`
+const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', {
+    ...loggerEnvUtil(
+        Env.LOG_APOLLO_ERROR_LEVEL,
+        Env.LOG_APOLLO_ERROR_CONSOLE_LEVEL,
+        Env.LOG_APOLLO_ERROR_FILE_LEVEL,
+        Env.LOG_APOLLO_ERROR_FILE_DIR
+    ),
+    consoleFormat: ({ message, subData, timestamp }) =>
+        `${timestamp} [APOLLO_ERROR]: (${subData.path}${subData.code ? ', ' + subData.code : ''}) ${message}`
+}
 );
 const apollo = new ApolloServer({
     schema: application.createSchemaForApollo(),

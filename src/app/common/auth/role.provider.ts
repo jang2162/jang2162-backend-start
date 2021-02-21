@@ -1,5 +1,6 @@
 import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
 import {Injectable} from 'graphql-modules';
+import Knex from 'knex';
 
 export const ROLE_USER = 'ROLE_USER';
 export const ROLE_ADMIN = 'ROLE_ADMIN';
@@ -31,13 +32,17 @@ export class RoleProvider {
         return false;
     }
 
-    async addRole(userId: string, role: string) {
-        const {trx, release} = await this.dbTran.getTransaction();
-        await trx('user_role').insert({
+    async addRole(userId: string, role: string, trx?: Knex) {
+        const {trx: trx2, release} = await this.dbTran.getTransaction();
+        const curTrx = trx || trx2;
+        await curTrx('user_role').insert({
             user_id: userId,
             role_id: this.roleIdMapper[role]
         });
-        await release();
+
+        if (!trx) {
+            await release();
+        }
     }
 
     private async loadRole() {

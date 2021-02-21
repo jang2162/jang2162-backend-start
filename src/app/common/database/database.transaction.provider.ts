@@ -1,19 +1,26 @@
-import {createLogger} from '@/utils/createLogger';
+import {Env} from '@/env';
+import {createLogger, loggerEnvUtil} from '@/utils/createLogger';
+import {range} from '@/utils/tools';
 import {Injectable} from 'graphql-modules';
-import env from 'json-env';
 import Knex from 'knex';
-import {range} from 'utils';
 import Timeout = NodeJS.Timeout;
 
-const knexLogger = createLogger('KNEX');
+const knexLogger = createLogger('KNEX', {
+    ...loggerEnvUtil(
+        Env.LOG_KNEX_LEVEL,
+        Env.LOG_KNEX_CONSOLE_LEVEL,
+        Env.LOG_KNEX_FILE_LEVEL,
+        Env.LOG_KNEX_FILE_DIR
+    )
+});
 const knex = Knex({
     client: 'pg',
     connection: {
-        host: env.get('db.host'),
-        port: env.get('db.port'),
-        database: env.get('db.name'),
-        user: env.get('db.user'),
-        password: env.get('db.password')
+        host: Env.DB_HOST,
+        port: Env.DB_PORT,
+        database: Env.DB_NAME,
+        user: Env.DB_USER,
+        password: Env.DB_PASSWORD,
     },
     log: {
         warn(message) {
@@ -43,8 +50,14 @@ interface DbLoggerSubData {
     position?: string
 }
 
-const dbLogger = createLogger<DbLoggerSubData>('DB',
-    ({ level, message, subData, timestamp }) => `${timestamp} [DB] ${level}: ${
+const dbLogger = createLogger<DbLoggerSubData>('DB', {
+    ...loggerEnvUtil(
+        Env.LOG_DB_LEVEL,
+        Env.LOG_DB_CONSOLE_LEVEL,
+        Env.LOG_DB_FILE_LEVEL,
+        Env.LOG_DB_FILE_DIR
+    ),
+    consoleFormat: ({ level, message, subData, timestamp }) => `${timestamp} [DB] ${level}: ${
         level === 'debug'
             ? `executed query\nQuery: ${subData.queryText}\nDuration: ${subData.duration}ms\nRowCount: ${subData.rowCount}${
                 subData.params && subData.params.length > 0 ?
@@ -55,7 +68,7 @@ const dbLogger = createLogger<DbLoggerSubData>('DB',
             level === 'error'
                 ? `(${subData.code}, ${subData.position}) ${message}`
                 : message }`
-)
+});
 
 @Injectable({
     global: true

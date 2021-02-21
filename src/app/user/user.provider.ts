@@ -72,7 +72,7 @@ export class UserProvider {
         }).returning(['id', 'login_id as loginId', 'name', 'birthday', 'create_date as createDate']);
 
         if (res?.[0]?.id) {
-            await this.roleProvider.addRole(res[0].id, ROLE_USER);
+            await this.roleProvider.addRole(res[0].id, ROLE_USER, trx);
         } else {
             throw new Error('USER_INSERT_ERROR');
         }

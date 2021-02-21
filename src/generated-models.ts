@@ -13,7 +13,8 @@ export type Scalars = {
   Int: number;
   Float: number;
   Date: Date;
-  DateTime: Date;
+  Datetime: any;
+  Timestamp: any;
 };
 
 export type AccessToken = {
@@ -75,6 +76,7 @@ export enum Direction_Type {
   Next = 'NEXT',
   Prev = 'PREV'
 }
+
 
 
 
@@ -293,7 +295,8 @@ export type ResolversTypes = {
   SORT_TYPE: Sort_Type;
   DIRECTION_TYPE: Direction_Type;
   Date: ResolverTypeWrapper<Scalars['Date']>;
-  DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
+  Datetime: ResolverTypeWrapper<Scalars['Datetime']>;
+  Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
   Query: ResolverTypeWrapper<{}>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   SampleUser: ResolverTypeWrapper<SampleUser>;
@@ -320,7 +323,8 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   PageInput: PageInput;
   Date: Scalars['Date'];
-  DateTime: Scalars['DateTime'];
+  Datetime: Scalars['Datetime'];
+  Timestamp: Scalars['Timestamp'];
   Query: {};
   ID: Scalars['ID'];
   SampleUser: SampleUser;
@@ -366,8 +370,12 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
-export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
-  name: 'DateTime';
+export interface DatetimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Datetime'], any> {
+  name: 'Datetime';
+}
+
+export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
+  name: 'Timestamp';
 }
 
 export type QueryResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -428,7 +436,8 @@ export type Resolvers<ContextType = ModuleContext> = {
   Mutation?: MutationResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   Date?: GraphQLScalarType;
-  DateTime?: GraphQLScalarType;
+  Datetime?: GraphQLScalarType;
+  Timestamp?: GraphQLScalarType;
   Query?: QueryResolvers<ContextType>;
   SampleUser?: SampleUserResolvers<ContextType>;
   SampleUserConnection?: SampleUserConnectionResolvers<ContextType>;
