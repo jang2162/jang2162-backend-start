@@ -12,8 +12,8 @@ const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', {
     ),
     consoleFormat: ({ message, subData, timestamp }) =>
         `${timestamp} [APOLLO_ERROR]: (${subData.path}${subData.code ? ', ' + subData.code : ''}) ${message}`
-}
-);
+});
+
 const apollo = new ApolloServer({
     schema: application.createSchemaForApollo(),
     context: session => session,

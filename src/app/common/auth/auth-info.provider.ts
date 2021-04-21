@@ -36,14 +36,14 @@ export class AuthInfoProvider {
         }
     }
 
-    async authentication(uid: number, salt: string) {
-        await this.authProvider.authentication(this.context.res, uid, salt);
+    async authentication(userId: number, salt: string) {
+        await this.authProvider.authentication(this.context.res, userId, salt);
     }
 
     async tokenRefresh() {
         if (this.err) {
             if (this.err === 1) {
-                return await this.authProvider.refresh(this.context.res, this.payload as IAccessToken);
+                await this.authProvider.refresh(this.context.res, this.payload as IAccessToken);
             } else {
                 throw new ApolloError('', 'ACCESS_TOKEN_INVALID');
             }
@@ -61,7 +61,7 @@ export class AuthInfoProvider {
                 throw new ApolloError('', 'ACCESS_TOKEN_INVALID');
             }
         } else {
-            return this.authProvider.invalidate(this.context.res, this.payload as IAccessToken);
+            this.authProvider.invalidate(this.context.res, this.payload as IAccessToken);
         }
     }
 }

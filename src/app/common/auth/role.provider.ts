@@ -1,6 +1,5 @@
-import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
+import {getTransaction} from '@/transaction';
 import {Injectable} from 'graphql-modules';
-import Knex from 'knex';
 
 export const ROLE_USER = 'ROLE_USER';
 export const ROLE_ADMIN = 'ROLE_ADMIN';
@@ -11,12 +10,6 @@ export const ROLE_ADMIN = 'ROLE_ADMIN';
 export class RoleProvider {
     private roleLoaded = false;
     private roleIdMapper: {[k:string]: number} = {};
-
-    constructor(
-        private dbTran: DatabaseTransactionProvider,
-    ){
-        this.loadRole().then();
-    }
 
     async checkRole(roleName: string | string[], roleId: number | number[]) {
         if (!this.roleLoaded) {
@@ -32,21 +25,17 @@ export class RoleProvider {
         return false;
     }
 
-    async addRole(userId: string, role: string, trx?: Knex) {
-        const {trx: trx2, release} = await this.dbTran.getTransaction();
-        const curTrx = trx || trx2;
-        await curTrx('user_role').insert({
-            user_id: userId,
-            role_id: this.roleIdMapper[role]
-        });
 
-        if (!trx) {
-            await release();
+    async getRoleId(role: string) {
+        if (!this.roleLoaded) {
+            await this.loadRole();
         }
+        return this.roleIdMapper[role];
     }
 
+
     private async loadRole() {
-        const {trx, release} = await this.dbTran.getTransaction();
+        const {trx, release} = await getTransaction();
         const res = await trx('role_info');
         this.roleIdMapper = {};
         for (const item of res) {

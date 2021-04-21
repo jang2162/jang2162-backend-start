@@ -18,9 +18,11 @@ export const userModule = createModule({
     },
     resolvers: {
         Query: {
+            userById: (parent, args, {injector}) => injector.get<UserProvider>(UserProvider).userById(args.id),
+            users: (parent, args, {injector}) => injector.get<UserProvider>(UserProvider).getUserConnection(args.search, args.page),
         },
         Mutation: {
             addUser: (parent, args, {injector}) =>  injector.get<UserProvider>(UserProvider).insertUser(args.user)
-        },
+        }
     } as Resolvers,
 });

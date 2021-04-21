@@ -1,5 +1,12 @@
-import {DatabaseTransactionProvider} from '@/app/common/database/database.transaction.provider';
+import {
+    insertAuthToken,
+    invalidateToken, renewAccessKey,
+    selectAuthData,
+    selectRoleByUserId,
+    selectSalt
+} from '@/app/common/auth/auth.query';
 import {Env} from '@/env';
+import {getTransaction} from '@/transaction';
 import {ApolloError} from 'apollo-server-errors';
 import {Response} from 'express';
 import {Injectable} from 'graphql-modules';
@@ -21,25 +28,23 @@ export interface IAccessToken {
 })
 export class AuthProvider {
 
-    constructor(
-        private dbTran: DatabaseTransactionProvider,
-    ){}
+    constructor(){}
 
-    async authentication(response: Response, uid: number, salt: string) {
-        const {trx, release} = await this.dbTran.getTransaction();
+    async authentication(response: Response, userId: number, salt: string) {
+        const {trx, release} = await getTransaction();
         let accessToken;
         try {
             const refreshKey = uuid4().replace(/-/g, '');
             const accessKey = uuid4().replace(/-/g, '');
-            const roles = (await trx('user_role').where('user_id', uid)).map((item: any) => item.role_id);
-            await trx('auth_token').insert({
-                user_id: uid,
-                refresh_key: refreshKey,
-                access_key: accessKey,
+            const roles = (await selectRoleByUserId(trx, {userId: userId})).map(item => item.roleId);
+            await insertAuthToken(trx, {
+                userId,
+                refreshKey,
+                accessKey,
                 salt,
             });
             accessToken = sign({
-                uid,
+                uid: userId,
                 rol: roles,
                 rfk: refreshKey
             }, Env.JWT_SECRET, {
@@ -66,44 +71,32 @@ export class AuthProvider {
     }
 
     async refresh(response: Response, accessTokenPayload: IAccessToken) {
-        const {trx, release} = await this.dbTran.getTransaction();
+        const {trx, release} = await getTransaction();
         let token;
         try {
-            const authData = await trx('auth_token').first([
-                'user_id',
-                this.dbTran.knex.raw('EXTRACT(epoch FROM (NOW() - last_date))::int refresh_interval'),
-                'access_key',
-                'salt'
-            ]).where('refresh_key', accessTokenPayload.rfk)
-                .where('disabled', 0);
-            const saltRow = await trx('user').first(this.dbTran.knex.raw('SUBSTR(password, 0, 30) salt'))
-                .where('id', accessTokenPayload.uid);
+            const authData = await selectAuthData(trx, {refreshKey: accessTokenPayload.rfk});
+            const salt = (await selectSalt(trx, {userId: accessTokenPayload.uid})).slat;
 
-            if (!(saltRow?.salt) || !authData || authData.user_id !== accessTokenPayload.uid) {
+            if (!salt || !authData || authData.userId !== accessTokenPayload.uid) {
                 throw new ApolloError('', 'UNKNOWN_ERROR');
             }
 
-            if (authData.salt !== saltRow.salt) {
+            if (authData.salt !== salt) {
                 throw new ApolloError('', 'SALT_VALUE_CHANGED');
             }
 
-            if (authData.refresh_interval > Env.JWT_REFRESH_EXPIRED_IN) {
+            if (authData.refreshInterval > Env.JWT_REFRESH_EXPIRED_IN) {
                 throw new ApolloError('', 'REFRESH_TOO_LATE');
             }
 
-            if (authData.access_key !== accessTokenPayload.jti) {
-                await trx('auth_token').update({
-                    disabled: 1
-                }).where('refresh_key', accessTokenPayload.rfk);
+            if (authData.accessKey !== accessTokenPayload.jti) {
+                await invalidateToken(trx, {refreshKey: accessTokenPayload.rfk});
                 throw new ApolloError('', 'ACCESS_KEY_IS_OLD');
             }
 
             const accessKey = uuid4().replace(/-/g, '');
-            const roles = (await trx('user_role').where('user_id', accessTokenPayload.uid)).map((item: any) => item.role_id);
-            await trx('auth_token').update({
-                access_key: accessKey,
-                last_date: this.dbTran.knex.fn.now()
-            }).where('refresh_key', accessTokenPayload.rfk);
+            const roles = (await selectRoleByUserId(trx, {userId: accessTokenPayload.uid})).map(item => item.roleId);
+            await renewAccessKey(trx, {accessKey, refreshKey: accessTokenPayload.rfk});
             token = sign({
                 uid: accessTokenPayload.uid,
                 rol: roles,
@@ -130,11 +123,9 @@ export class AuthProvider {
     }
 
     async invalidate(response: Response, accessTokenPayload: IAccessToken) {
-        const {trx, release} = await this.dbTran.getTransaction();
+        const {trx, release} = await getTransaction();
         try {
-            await trx('auth_token').update({
-                disabled: 1
-            }).where('access_key', accessTokenPayload.jti);
+            await invalidateToken(trx, {accessKey: accessTokenPayload.jti});
             response.clearCookie('token', {
                 secure: Env.NODE_ENV === 'production',
                 domain: Env.JWT_COOKIE_DOMAIN,

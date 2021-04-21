@@ -21,7 +21,7 @@ export class Env {
     static readonly DB_USER = envStringErr(process.env.DB_USER)
     static readonly DB_PASSWORD = envStringErr(process.env.DB_PASSWORD)
     static readonly LOG_DEFAULT_LEVEL = envLogLevel(process.env.LOG_DEFAULT_LEVEL, 'info')
-    static readonly LOG_DEFAULT_FILE_DIR = envString(process.env.LOG_DEFAULT_LEVEL, './logs')
+    static readonly LOG_DEFAULT_FILE_DIR = envString(process.env.LOG_DEFAULT_FILE_DIR, './logs')
 
     static readonly LOG_KNEX_LEVEL = envLogLevel(process.env.LOG_KNEX_LEVEL, Env.LOG_DEFAULT_LEVEL)
     static readonly LOG_KNEX_CONSOLE_LEVEL = envLogLevel(process.env.LOG_KNEX_CONSOLE_LEVEL, Env.LOG_KNEX_LEVEL)

@@ -1,5 +1,5 @@
 import {APOLLO_LOGGER, ApolloLogger} from '@/app/apollo-logger.provider';
-import {DatabaseProvider} from '@/app/common/database/database.provider';
+import {DatabaseConnectionProvider} from '@/app/common/database/database-connection-provider';
 import {isEmpty} from '@/utils/tools';
 import {ExpressContext} from 'apollo-server-express/dist/ApolloServer';
 import {CONTEXT, Injector, Middleware} from 'graphql-modules';
@@ -25,8 +25,7 @@ export const logMiddleware: Middleware = async ({context: {injector}, info}, nex
 }
 
 export const dbMiddleware: Middleware = async ({context: {injector}}, next) => {
-    const databaseProvider = injector.get<DatabaseProvider>(DatabaseProvider);
-    await databaseProvider.init();
+    const databaseProvider = injector.get<DatabaseConnectionProvider>(DatabaseConnectionProvider);
     try {
         return await next();
     } catch (e) {

@@ -1,6 +1,22 @@
+# Init
+type Query
+type Mutation
+
+# Scalars
 scalar Date
 scalar Datetime
 scalar Timestamp
 
-type Query
-type Mutation
+# Pagination
+type PageInfo {
+    totalCount: Int!
+    next: String
+    prev: String
+    hasMore: Boolean!
+}
+
+input PageInput {
+    size: Int
+    cursor: String
+}
+

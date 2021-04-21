@@ -6,9 +6,9 @@ type User {
     createDate: Date!
 }
 
-input UserForm {
-    page: PageInput = {}
-    name: String = ""
+input UserSearchInput {
+    searchName: String
+    searchLoginId: String
 }
 
 input UserInput {
@@ -25,7 +25,7 @@ type UserConnection {
 
 # COMMON
 extend type Query {
-    users(form: UserForm = {}): UserConnection!
+    users(search: UserSearchInput, page: PageInput): UserConnection!
     userById(id: ID!): User
 }
 
