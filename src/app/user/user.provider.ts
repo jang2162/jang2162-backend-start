@@ -8,7 +8,7 @@ import {
     getUserConnection,
     insertUser, userAddRole
 } from '@/app/user/user.query';
-import {PageInput, User, UserInput, UserSearchInput} from '@/generated-models';
+import {CusorPageInput, User, UserInput, UserSearchInput} from '@/generated-models';
 import {orderByIdArray} from '@/utils/apolloUtil';
 import {ApolloError} from 'apollo-server-errors';
 import {compare, hash} from 'bcrypt'
@@ -73,7 +73,7 @@ export class UserProvider {
         return res[0];
     }
 
-    async getUserConnection(searchInput?: UserSearchInput | null, pageInput?: PageInput | null) {
+    async getUserConnection(searchInput?: UserSearchInput | null, pageInput?: CusorPageInput | null) {
         const trx = await this.db.getConn();
         return getUserConnection(trx, searchInput, pageInput);
     }

@@ -55,23 +55,28 @@ export type QueryUserByIdArgs = {
 
 export type QueryUsersArgs = {
   search?: Maybe<UserSearchInput>;
-  page?: Maybe<PageInput>;
+  page?: Maybe<CusorPageInput>;
 };
 
 
 
 
-export type PageInfo = {
-  __typename?: 'PageInfo';
+export type CusorPageInfo = {
+  __typename?: 'CusorPageInfo';
   totalCount: Scalars['Int'];
   next?: Maybe<Scalars['String']>;
   prev?: Maybe<Scalars['String']>;
   hasMore: Scalars['Boolean'];
 };
 
-export type PageInput = {
+export type CusorPageInput = {
   size?: Maybe<Scalars['Int']>;
   cursor?: Maybe<Scalars['String']>;
+};
+
+export type OffsetPageInput = {
+  size?: Maybe<Scalars['Int']>;
+  pagrIndex?: Maybe<Scalars['Int']>;
 };
 
 export type User = {
@@ -97,7 +102,7 @@ export type UserInput = {
 
 export type UserConnection = {
   __typename?: 'UserConnection';
-  pageInfo: PageInfo;
+  pageInfo: CusorPageInfo;
   list?: Maybe<Array<User>>;
 };
 
@@ -187,10 +192,11 @@ export type ResolversTypes = {
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Datetime: ResolverTypeWrapper<Scalars['Datetime']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
-  PageInfo: ResolverTypeWrapper<PageInfo>;
+  CusorPageInfo: ResolverTypeWrapper<CusorPageInfo>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  PageInput: PageInput;
+  CusorPageInput: CusorPageInput;
+  OffsetPageInput: OffsetPageInput;
   User: ResolverTypeWrapper<User>;
   UserSearchInput: UserSearchInput;
   UserInput: UserInput;
@@ -207,10 +213,11 @@ export type ResolversParentTypes = {
   Date: Scalars['Date'];
   Datetime: Scalars['Datetime'];
   Timestamp: Scalars['Timestamp'];
-  PageInfo: PageInfo;
+  CusorPageInfo: CusorPageInfo;
   Int: Scalars['Int'];
   Boolean: Scalars['Boolean'];
-  PageInput: PageInput;
+  CusorPageInput: CusorPageInput;
+  OffsetPageInput: OffsetPageInput;
   User: User;
   UserSearchInput: UserSearchInput;
   UserInput: UserInput;
@@ -246,7 +253,7 @@ export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<Resolvers
   name: 'Timestamp';
 }
 
-export type PageInfoResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
+export type CusorPageInfoResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['CusorPageInfo'] = ResolversParentTypes['CusorPageInfo']> = {
   totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   next?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   prev?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -264,7 +271,7 @@ export type UserResolvers<ContextType = ModuleContext, ParentType extends Resolv
 };
 
 export type UserConnectionResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection']> = {
-  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['CusorPageInfo'], ParentType, ContextType>;
   list?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -276,7 +283,7 @@ export type Resolvers<ContextType = ModuleContext> = {
   Date?: GraphQLScalarType;
   Datetime?: GraphQLScalarType;
   Timestamp?: GraphQLScalarType;
-  PageInfo?: PageInfoResolvers<ContextType>;
+  CusorPageInfo?: CusorPageInfoResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserConnection?: UserConnectionResolvers<ContextType>;
 };

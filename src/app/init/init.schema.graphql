@@ -8,15 +8,20 @@ scalar Datetime
 scalar Timestamp
 
 # Pagination
-type PageInfo {
+type CusorPageInfo {
     totalCount: Int!
     next: String
     prev: String
     hasMore: Boolean!
 }
 
-input PageInput {
+input CusorPageInput {
     size: Int
     cursor: String
+}
+
+input OffsetPageInput {
+    size: Int
+    pageIndex: Int
 }
 

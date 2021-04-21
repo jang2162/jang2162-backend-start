@@ -19,13 +19,13 @@ input UserInput {
 }
 
 type UserConnection {
-    pageInfo: PageInfo!
+    pageInfo: CusorPageInfo!
     list: [User!]
 }
 
 # COMMON
 extend type Query {
-    users(search: UserSearchInput, page: PageInput): UserConnection!
+    users(search: UserSearchInput, page: CusorPageInput): UserConnection!
     userById(id: ID!): User
 }
 

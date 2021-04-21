@@ -1,4 +1,4 @@
-import {PageInput} from '@/generated-models';
+import {CusorPageInput, OffsetPageInput} from '@/generated-models';
 import {Base64} from 'js-base64';
 import {Knex} from 'knex';
 
@@ -8,7 +8,7 @@ export enum SortType {
     DESC = 1,
 }
 
-const wherePagination = (
+const whereCursorPagination = (
     builder: Knex.QueryBuilder,
     columnNameMapper: Record<string, string>,
     idx: number,
@@ -26,7 +26,7 @@ const wherePagination = (
         , item[1]);
 
     if (idx < cursorData.length - 1) {
-        builder.orWhere(newBuilder => wherePagination(newBuilder, columnNameMapper,idx+1, cursorData, pageDirection));
+        builder.orWhere(newBuilder => whereCursorPagination(newBuilder, columnNameMapper,idx+1, cursorData, pageDirection));
     }
 }
 
@@ -49,7 +49,7 @@ export function cursorPaginationConnectionBuilder<SEARCH_INPUT = any, LIST_ITEM 
     return async (
         trx: Knex.Transaction,
         searchInput?: SEARCH_INPUT | null,
-        pageInput?: PageInput | null,
+        pageInput?: CusorPageInput | null,
         sortInfo?: SORT_INFO,
     ) => {
         let sortKeyData: Array<[string, SortType]> | null = null;
@@ -87,7 +87,7 @@ export function cursorPaginationConnectionBuilder<SEARCH_INPUT = any, LIST_ITEM 
         }))).limit(pageSize);
 
         if (cursorData) {
-            wherePagination(listQueryBuilder, columnNameMapper, 0, cursorData, pageDirection)
+            whereCursorPagination(listQueryBuilder, columnNameMapper, 0, cursorData, pageDirection)
         }
 
         const list = await listQueryBuilder;
@@ -104,6 +104,47 @@ export function cursorPaginationConnectionBuilder<SEARCH_INPUT = any, LIST_ITEM 
                 prev: list.length ? getCursor(list[0], sortKeyData, 0) : null,
                 hasMore: list.length === pageSize,
             }
+        }
+    }
+}
+
+
+export function offsetPaginationConnectionBuilder<SEARCH_INPUT = any, LIST_ITEM = any, SORT_INFO = string>(
+    columnNameMapper: Record<string, string>,
+    sortInfoOrDataOrParser: string | Array<[string, SortType] | string> | ((sortInfo: SORT_INFO) => Array<[string, SortType] | string>),
+    queryBuilderFactory: (builder: Knex.QueryBuilder, form?: SEARCH_INPUT | null) => any
+) {
+    return async (
+        trx: Knex.Transaction,
+        searchInput?: SEARCH_INPUT | null,
+        pageInput?: OffsetPageInput | null,
+        sortInfo?: SORT_INFO,
+    ) => {
+        let sortKeyData: Array<[string, SortType]> | null = null;
+        pageInput = pageInput ?? {};
+        const pageSize = pageInput.size ?? 15;
+        const pageIndex = pageInput.pagrIndex ?? 1;
+        if (typeof sortInfoOrDataOrParser === 'string') {
+            sortKeyData = [[sortInfoOrDataOrParser, SortType.DESC]]
+        } else if (Array.isArray(sortInfoOrDataOrParser)) {
+            sortKeyData = sortInfoOrDataOrParser.map(item => Array.isArray(item) ? item : [item, SortType.ASC]);
+        } else if (sortInfo) {
+            sortKeyData = sortInfoOrDataOrParser(sortInfo).map(item => Array.isArray(item) ? item : [item, SortType.ASC]);
+        } else {
+            throw Error('GET_SORT_KEY_DATA');
+        }
+
+        const baseQueryBuilder = trx.queryBuilder<any, LIST_ITEM[]>();
+        queryBuilderFactory(baseQueryBuilder, searchInput);
+
+        const listQueryBuilder = baseQueryBuilder.clone().orderBy(sortKeyData.map(value => ({
+            column: columnNameMapper[value[0]],
+            order: value[1] === SortType.ASC  ? 'asc' : 'desc'
+        }))).limit(pageSize).offset((pageIndex - 1) * pageSize );
+        const list = await listQueryBuilder;
+        return {
+            list,
+            totalCount: baseQueryBuilder.clone().clear('select').count({cnt: '*'}).first().then(item => (item?.cnt ?? 0) - 0),
         }
     }
 }
