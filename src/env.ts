@@ -1,5 +1,5 @@
-import {LogLevel} from '@/utils/createLogger';
 import dotenv from 'dotenv';
+import {LogLevel} from '@/utils/createLogger';
 
 dotenv.config();
 
