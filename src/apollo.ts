@@ -1,7 +1,7 @@
+import {ApolloServer} from 'apollo-server-express';
 import application from '@/app/application';
 import {Env} from '@/env';
 import {createLogger, loggerEnvUtil} from '@/utils/createLogger';
-import {ApolloServer} from 'apollo-server-express';
 
 const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', {
     ...loggerEnvUtil(
@@ -25,6 +25,5 @@ const apollo = new ApolloServer({
         return error;
     }
 });
-
 export default apollo;
 

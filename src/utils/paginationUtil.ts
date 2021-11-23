@@ -99,7 +99,7 @@ export function cursorPaginationConnectionBuilder<SEARCH_INPUT = any, LIST_ITEM 
         return {
             list,
             pageInfo: {
-                totalCount: baseQueryBuilder.clone().clear('select').count({cnt: '*'}).first().then(item => (item?.cnt ?? 0) - 0),
+                totalCount: await baseQueryBuilder.clone().clear('select').count({cnt: '*'}).first().then(item => (item?.cnt ?? 0) - 0),
                 next: list.length ? getCursor(list[list.length - 1], sortKeyData, 1) : null,
                 prev: list.length ? getCursor(list[0], sortKeyData, 0) : null,
                 hasMore: list.length === pageSize,
@@ -123,7 +123,7 @@ export function offsetPaginationConnectionBuilder<SEARCH_INPUT = any, LIST_ITEM 
         let sortKeyData: Array<[string, SortType]> | null = null;
         pageInput = pageInput ?? {};
         const pageSize = pageInput.size ?? 15;
-        const pageIndex = pageInput.pagrIndex ?? 1;
+        const pageIndex = pageInput.pageIndex ?? 1;
         if (typeof sortInfoOrDataOrParser === 'string') {
             sortKeyData = [[sortInfoOrDataOrParser, SortType.DESC]]
         } else if (Array.isArray(sortInfoOrDataOrParser)) {

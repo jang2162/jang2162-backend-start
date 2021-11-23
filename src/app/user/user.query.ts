@@ -1,4 +1,4 @@
-import {ProductSearchInput, User, UserConnection, UserInput, UserSearchInput} from '@/generated-models';
+import {User, UserInput, UserSearchInput} from '@/generated-models';
 import {cursorPaginationConnectionBuilder, SortType} from '@/utils/paginationUtil';
 import {queryBuilder, queryBuilderFirst} from '@/utils/queryUtil';
 

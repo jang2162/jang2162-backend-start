@@ -1,3 +1,7 @@
+import {ApolloError} from 'apollo-server-express';
+import {compare, hash} from 'bcrypt'
+import DataLoader from 'dataloader';
+import {Injectable, Scope} from 'graphql-modules';
 import {AuthInfoProvider} from '@/app/common/auth/auth-info.provider';
 import {AuthProvider} from '@/app/common/auth/auth.provider';
 import {ROLE_USER, RoleProvider} from '@/app/common/auth/role.provider';
@@ -10,10 +14,6 @@ import {
 } from '@/app/user/user.query';
 import {CusorPageInput, User, UserInput, UserSearchInput} from '@/generated-models';
 import {orderByIdArray} from '@/utils/apolloUtil';
-import {ApolloError} from 'apollo-server-errors';
-import {compare, hash} from 'bcrypt'
-import DataLoader from 'dataloader';
-import {Injectable, Scope} from 'graphql-modules';
 
 @Injectable({
     scope: Scope.Operation

@@ -1,8 +1,7 @@
+import {ApolloError, ExpressContext} from 'apollo-server-express';
+import {Injectable, Scope, CONTEXT, Inject, Middleware} from 'graphql-modules';
 import {AuthProvider, IAccessToken} from '@/app/common/auth/auth.provider';
 import {RoleProvider} from '@/app/common/auth/role.provider';
-import {ApolloError} from 'apollo-server-errors';
-import {ExpressContext} from 'apollo-server-express/dist/ApolloServer';
-import {Injectable, Scope, CONTEXT, Inject, Middleware} from 'graphql-modules';
 
 @Injectable({
     scope: Scope.Operation,

@@ -1,3 +1,8 @@
+import {ApolloError} from 'apollo-server-express';
+import {Response} from 'express';
+import {Injectable} from 'graphql-modules';
+import {sign, verify} from 'jsonwebtoken'
+import { v4 as uuid4 } from 'uuid';
 import {
     insertAuthToken,
     invalidateToken, renewAccessKey,
@@ -7,11 +12,6 @@ import {
 } from '@/app/common/auth/auth.query';
 import {Env} from '@/env';
 import {getTransaction} from '@/transaction';
-import {ApolloError} from 'apollo-server-errors';
-import {Response} from 'express';
-import {Injectable} from 'graphql-modules';
-import {sign, verify} from 'jsonwebtoken'
-import { v4 as uuid4 } from 'uuid';
 
 export interface IAccessToken {
     uid: number,
@@ -147,7 +147,7 @@ export class AuthProvider {
                 subject: 'ACCESS_TOKEN',
             });
         } catch (e) {
-            if (e.name === 'TokenExpiredError') {
+            if ((e as Error).name === 'TokenExpiredError') {
                 try {
                     payload = verify(token, Env.JWT_SECRET, {
                         issuer: Env.JWT_ISSUER,
