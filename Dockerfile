@@ -1,8 +1,7 @@
 FROM node:16
 
-RUN ls -al /app
-
 WORKDIR /app
+RUN ls -al /app
 COPY . /app
 
 RUN ls -al /app
