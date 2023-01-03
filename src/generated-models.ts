@@ -5,7 +5,7 @@ export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -55,6 +55,12 @@ export type OffsetPageInput = {
   size?: InputMaybe<Scalars['Int']>;
 };
 
+export type Post = {
+  __typename?: 'Post';
+  id: Scalars['ID'];
+  subject: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   userById?: Maybe<User>;
@@ -79,11 +85,12 @@ export type User = {
   id: Scalars['ID'];
   loginId: Scalars['String'];
   name: Scalars['String'];
+  posts: Array<Post>;
 };
 
 export type UserConnection = {
   __typename?: 'UserConnection';
-  list?: Maybe<Array<User>>;
+  list: Array<User>;
   pageInfo: CusorPageInfo;
 };
 
@@ -182,6 +189,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Mutation: ResolverTypeWrapper<{}>;
   OffsetPageInput: OffsetPageInput;
+  Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
@@ -203,6 +211,7 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   Mutation: {};
   OffsetPageInput: OffsetPageInput;
+  Post: Post;
   Query: {};
   String: Scalars['String'];
   Timestamp: Scalars['Timestamp'];
@@ -236,9 +245,15 @@ export type MutationResolvers<ContextType = ModuleContext, ParentType extends Re
   refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
+export type PostResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  subject?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   userById?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByIdArgs, 'id'>>;
-  users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
+  users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, Partial<QueryUsersArgs>>;
 };
 
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
@@ -251,11 +266,12 @@ export type UserResolvers<ContextType = ModuleContext, ParentType extends Resolv
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   loginId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserConnectionResolvers<ContextType = ModuleContext, ParentType extends ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection']> = {
-  list?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
+  list?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes['CusorPageInfo'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -270,6 +286,7 @@ export type Resolvers<ContextType = ModuleContext> = {
   Date?: GraphQLScalarType;
   Datetime?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
+  Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;

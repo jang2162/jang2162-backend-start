@@ -1,9 +1,0 @@
-type accessToken {
-    token: String!
-}
-
-extend type Mutation {
-    authentication(id: String!, pw: String!): String
-    refreshToken: String
-    invalidate: String
-}

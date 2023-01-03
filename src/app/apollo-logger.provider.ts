@@ -1,6 +1,6 @@
-import {Env} from '@/env';
-import {createLogger, Logger, loggerEnvUtil} from '@/utils/createLogger';
 import {ValueProvider, InjectionToken} from 'graphql-modules';
+import {Env} from '../env';
+import {createLogger, Logger, loggerEnvUtil} from '../utils/createLogger';
 
 interface ApolloLoggerSubData {
     type: string,

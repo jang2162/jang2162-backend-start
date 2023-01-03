@@ -1,8 +1,8 @@
-import {Env} from '@/env';
-import {createLogger, loggerEnvUtil} from '@/utils/createLogger';
-import {range} from '@/utils/tools';
-import camelcaseKeys from 'camelcase-keys';
+import camelCase from 'camelcase';
 import {Knex, knex} from 'knex';
+import {Env} from './env';
+import {createLogger, loggerEnvUtil} from './utils/createLogger';
+import {range} from './utils/tools';
 import Timeout = NodeJS.Timeout;
 
 interface DbLoggerSubData {
@@ -50,7 +50,7 @@ const dbLogger = createLogger<DbLoggerSubData>('DB', {
 export const knexClient = knex({
     client: 'pg',
     postProcessResponse: (result) => {
-        return camelcaseKeys(result);
+        return camelCase(result);
     },
     connection: {
         host: Env.DB_HOST,

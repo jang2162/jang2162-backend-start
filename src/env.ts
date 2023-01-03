@@ -7,10 +7,8 @@ export class Env {
     static readonly NODE_ENV = envString(process.env.NODE_ENV, 'development')
     static readonly SERVER_HOST = envString(process.env.SERVER_HOST, 'localhost')
     static readonly SERVER_PORT = envInt(process.env.SERVER_PORT, 4200)
-
-    static readonly CORS_ORIGIN = process.env.CORS_ORIGIN
-
-    static readonly JWT_ISSUER = process.env.JWT_ISSUER
+    static readonly CORS_ORIGIN = envString(process.env.CORS_ORIGIN, '*')
+    static readonly JWT_ISSUER = envString(process.env.JWT_ISSUER, 'APP')
     static readonly JWT_SECRET = envStringErr(process.env.JWT_SECRET)
     static readonly JWT_EXPIRED_IN = envInt(process.env.JWT_EXPIRED_IN, 600)
     static readonly JWT_REFRESH_EXPIRED_IN = envInt(process.env.JWT_REFRESH_EXPIRED_IN, 1209600)
