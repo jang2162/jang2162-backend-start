@@ -1,5 +1,5 @@
 overwrite: true
-schema: 'src/**/*.graphql'
+schema: 'src/typeDefs/**/*.graphql'
 require:
   - ts-node/register/transpile-only
   - tsconfig-paths/register
@@ -9,8 +9,8 @@ generates:
       - typescript
       - typescript-resolvers
     config:
-      maybeValue: T | null | undefined
-      contextType: '@/utils/apolloUtil#ModuleContext'
+      customResolverFn: './utils/gqlAppBuilder#ResolveFn'
       scalars:
         Date: Date
         DateTime: Date
+        Timestamp: Date

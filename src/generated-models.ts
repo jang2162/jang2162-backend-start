@@ -1,9 +1,11 @@
+import { ResolveFn as ResolverFn } from './utils/gqlAppBuilder';
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-export type Maybe<T> = T | null | undefined;
-export type InputMaybe<T> = T | null | undefined;
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export { ResolverFn };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -14,33 +16,28 @@ export type Scalars = {
   Float: number;
   Date: Date;
   Datetime: any;
-  Timestamp: any;
+  Timestamp: Date;
 };
 
-export type CusorPageInfo = {
-  __typename?: 'CusorPageInfo';
+export type CursorPageInfo = {
+  __typename?: 'CursorPageInfo';
   hasMore: Scalars['Boolean'];
   next?: Maybe<Scalars['String']>;
   prev?: Maybe<Scalars['String']>;
   totalCount: Scalars['Int'];
 };
 
-export type CusorPageInput = {
+export type CursorPageInput = {
   cursor?: InputMaybe<Scalars['String']>;
   size?: InputMaybe<Scalars['Int']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addUser: User;
+  _?: Maybe<Scalars['String']>;
   authentication?: Maybe<Scalars['String']>;
   invalidate?: Maybe<Scalars['String']>;
   refreshToken?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationAddUserArgs = {
-  user: UserInput;
 };
 
 
@@ -54,55 +51,11 @@ export type OffsetPageInput = {
   size?: InputMaybe<Scalars['Int']>;
 };
 
-export type Post = {
-  __typename?: 'Post';
-  id: Scalars['ID'];
-  subject: Scalars['String'];
-};
-
 export type Query = {
   __typename?: 'Query';
-  userById?: Maybe<User>;
-  users: UserConnection;
-};
-
-
-export type QueryUserByIdArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryUsersArgs = {
-  page?: InputMaybe<CusorPageInput>;
-  search?: InputMaybe<UserSearchInput>;
-};
-
-export type User = {
-  __typename?: 'User';
-  birthday?: Maybe<Scalars['Date']>;
-  createDate: Scalars['Date'];
-  id: Scalars['ID'];
-  loginId: Scalars['String'];
-  name: Scalars['String'];
-  posts: Array<Post>;
-};
-
-export type UserConnection = {
-  __typename?: 'UserConnection';
-  list: Array<User>;
-  pageInfo: CusorPageInfo;
-};
-
-export type UserInput = {
-  birthday?: InputMaybe<Scalars['Date']>;
-  loginId: Scalars['String'];
-  name: Scalars['String'];
-  password: Scalars['String'];
-};
-
-export type UserSearchInput = {
-  searchLoginId?: InputMaybe<Scalars['String']>;
-  searchName?: InputMaybe<Scalars['String']>;
+  nowDate?: Maybe<Scalars['Date']>;
+  nowDatetime?: Maybe<Scalars['Datetime']>;
+  nowTimestamp?: Maybe<Scalars['Timestamp']>;
 };
 
 export type AccessToken = {
@@ -119,13 +72,6 @@ export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
 export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
-
-export type ResolverFn<TResult, TParent, TContext, TArgs> = (
-  parent: TParent,
-  args: TArgs,
-  context: TContext,
-  info: GraphQLResolveInfo
-) => Promise<TResult> | TResult;
 
 export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -180,48 +126,36 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  CusorPageInfo: ResolverTypeWrapper<CusorPageInfo>;
-  CusorPageInput: CusorPageInput;
+  CursorPageInfo: ResolverTypeWrapper<CursorPageInfo>;
+  CursorPageInput: CursorPageInput;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Datetime: ResolverTypeWrapper<Scalars['Datetime']>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Mutation: ResolverTypeWrapper<{}>;
   OffsetPageInput: OffsetPageInput;
-  Post: ResolverTypeWrapper<Post>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
-  User: ResolverTypeWrapper<User>;
-  UserConnection: ResolverTypeWrapper<UserConnection>;
-  UserInput: UserInput;
-  UserSearchInput: UserSearchInput;
   accessToken: ResolverTypeWrapper<AccessToken>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
-  CusorPageInfo: CusorPageInfo;
-  CusorPageInput: CusorPageInput;
+  CursorPageInfo: CursorPageInfo;
+  CursorPageInput: CursorPageInput;
   Date: Scalars['Date'];
   Datetime: Scalars['Datetime'];
-  ID: Scalars['ID'];
   Int: Scalars['Int'];
   Mutation: {};
   OffsetPageInput: OffsetPageInput;
-  Post: Post;
   Query: {};
   String: Scalars['String'];
   Timestamp: Scalars['Timestamp'];
-  User: User;
-  UserConnection: UserConnection;
-  UserInput: UserInput;
-  UserSearchInput: UserSearchInput;
   accessToken: AccessToken;
 };
 
-export type CusorPageInfoResolvers<ContextType, ParentType extends ResolversParentTypes['CusorPageInfo'] = ResolversParentTypes['CusorPageInfo']> = {
+export type CursorPageInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['CursorPageInfo'] = ResolversParentTypes['CursorPageInfo']> = {
   hasMore?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   next?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   prev?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -237,59 +171,35 @@ export interface DatetimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'Datetime';
 }
 
-export type MutationResolvers<ContextType, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  addUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAddUserArgs, 'user'>>;
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  _?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   authentication?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationAuthenticationArgs, 'id' | 'pw'>>;
   invalidate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
-export type PostResolvers<ContextType, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  subject?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type QueryResolvers<ContextType, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  userById?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByIdArgs, 'id'>>;
-  users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, Partial<QueryUsersArgs>>;
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  nowDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  nowDatetime?: Resolver<Maybe<ResolversTypes['Datetime']>, ParentType, ContextType>;
+  nowTimestamp?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
 };
 
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
   name: 'Timestamp';
 }
 
-export type UserResolvers<ContextType, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  birthday?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  createDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  loginId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  posts?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UserConnectionResolvers<ContextType, ParentType extends ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection']> = {
-  list?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
-  pageInfo?: Resolver<ResolversTypes['CusorPageInfo'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type AccessTokenResolvers<ContextType, ParentType extends ResolversParentTypes['accessToken'] = ResolversParentTypes['accessToken']> = {
+export type AccessTokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['accessToken'] = ResolversParentTypes['accessToken']> = {
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type Resolvers<ContextType> = {
-  CusorPageInfo?: CusorPageInfoResolvers<ContextType>;
+export type Resolvers<ContextType = any> = {
+  CursorPageInfo?: CursorPageInfoResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Datetime?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
-  Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
-  User?: UserResolvers<ContextType>;
-  UserConnection?: UserConnectionResolvers<ContextType>;
   accessToken?: AccessTokenResolvers<ContextType>;
 };
 

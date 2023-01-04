@@ -1,6 +1,6 @@
-import {CusorPageInput, OffsetPageInput} from '../generated-models';
 import {Base64} from 'js-base64';
 import {Knex} from 'knex';
+import {CursorPageInput, OffsetPageInput} from '../generated-models';
 
 
 export enum SortType {
@@ -49,7 +49,7 @@ export function cursorPaginationConnectionBuilder<SEARCH_INPUT = any, LIST_ITEM 
     return async (
         trx: Knex.Transaction,
         searchInput?: SEARCH_INPUT | null,
-        pageInput?: CusorPageInput | null,
+        pageInput?: CursorPageInput | null,
         sortInfo?: SORT_INFO,
     ) => {
         let sortKeyData: Array<[string, SortType]> | null = null;

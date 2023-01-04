@@ -1,14 +1,13 @@
 import {Request, Response} from 'express';
 // import {APOLLO_LOGGER, ApolloLogger} from '@/app/apollo-logger.provider';
 // import {DatabaseConnectionProvider} from '../app/database/database-connection-provider';
+import DependencyContainer from 'tsyringe/dist/typings/types/dependency-container';
 import {isEmpty} from './tools';
 export interface ApolloContext{
     req: Request;
     res: Response;
 }
 
-export type ModuleContext = ApolloContext & {
-}
 
 // export const logMiddleware: Middleware = async ({context: {injector}, info}, next) => {
 //     const logger = injector.get<ApolloLogger>(APOLLO_LOGGER);

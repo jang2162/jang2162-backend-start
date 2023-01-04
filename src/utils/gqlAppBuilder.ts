@@ -1,8 +1,13 @@
+import {Request, Response} from 'express';
 import {DocumentNode, GraphQLResolveInfo, GraphQLScalarType} from 'graphql';
-import {Resolvers} from '../generated-models';
-import {ApolloContext, ModuleContext} from './apolloUtil';
+import {container, DependencyContainer} from 'tsyringe';
+import {ApolloContext} from './apolloUtil';
+import {Resolvers} from '@/generated-models';
 
-export type  GqlAppBuilderMiddleware =  (parent: any, args: any, context: ModuleContext, info: GraphQLResolveInfo) => Promise<any>
+export type  GqlAppBuilderMiddleware =  (injector: DependencyContainer, parent: any, args: any, info: GraphQLResolveInfo) => Promise<any>
+
+export const REQUEST = Symbol('REQUEST');
+export const RESPONSE = Symbol('RESPONSE');
 
 export interface GqlAppBuilderConfig {
     typeDefs : DocumentNode[]
@@ -52,21 +57,18 @@ export class GqlAppBuilder{
                         }
 
                         resolvers[typeName][fieldName] = async (parent: any, args: any, context: ApolloContext, info: GraphQLResolveInfo) => {
-                            const newContext = {
-                                ...context
-                                , injector: {} as any
-                            }
-
+                            const injector = container.createChildContainer();
+                            container.register<Request>(REQUEST, {useValue: context.req});
+                            container.register<Response>(RESPONSE, {useValue: context.res});
                             for (const middleware of middlewares) {
-                                await middleware(parent, args, newContext, info)
+                                await middleware(injector, parent, args, info)
                             }
-                            await module.resolvers[typeName][fieldName](parent, args, newContext, info)
+                            return module.resolvers[typeName][fieldName](injector, parent, args, info)
                         }
                     }
                 }
             }
         }
-
         return {
             typeDefs,
             resolvers
@@ -75,6 +77,12 @@ export class GqlAppBuilder{
 }
 export interface GqlAppBuilderModule {
     middlewares?: Record<string, Record<string, GqlAppBuilderMiddleware[]>>
-    resolvers?: Resolvers<ModuleContext>
+    resolvers?: Resolvers<DependencyContainer>
 }
+export type ResolveFn<TResult, TParent, TContext, TArgs> = (
+    injector: TContext,
+    parent: TParent,
+    args: TArgs,
+    info: GraphQLResolveInfo
+) => Promise<TResult> | TResult;
 

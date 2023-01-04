@@ -5,6 +5,7 @@ dotenv.config({path: '../.env'});
 
 export class Env {
     static readonly NODE_ENV = envString(process.env.NODE_ENV, 'development')
+    static readonly SERVER_ORIGIN = envStringErr(process.env.SERVER_ORIGIN)
     static readonly SERVER_HOST = envString(process.env.SERVER_HOST, 'localhost')
     static readonly SERVER_PORT = envInt(process.env.SERVER_PORT, 4200)
     static readonly CORS_ORIGIN = envString(process.env.CORS_ORIGIN, '*')

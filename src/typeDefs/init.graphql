@@ -1,7 +1,13 @@
-type Query {
-    _: String
+type Query
+type Mutation
+
+
+extend type Query {
+    nowDate: Date
+    nowDatetime: Datetime
+    nowTimestamp: Timestamp
 }
 
-type Mutation {
+extend type Mutation {
     _: String
 }

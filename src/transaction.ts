@@ -1,5 +1,5 @@
 import camelCase from 'camelcase';
-import {Knex, knex} from 'knex';
+import knex, {Knex} from 'knex';
 import {Env} from './env';
 import {createLogger, loggerEnvUtil} from './utils/createLogger';
 import {range} from './utils/tools';

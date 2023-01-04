@@ -32,13 +32,17 @@ const server = new ApolloServer<ApolloContext>({
             code: error.extensions && error.extensions.code
         });
         return error;
-    }
+    },
+    plugins: []
 });
 (async ()=>{
     await server.start();
     app.use(
         '/graphql',
-        cors<cors.CorsRequest>(),
+        cors<cors.CorsRequest>({
+            credentials: true,
+            origin: 'http://localhost.com:4200'
+        }),
         bodyParser.json(),
         expressMiddleware(server, {
             context: async ctx => ctx,
