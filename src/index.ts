@@ -3,6 +3,10 @@ import 'reflect-metadata';
 import {createServer} from 'http';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
+import {ApolloServerPluginLandingPageDisabled} from '@apollo/server/plugin/disabled';
+import {
+    ApolloServerPluginLandingPageLocalDefault
+} from '@apollo/server/plugin/landingPage/default';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
@@ -33,24 +37,26 @@ const server = new ApolloServer<ApolloContext>({
         });
         return error;
     },
-    plugins: []
+    plugins: [
+        process.env.NODE_ENV === 'production'
+            ? ApolloServerPluginLandingPageDisabled()
+            : ApolloServerPluginLandingPageLocalDefault({
+                includeCookies: true
+            }),
+    ],
 });
 (async ()=>{
     await server.start();
     app.use(
         '/graphql',
-        cors<cors.CorsRequest>({
-            credentials: true,
-            origin: 'http://localhost.com:4200'
-        }),
+        cors<cors.CorsRequest>(),
         bodyParser.json(),
         expressMiddleware(server, {
             context: async ctx => ctx,
         }),
     );
-    const host = Env.SERVER_HOST;
+    const origin = Env.SERVER_ORIGIN;
     const port = Env.SERVER_PORT;
     await new Promise<void>((resolve) => httpServer.listen(port, resolve));
-    console.log(`GraphQL Server listening on ${Env.NODE_ENV === 'production' ? 'https' : 'http'}://${host==='0.0.0.0' ? '127.0.0.1' : host}:${port}/graphql`)
-
+    console.log(`GraphQL Server listening on ${origin ?? `'http'://localhost:${port}`}/graphql`)
 })()

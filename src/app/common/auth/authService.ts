@@ -60,7 +60,7 @@ export class AuthService {
             throw e;
         }
         response.cookie('token', accessToken, {
-            secure: Env.NODE_ENV === 'production',
+            secure: Env.JWT_COOKIE_SECURE,
             domain: Env.JWT_COOKIE_DOMAIN,
             expires: new Date(Date.now() + Env.JWT_REFRESH_EXPIRED_IN * 1000),
             httpOnly: true,
@@ -113,7 +113,7 @@ export class AuthService {
             throw e;
         }
         response.cookie('token', token, {
-            secure: Env.NODE_ENV === 'production',
+            secure: Env.JWT_COOKIE_SECURE,
             domain: Env.JWT_COOKIE_DOMAIN,
             expires: new Date(Date.now() + Env.JWT_REFRESH_EXPIRED_IN * 1000),
             httpOnly: true,
@@ -126,7 +126,7 @@ export class AuthService {
         try {
             await invalidateToken(trx, {accessKey: accessTokenPayload.jti});
             response.clearCookie('token', {
-                secure: Env.NODE_ENV === 'production',
+                secure: Env.JWT_COOKIE_SECURE,
                 domain: Env.JWT_COOKIE_DOMAIN,
                 httpOnly: true,
                 sameSite: 'lax'

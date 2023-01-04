@@ -2,8 +2,6 @@ import dayjs from 'dayjs';
 import {GraphQLError, GraphQLScalarType, Kind} from 'graphql';
 
 export function parseDate(value: string | dayjs.Dayjs | Date) {
-    console.log('parseDate');
-    console.log(value);
     if (value instanceof Date) {
         value = dayjs(value);
     } else if (typeof value === 'string') {

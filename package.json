@@ -7,7 +7,7 @@
     "gql-gen": "graphql-codegen",
     "build": "gql-gen && rimraf dist && tsc && tsc-alias && copyfiles -u 1  src/**/*.graphql dist",
     "dev": " cd src && tsx index.ts",
-    "start": "npm run build && cd dist && node --experimental-specifier-resolution=node index.js"
+    "start": "npm run build && cd dist && cross-env NODE_ENV=production node --experimental-specifier-resolution=node index.js"
   },
   "repository": {
     "type": "git",

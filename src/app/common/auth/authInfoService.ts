@@ -56,7 +56,7 @@ export class AuthInfoService {
         });
 
         this.res.cookie('token', accessToken, {
-            secure: Env.NODE_ENV === 'production',
+            secure: Env.JWT_COOKIE_SECURE,
             domain: Env.JWT_COOKIE_DOMAIN,
             expires: new Date(Date.now() + Env.JWT_REFRESH_EXPIRED_IN * 1000),
             httpOnly: true,
