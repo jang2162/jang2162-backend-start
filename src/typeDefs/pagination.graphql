@@ -1,0 +1,16 @@
+type CursorPageInfo {
+    totalCount: Int!
+    next: String
+    prev: String
+    hasMore: Boolean!
+}
+
+input CursorPageInput {
+    size: Int
+    cursor: String
+}
+
+input OffsetPageInput {
+    size: Int
+    pageIndex: Int
+}

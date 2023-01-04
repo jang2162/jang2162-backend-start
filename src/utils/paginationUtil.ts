@@ -1,4 +1,4 @@
-import {CusorPageInput, OffsetPageInput} from '@/generated-models';
+import {CusorPageInput, OffsetPageInput} from '../generated-models';
 import {Base64} from 'js-base64';
 import {Knex} from 'knex';
 

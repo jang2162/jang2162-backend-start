@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import {LogLevel} from '@/utils/createLogger';
+import {LogLevel} from './utils/createLogger';
 
-dotenv.config();
+dotenv.config({path: '../.env'});
 
 export class Env {
     static readonly NODE_ENV = envString(process.env.NODE_ENV, 'development')
@@ -63,11 +63,11 @@ function envIntErr(value: string | undefined): number {
     }
     return parseInt(value, 10);
 }
-function envIntOptional(value: string | undefined): number | undefined {
-    return value === undefined ? value : parseInt(value, 10);
+function envIntOptional(value: string , defaultValue: number): number | undefined {
+    return value === undefined ? undefined : parseInt(value, 10);
 }
 
-function envFloat(value: string | undefined, defaultValue: number): number {
+function envFloat(value: string, defaultValue: number): number {
     return value === undefined ? defaultValue : parseFloat(value);
 }
 function envFloatErr(value: string | undefined): number {
@@ -77,7 +77,7 @@ function envFloatErr(value: string | undefined): number {
     return parseFloat(value);
 }
 function envFloatOptional(value: string | undefined): number | undefined {
-    return value === undefined ? value : parseFloat(value);
+    return value === undefined ? undefined : parseFloat(value);
 }
 
 function envLogLevel(value: string | undefined, defaultValue: LogLevel): LogLevel {

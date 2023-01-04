@@ -1,9 +1,11 @@
-import {createApplication} from 'graphql-modules';
+import {loadFiles} from '@graphql-tools/load-files';
+import {GqlAppBuilder} from '../utils/gqlAppBuilder';
+import {initModule} from '@/app/modules/init/initModule';
 
-export default createApplication({
+export const application = new GqlAppBuilder({
+    typeDefs: await loadFiles('./typeDefs/**/*.graphql'),
     modules: [
-    ],
-    providers: [
+        initModule
     ],
     middlewares: {
         'Query': {
