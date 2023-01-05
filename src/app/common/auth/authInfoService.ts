@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import {GraphQLError} from 'graphql';
 import jwt from 'jsonwebtoken';
-import {autoInjectable, inject, singleton} from 'tsyringe';
+import {autoInjectable, inject} from 'tsyringe';
 import {v4 as uuid4} from 'uuid';
 import {AuthService, IAccessToken} from '@/app/common/auth/authService';
 import {ROLE_USER, RoleService} from '@/app/common/auth/roleService';
