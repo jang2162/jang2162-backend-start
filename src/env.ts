@@ -1,20 +1,19 @@
 import dotenv from 'dotenv';
-import {LogLevel} from '@/utils/createLogger';
+import {LogLevel} from './utils/createLogger';
 
-dotenv.config();
+dotenv.config({path: '../.env'});
 
 export class Env {
     static readonly NODE_ENV = envString(process.env.NODE_ENV, 'development')
-    static readonly SERVER_HOST = envString(process.env.SERVER_HOST, 'localhost')
+    static readonly SERVER_ORIGIN = envString(process.env.SERVER_ORIGIN, 'http://localhost:4200')
     static readonly SERVER_PORT = envInt(process.env.SERVER_PORT, 4200)
-
-    static readonly CORS_ORIGIN = process.env.CORS_ORIGIN
-
-    static readonly JWT_ISSUER = process.env.JWT_ISSUER
+    static readonly CORS_ORIGIN = envString(process.env.CORS_ORIGIN, '*')
+    static readonly JWT_ISSUER = envString(process.env.JWT_ISSUER, 'APP')
     static readonly JWT_SECRET = envStringErr(process.env.JWT_SECRET)
     static readonly JWT_EXPIRED_IN = envInt(process.env.JWT_EXPIRED_IN, 600)
     static readonly JWT_REFRESH_EXPIRED_IN = envInt(process.env.JWT_REFRESH_EXPIRED_IN, 1209600)
-    static readonly JWT_COOKIE_DOMAIN = envStringErr(process.env.JWT_COOKIE_DOMAIN)
+    static readonly JWT_COOKIE_SECURE = envBool(process.env.JWT_COOKIE_SECURE, false)
+    static readonly JWT_COOKIE_DOMAIN = envString(process.env.JWT_COOKIE_DOMAIN, '')
     static readonly DB_HOST = envStringErr(process.env.DB_HOST)
     static readonly DB_PORT = envIntErr(process.env.DB_PORT)
     static readonly DB_NAME = envStringErr(process.env.DB_NAME)
@@ -65,10 +64,6 @@ function envIntErr(value: string | undefined): number {
     }
     return parseInt(value, 10);
 }
-function envIntOptional(value: string | undefined): number | undefined {
-    return value === undefined ? value : parseInt(value, 10);
-}
-
 function envFloat(value: string | undefined, defaultValue: number): number {
     return value === undefined ? defaultValue : parseFloat(value);
 }
@@ -77,9 +72,11 @@ function envFloatErr(value: string | undefined): number {
         throw new Error('Empty environment given.');
     }
     return parseFloat(value);
-}
-function envFloatOptional(value: string | undefined): number | undefined {
-    return value === undefined ? value : parseFloat(value);
+}function envBool(value: string | undefined, defaultValue?: boolean): boolean {
+    if (value && ['true', 'false'].indexOf(value.toLowerCase()) > 0) {
+        return value.toLowerCase() === 'true'
+    }
+    throw new Error('invalid boolean value environment given.');
 }
 
 function envLogLevel(value: string | undefined, defaultValue: LogLevel): LogLevel {

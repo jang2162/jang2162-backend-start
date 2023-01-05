@@ -1,21 +1,11 @@
-# Init
-type Query
-type Mutation
-
-# Scalars
-scalar Date
-scalar Datetime
-scalar Timestamp
-
-# Pagination
-type CusorPageInfo {
+type CursorPageInfo {
     totalCount: Int!
     next: String
     prev: String
     hasMore: Boolean!
 }
 
-input CusorPageInput {
+input CursorPageInput {
     size: Int
     cursor: String
 }
@@ -24,4 +14,3 @@ input OffsetPageInput {
     size: Int
     pageIndex: Int
 }
-

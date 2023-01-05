@@ -1,10 +1,10 @@
 import {GraphQLError, GraphQLScalarType, Kind} from 'graphql';
 
-export default new GraphQLScalarType({
+export const TimestampScalar = new GraphQLScalarType({
     name: 'Timestamp',
     description: 'Timestamp scalar type',
-    serialize: value => value.getTime(),
-    parseValue: value => new Date(value),
+    serialize: value => (value as any).getTime(),
+    parseValue: value => new Date((value as any)),
     parseLiteral: ast => {
         if (ast.kind !== Kind.INT) {
             throw new GraphQLError(

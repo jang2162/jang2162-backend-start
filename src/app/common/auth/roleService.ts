@@ -1,13 +1,12 @@
+import {singleton} from 'tsyringe';
 import {getTransaction} from '@/transaction';
-import {Injectable} from 'graphql-modules';
+import {selectRoles} from '@/app/common/auth/authQuery';
 
 export const ROLE_USER = 'ROLE_USER';
 export const ROLE_ADMIN = 'ROLE_ADMIN';
 
-@Injectable({
-    global: true
-})
-export class RoleProvider {
+@singleton()
+export class RoleService {
     private roleLoaded = false;
     private roleIdMapper: {[k:string]: number} = {};
 
@@ -33,10 +32,9 @@ export class RoleProvider {
         return this.roleIdMapper[role];
     }
 
-
     private async loadRole() {
         const {trx, release} = await getTransaction();
-        const res = await trx('role_info');
+        const res = await selectRoles(trx);
         this.roleIdMapper = {};
         for (const item of res) {
             this.roleIdMapper[item.name] = item.id;

@@ -6,31 +6,17 @@
         "*"
       ]
     },
-    "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "lib": [ "es6", "esnext", "es2015" ],
+    "rootDirs": ["src"],
     "outDir": "dist",
-    "removeComments": true,
-    "strict": true,
-    "inlineSourceMap": true,
-    "allowSyntheticDefaultImports": true,
+    "lib": ["es2020"],
+    "target": "es2020",
+    "module": "esnext",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "isolatedModules": true,
-    "resolveJsonModule": true,
-    "preserveConstEnums": true,
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": false
+    "types": ["node"]
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.spec.ts"]
 }

@@ -1,11 +1,11 @@
-import {parseDate} from '@/app/init/scalar/date.scalar';
 import {GraphQLError, GraphQLScalarType, Kind} from 'graphql';
+import {parseDate} from './dateScalar';
 
-export default new GraphQLScalarType({
+export const DatetimeScalar = new GraphQLScalarType({
     name: 'Datetime',
     description: 'Datetime scalar type',
-    serialize: value => parseDate(value).format('YYYY-MM-DD HH:mm:ss'),
-    parseValue: value => parseDate(value).toDate(),
+    serialize: value => parseDate(value as any).format('YYYY-MM-DD HH:mm:ss'),
+    parseValue: value => parseDate(value as any).toDate(),
     parseLiteral: ast => {
         if (ast.kind !== Kind.STRING) {
             throw new GraphQLError(

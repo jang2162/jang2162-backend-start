@@ -1,7 +1,7 @@
-import {ApolloError} from 'apollo-server-express';
 import {Response} from 'express';
-import {Injectable} from 'graphql-modules';
-import {sign, verify} from 'jsonwebtoken'
+import {GraphQLError} from 'graphql';
+import jwt from 'jsonwebtoken'
+import {singleton} from 'tsyringe';
 import { v4 as uuid4 } from 'uuid';
 import {
     insertAuthToken,
@@ -9,9 +9,11 @@ import {
     selectAuthData,
     selectRoleByUserId,
     selectSalt
-} from '@/app/common/auth/auth.query';
+} from '@/app/common/auth/authQuery';
+import {ROLE_USER} from '@/app/common/auth/roleService';
 import {Env} from '@/env';
 import {getTransaction} from '@/transaction';
+import {genGraphqlErrorCode} from '@/utils/apolloUtil';
 
 export interface IAccessToken {
     uid: number,
@@ -23,10 +25,8 @@ export interface IAccessToken {
     rfk: string,
 }
 
-@Injectable({
-    global: true
-})
-export class AuthProvider {
+@singleton()
+export class AuthService {
 
     constructor(){}
 
@@ -43,7 +43,7 @@ export class AuthProvider {
                 accessKey,
                 salt,
             });
-            accessToken = sign({
+            accessToken = jwt.sign({
                 uid: userId,
                 rol: roles,
                 rfk: refreshKey
@@ -59,9 +59,8 @@ export class AuthProvider {
             await release(true);
             throw e;
         }
-
         response.cookie('token', accessToken, {
-            secure: Env.NODE_ENV === 'production',
+            secure: Env.JWT_COOKIE_SECURE,
             domain: Env.JWT_COOKIE_DOMAIN,
             expires: new Date(Date.now() + Env.JWT_REFRESH_EXPIRED_IN * 1000),
             httpOnly: true,
@@ -78,26 +77,26 @@ export class AuthProvider {
             const salt = (await selectSalt(trx, {userId: accessTokenPayload.uid})).slat;
 
             if (!salt || !authData || authData.userId !== accessTokenPayload.uid) {
-                throw new ApolloError('', 'UNKNOWN_ERROR');
+                throw new GraphQLError('', genGraphqlErrorCode('genGraphqlErrorCode'));
             }
 
             if (authData.salt !== salt) {
-                throw new ApolloError('', 'SALT_VALUE_CHANGED');
+                throw new GraphQLError('', genGraphqlErrorCode('genGraphqlErrorCode'));
             }
 
             if (authData.refreshInterval > Env.JWT_REFRESH_EXPIRED_IN) {
-                throw new ApolloError('', 'REFRESH_TOO_LATE');
+                throw new GraphQLError('', genGraphqlErrorCode('genGraphqlErrorCode'));
             }
 
             if (authData.accessKey !== accessTokenPayload.jti) {
                 await invalidateToken(trx, {refreshKey: accessTokenPayload.rfk});
-                throw new ApolloError('', 'ACCESS_KEY_IS_OLD');
+                throw new GraphQLError('', genGraphqlErrorCode('genGraphqlErrorCode'));
             }
 
             const accessKey = uuid4().replace(/-/g, '');
             const roles = (await selectRoleByUserId(trx, {userId: accessTokenPayload.uid})).map(item => item.roleId);
             await renewAccessKey(trx, {accessKey, refreshKey: accessTokenPayload.rfk});
-            token = sign({
+            token = jwt.sign({
                 uid: accessTokenPayload.uid,
                 rol: roles,
                 rfk: accessTokenPayload.rfk,
@@ -114,7 +113,7 @@ export class AuthProvider {
             throw e;
         }
         response.cookie('token', token, {
-            secure: Env.NODE_ENV === 'production',
+            secure: Env.JWT_COOKIE_SECURE,
             domain: Env.JWT_COOKIE_DOMAIN,
             expires: new Date(Date.now() + Env.JWT_REFRESH_EXPIRED_IN * 1000),
             httpOnly: true,
@@ -127,10 +126,10 @@ export class AuthProvider {
         try {
             await invalidateToken(trx, {accessKey: accessTokenPayload.jti});
             response.clearCookie('token', {
-                secure: Env.NODE_ENV === 'production',
+                secure: Env.JWT_COOKIE_SECURE,
                 domain: Env.JWT_COOKIE_DOMAIN,
                 httpOnly: true,
-                sameSite: 'Lax'
+                sameSite: 'lax'
             });
             await release(true);
         } catch (e) {
@@ -142,14 +141,14 @@ export class AuthProvider {
         let payload = null;
         let err = 0; // 0 정상, 1: 만료, 2: 검증불가
         try {
-            payload = verify(token, Env.JWT_SECRET, {
+            payload = jwt.verify(token, Env.JWT_SECRET, {
                 issuer: Env.JWT_ISSUER,
                 subject: 'ACCESS_TOKEN',
             });
         } catch (e) {
             if ((e as Error).name === 'TokenExpiredError') {
                 try {
-                    payload = verify(token, Env.JWT_SECRET, {
+                    payload = jwt.verify(token, Env.JWT_SECRET, {
                         issuer: Env.JWT_ISSUER,
                         subject: 'ACCESS_TOKEN',
                         ignoreExpiration: true

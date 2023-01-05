@@ -1,11 +1,11 @@
+import dayjs from 'dayjs';
 import {GraphQLError, GraphQLScalarType, Kind} from 'graphql';
-import moment from 'moment';
 
-export function parseDate(value: string | moment.Moment | Date) {
+export function parseDate(value: string | dayjs.Dayjs | Date) {
     if (value instanceof Date) {
-        value = moment(value);
+        value = dayjs(value);
     } else if (typeof value === 'string') {
-        value = moment(value, [
+        value = dayjs(value, [
             'YYYY-MM-DD',
             'YYYYMMDD',
             'YYYY-MM-DDTHH:mm:ss.SSS',
@@ -23,11 +23,11 @@ export function parseDate(value: string | moment.Moment | Date) {
     return value
 }
 
-export default new GraphQLScalarType({
+export const DateScalar = new GraphQLScalarType({
     name: 'Date',
     description: 'Date scalar type',
-    serialize: value => parseDate(value).format('YYYY-MM-DD'),
-    parseValue: value => parseDate(value).set(({h:0, m:0, s:0, ms:0})).toDate(),
+    serialize: (value) => parseDate(value as any).format('YYYY-MM-DD'),
+    parseValue: (value) => parseDate(value as any).startOf('date').toDate(),
     parseLiteral: ast => {
         if (ast.kind !== Kind.STRING) {
             throw new GraphQLError(
@@ -36,7 +36,7 @@ export default new GraphQLScalarType({
         }
 
         try {
-            return parseDate(ast.value).set(({h:0, m:0, s:0, ms:0})).toDate();
+            return parseDate(ast.value).startOf('date').toDate();
         } catch (e) {
             throw new GraphQLError(
                 `Value is not a valid Date: ${ast.value}`,
