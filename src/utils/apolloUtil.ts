@@ -1,12 +1,8 @@
 import {Request, Response} from 'express';
-// import {APOLLO_LOGGER, ApolloLogger} from '@/app/apollo-logger.provider';
-// import {DatabaseConnectionProvider} from '../app/database/database-connection-provider';
-import DependencyContainer from 'tsyringe/dist/typings/types/dependency-container';
 import {isEmpty} from './tools';
-import {GqlAppBuilderMiddleware, REQUEST} from '@/utils/gqlAppBuilder';
 import {APOLLO_LOGGER, ApolloLogger} from '@/app/apollo-logger.provider';
 import {DatabaseConnectionService} from '@/app/common/database/databaseConnectionService';
-import {error} from 'winston';
+import {GqlAppBuilderMiddleware, REQUEST} from '@/utils/gqlAppBuilder';
 export interface ApolloContext{
     req: Request;
     res: Response;
