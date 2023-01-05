@@ -17,6 +17,7 @@ export type Scalars = {
   Date: Date;
   Datetime: any;
   Timestamp: Date;
+  Void: any;
 };
 
 export type CursorPageInfo = {
@@ -34,8 +35,9 @@ export type CursorPageInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  _?: Maybe<Scalars['String']>;
   authentication?: Maybe<Scalars['String']>;
+  insertTempPost?: Maybe<Scalars['Void']>;
+  insertTempUser?: Maybe<Scalars['Void']>;
   invalidate?: Maybe<Scalars['String']>;
   refreshToken?: Maybe<Scalars['String']>;
 };
@@ -44,6 +46,20 @@ export type Mutation = {
 export type MutationAuthenticationArgs = {
   id: Scalars['String'];
   pw: Scalars['String'];
+};
+
+
+export type MutationInsertTempPostArgs = {
+  content: Scalars['String'];
+  regDate: Scalars['Date'];
+  title: Scalars['String'];
+  writerId: Scalars['Int'];
+};
+
+
+export type MutationInsertTempUserArgs = {
+  birth: Scalars['Date'];
+  name: Scalars['String'];
 };
 
 export type OffsetPageInput = {
@@ -56,6 +72,40 @@ export type Query = {
   nowDate?: Maybe<Scalars['Date']>;
   nowDatetime?: Maybe<Scalars['Datetime']>;
   nowTimestamp?: Maybe<Scalars['Timestamp']>;
+  selectPostById: TempPost;
+  selectPosts: Array<TempPost>;
+  selectUserById: TempUser;
+  selectUsers: Array<TempUser>;
+};
+
+
+export type QuerySelectPostByIdArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QuerySelectUserByIdArgs = {
+  id: Scalars['Int'];
+};
+
+export type TempPost = {
+  __typename?: 'TempPost';
+  content: Scalars['String'];
+  id: Scalars['ID'];
+  postId: Scalars['Int'];
+  regDate: Scalars['Date'];
+  title: Scalars['String'];
+  writer: TempUser;
+  writerId: Scalars['Int'];
+};
+
+export type TempUser = {
+  __typename?: 'TempUser';
+  birth: Scalars['Date'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  posts: Array<TempPost>;
+  userId: Scalars['Int'];
 };
 
 export type AccessToken = {
@@ -130,12 +180,16 @@ export type ResolversTypes = {
   CursorPageInput: CursorPageInput;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Datetime: ResolverTypeWrapper<Scalars['Datetime']>;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Mutation: ResolverTypeWrapper<{}>;
   OffsetPageInput: OffsetPageInput;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  TempPost: ResolverTypeWrapper<TempPost>;
+  TempUser: ResolverTypeWrapper<TempUser>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
+  Void: ResolverTypeWrapper<Scalars['Void']>;
   accessToken: ResolverTypeWrapper<AccessToken>;
 };
 
@@ -146,12 +200,16 @@ export type ResolversParentTypes = {
   CursorPageInput: CursorPageInput;
   Date: Scalars['Date'];
   Datetime: Scalars['Datetime'];
+  ID: Scalars['ID'];
   Int: Scalars['Int'];
   Mutation: {};
   OffsetPageInput: OffsetPageInput;
   Query: {};
   String: Scalars['String'];
+  TempPost: TempPost;
+  TempUser: TempUser;
   Timestamp: Scalars['Timestamp'];
+  Void: Scalars['Void'];
   accessToken: AccessToken;
 };
 
@@ -172,8 +230,9 @@ export interface DatetimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  _?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   authentication?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationAuthenticationArgs, 'id' | 'pw'>>;
+  insertTempPost?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInsertTempPostArgs, 'content' | 'regDate' | 'title' | 'writerId'>>;
+  insertTempUser?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInsertTempUserArgs, 'birth' | 'name'>>;
   invalidate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
@@ -182,10 +241,38 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   nowDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   nowDatetime?: Resolver<Maybe<ResolversTypes['Datetime']>, ParentType, ContextType>;
   nowTimestamp?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
+  selectPostById?: Resolver<ResolversTypes['TempPost'], ParentType, ContextType, RequireFields<QuerySelectPostByIdArgs, 'id'>>;
+  selectPosts?: Resolver<Array<ResolversTypes['TempPost']>, ParentType, ContextType>;
+  selectUserById?: Resolver<ResolversTypes['TempUser'], ParentType, ContextType, RequireFields<QuerySelectUserByIdArgs, 'id'>>;
+  selectUsers?: Resolver<Array<ResolversTypes['TempUser']>, ParentType, ContextType>;
+};
+
+export type TempPostResolvers<ContextType = any, ParentType extends ResolversParentTypes['TempPost'] = ResolversParentTypes['TempPost']> = {
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  postId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  regDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  writer?: Resolver<ResolversTypes['TempUser'], ParentType, ContextType>;
+  writerId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TempUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['TempUser'] = ResolversParentTypes['TempUser']> = {
+  birth?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  posts?: Resolver<Array<ResolversTypes['TempPost']>, ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
   name: 'Timestamp';
+}
+
+export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Void'], any> {
+  name: 'Void';
 }
 
 export type AccessTokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['accessToken'] = ResolversParentTypes['accessToken']> = {
@@ -199,7 +286,10 @@ export type Resolvers<ContextType = any> = {
   Datetime?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  TempPost?: TempPostResolvers<ContextType>;
+  TempUser?: TempUserResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
+  Void?: GraphQLScalarType;
   accessToken?: AccessTokenResolvers<ContextType>;
 };
 

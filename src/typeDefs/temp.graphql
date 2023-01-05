@@ -1,0 +1,38 @@
+type TempUser {
+    id: ID!
+    userId: Int!
+    name: String!
+    birth: Date!
+    posts: [TempPost!]!
+}
+
+type TempPost {
+    id: ID!
+    postId: Int!
+    title: String!
+    content: String!
+    regDate: Date!
+    writerId: Int!
+    writer: TempUser!
+}
+
+extend type Query {
+    selectPosts: [TempPost!]!
+    selectUsers: [TempUser!]!
+    selectPostById(id: Int!): TempPost!
+    selectUserById(id: Int!): TempUser!
+}
+
+extend type Mutation {
+    insertTempUser(
+        name: String!
+        birth: Date!
+    ): Void
+
+    insertTempPost(
+        title: String!
+        content: String!
+        regDate: Date!
+        writerId: Int!
+    ): Void
+}
