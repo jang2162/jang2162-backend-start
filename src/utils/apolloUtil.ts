@@ -8,7 +8,6 @@ export interface ApolloContext{
     res: Response;
 }
 
-
 export const logMiddleware: GqlAppBuilderMiddleware = (injector, parent, args, info) => {
     const logger = injector.resolve<ApolloLogger>(APOLLO_LOGGER);
     const req = injector.resolve<Request>(REQUEST);
