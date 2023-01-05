@@ -62,7 +62,7 @@ export class AuthInfoService {
             httpOnly: true,
             sameSite: 'lax'
         });
-        return Env.NODE_ENV === 'development' ? accessToken : null
+        return null
     }
 
     async authentication(userId: number, salt: string) {
