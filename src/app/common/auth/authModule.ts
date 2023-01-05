@@ -1,7 +1,5 @@
-import {GqlAppBuilderModule, RESPONSE} from '@/utils/gqlAppBuilder';
-import {AuthService} from '@/app/common/auth/authService';
-import {Response} from 'express';
 import {AuthInfoService} from '@/app/common/auth/authInfoService';
+import {GqlAppBuilderModule} from '@/utils/gqlAppBuilder';
 
 export const authModule: GqlAppBuilderModule = {
     resolvers: {
