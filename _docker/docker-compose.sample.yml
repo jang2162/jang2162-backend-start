@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  postgres:
+    container_name: backend-start-postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: backend-start
+      POSTGRES_PASSWORD: backend-start
+      PGDATA: /data/postgres
+    ports:
+      - "5432:5432"

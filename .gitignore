@@ -173,3 +173,4 @@ typings/
 
 /dist
 /environments/*.json
+_docker/docker-compose.yml
