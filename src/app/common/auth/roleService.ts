@@ -1,5 +1,6 @@
 import {singleton} from 'tsyringe';
 import {getTransaction} from '@/transaction';
+import {selectRoles} from '@/app/common/auth/authQuery';
 
 export const ROLE_USER = 'ROLE_USER';
 export const ROLE_ADMIN = 'ROLE_ADMIN';
@@ -33,7 +34,7 @@ export class RoleService {
 
     private async loadRole() {
         const {trx, release} = await getTransaction();
-        const res = await trx('role_info');
+        const res = await selectRoles(trx);
         this.roleIdMapper = {};
         for (const item of res) {
             this.roleIdMapper[item.name] = item.id;

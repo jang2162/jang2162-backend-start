@@ -2,6 +2,10 @@ import {knexClient} from '@/transaction';
 import { queryBuilder, queryBuilderFirst} from '@/utils/queryUtil';
 
 
+export const selectRoles = queryBuilder((query) =>
+    query.from('auth_token')
+);
+
 export const insertAuthToken = queryBuilder<
     {
         userId: number,

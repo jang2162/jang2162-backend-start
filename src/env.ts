@@ -73,7 +73,7 @@ function envFloatErr(value: string | undefined): number {
     }
     return parseFloat(value);
 }function envBool(value: string | undefined, defaultValue?: boolean): boolean {
-    if (value && (value.toLowerCase() in ['true', 'false'])) {
+    if (value && ['true', 'false'].indexOf(value.toLowerCase()) > 0) {
         return value.toLowerCase() === 'true'
     }
     throw new Error('invalid boolean value environment given.');

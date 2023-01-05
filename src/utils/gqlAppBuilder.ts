@@ -3,9 +3,10 @@ import {DocumentNode, GraphQLResolveInfo, GraphQLScalarType} from 'graphql';
 import {container, DependencyContainer} from 'tsyringe';
 import {ApolloContext} from './apolloUtil';
 import {Resolvers} from '@/generated-models';
+import {error} from 'winston';
 
-export type  GqlAppBuilderMiddleware =  (injector: DependencyContainer, parent: any, args: any, info: GraphQLResolveInfo) => Promise<any>
-
+export type  GqlAppBuilderMiddleware =  (injector: DependencyContainer, parent: any, args: any, info: GraphQLResolveInfo) => void | null | undefined | Promise<void | null | undefined | GqlAppBuilderMiddlewareCallback>
+export type  GqlAppBuilderMiddlewareCallback = (resolveData: any, resolveError: any) => void | null | undefined | Promise<any>
 export const REQUEST = Symbol('REQUEST');
 export const RESPONSE = Symbol('RESPONSE');
 
@@ -58,12 +59,31 @@ export class GqlAppBuilder{
 
                         resolvers[typeName][fieldName] = async (parent: any, args: any, context: ApolloContext, info: GraphQLResolveInfo) => {
                             const injector = container.createChildContainer();
+                            const callbacks: GqlAppBuilderMiddlewareCallback[] = []
                             container.register<Request>(REQUEST, {useValue: context.req});
                             container.register<Response>(RESPONSE, {useValue: context.res});
-                            for (const middleware of middlewares) {
-                                await middleware(injector, parent, args, info)
+                            let resolveData: any;
+                            let resolveError: any;
+                            try {
+                                for (const middleware of middlewares) {
+                                    const cb = await middleware(injector, parent, args, info)
+                                    if (cb) {
+                                        callbacks.push(cb)
+                                    }
+                                }
+                                resolveData = module.resolvers[typeName][fieldName](injector, parent, args, info);
+                            } catch (error) {
+                                resolveError = error
                             }
-                            return module.resolvers[typeName][fieldName](injector, parent, args, info)
+
+                            callbacks.reverse()
+                            for (const cb of callbacks) {
+                                await cb(resolveData, resolveError)
+                            }
+                            if (resolveError) {
+                                throw resolveError;
+                            }
+                            return resolveData;
                         }
                     }
                 }

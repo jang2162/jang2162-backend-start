@@ -7,10 +7,10 @@ import {ApolloServerPluginLandingPageDisabled} from '@apollo/server/plugin/disab
 import {
     ApolloServerPluginLandingPageLocalDefault
 } from '@apollo/server/plugin/landingPage/default';
+import {application} from 'application';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import {application} from './app/application';
 import {Env} from './env';
 import {ApolloContext} from './utils/apolloUtil';
 import {createLogger, loggerEnvUtil} from './utils/createLogger';

@@ -16,10 +16,6 @@ export class DatabaseConnectionService {
         }
     }
 
-    setError(error: boolean) {
-        this.err = error;
-    }
-
     async getConn() {
         if (!this.transactionInfo) {
             this.transactionInfo = await getTransaction();

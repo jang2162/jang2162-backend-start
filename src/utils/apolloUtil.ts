@@ -3,36 +3,36 @@ import {Request, Response} from 'express';
 // import {DatabaseConnectionProvider} from '../app/database/database-connection-provider';
 import DependencyContainer from 'tsyringe/dist/typings/types/dependency-container';
 import {isEmpty} from './tools';
+import {GqlAppBuilderMiddleware, REQUEST} from '@/utils/gqlAppBuilder';
+import {APOLLO_LOGGER, ApolloLogger} from '@/app/apollo-logger.provider';
+import {DatabaseConnectionService} from '@/app/common/database/databaseConnectionService';
+import {error} from 'winston';
 export interface ApolloContext{
     req: Request;
     res: Response;
 }
 
 
-// export const logMiddleware: Middleware = async ({context: {injector}, info}, next) => {
-//     const logger = injector.get<ApolloLogger>(APOLLO_LOGGER);
-//     const context = injector.get<ApolloContext>(CONTEXT);
-//     const type = info.parentType.name;
-//     if (type === 'Query' || type === 'Mutation' || type === 'Subscription') {
-//         logger.info(`${type}: '${info.fieldName}' called.`, {
-//             fieldName: info.fieldName,
-//             type,
-//             query: context.req.body?.query,
-//             params: isEmpty(info.variableValues) ? undefined : info.variableValues
-//         });
-//     }
-//     return next();
-// }
+export const logMiddleware: GqlAppBuilderMiddleware = (injector, parent, args, info) => {
+    const logger = injector.resolve<ApolloLogger>(APOLLO_LOGGER);
+    const req = injector.resolve<Request>(REQUEST);
+    const type = info.parentType.name;
+    logger.info(`${type}: '${info.fieldName}' called.`, {
+        fieldName: info.fieldName,
+        type,
+        query: req.body?.query,
+        params: isEmpty(info.variableValues) ? undefined : info.variableValues
+    });
+}
 
-// export const dbMiddleware: Middleware = async ({context: {injector}}, next) => {
-//     const databaseProvider = injector.get<DatabaseConnectionProvider>(DatabaseConnectionProvider);
-//     try {
-//         return await next();
-//     } catch (e) {
-//         databaseProvider.setError(true);
-//         throw e;
-//     }
-// }
+export const dbMiddleware: GqlAppBuilderMiddleware = async (injector) => {
+    return async (resolveData, resolveError) => {
+        if (resolveError) {
+            const databaseConnectionService = injector.resolve<DatabaseConnectionService>(DatabaseConnectionService);
+            await databaseConnectionService.release();
+        }
+    }
+}
 
 export const orderByIdArray = (arr: any[], idArr: ReadonlyArray<string|number>, getIdFn: (item: any) => string|number = item => item.id) => {
     const map: {[k:string]: any} = {};
@@ -40,4 +40,4 @@ export const orderByIdArray = (arr: any[], idArr: ReadonlyArray<string|number>, 
     return idArr.map(id => map[id]);
 };
 
-export const genGraphqlErrorCode = (code: string) => ({extensions: {code}});
+export const genGraphqlErrorCode = (code: string) => ({extensions: {code}})
