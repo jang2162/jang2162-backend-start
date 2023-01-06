@@ -75,7 +75,12 @@ export const knexClient = knex({
     }
 });
 
-export async function getTransaction() {
+export interface TransactionInfo{
+    trx: Knex.Transaction,
+    release: (err?: boolean) => void
+}
+
+export async function getTransaction(): Promise<TransactionInfo> {
     const trx = await knexClient.transaction();
     const queryList: Array<{text:string, duration:number, id: string, start: number, params?: any[]}> = [];
     let timeout: Timeout;

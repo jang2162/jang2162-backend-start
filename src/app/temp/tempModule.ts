@@ -1,5 +1,5 @@
-import {TempService} from '@/app/temp/TempService';
-import {GqlAppBuilderModule} from '@/utils/gqlAppBuilder';
+import {TempService} from '@/app/temp/tempService';
+import {GqlAppBuilderModule, REQUEST} from '@/utils/gqlAppBuilder';
 
 export const tempModule: GqlAppBuilderModule = {
     resolvers: {
@@ -20,7 +20,7 @@ export const tempModule: GqlAppBuilderModule = {
         },
         TempUser: {
             id: (injector, parent) => parent.userId.toString(),
-            posts:  (injector, parent) => injector.resolve<TempService>(TempService).selectUserPosts(parent.userId)
+            // posts:  (injector, parent) => injector.resolve<TempService>(TempService).selectUserPosts(parent.userId)
 
         }
     }

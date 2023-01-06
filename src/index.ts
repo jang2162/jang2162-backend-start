@@ -9,11 +9,14 @@ import {
 } from '@apollo/server/plugin/landingPage/default';
 import {application} from 'application';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express from 'express';
+import express, {Request, Response} from 'express';
+import {container, DependencyContainer} from 'tsyringe';
+import {v4 as uuid4} from 'uuid';
 import {Env} from './env';
-import {ApolloContext} from './utils/apolloUtil';
 import {createLogger, loggerEnvUtil} from './utils/createLogger';
+import {GqlAppBuilderExpressMiddleware, InjectorWrapper, REQ_KEY, REQUEST, RESPONSE} from '@/utils/gqlAppBuilder';
 
 
 const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', {
@@ -28,7 +31,7 @@ const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', {
 });
 const app = express();
 const httpServer = createServer(app);
-const server = new ApolloServer<ApolloContext>({
+const server = new ApolloServer({
     ...(application.build()),
     formatError: error => {
         logger.error(error.message, {
@@ -43,6 +46,9 @@ const server = new ApolloServer<ApolloContext>({
             : ApolloServerPluginLandingPageLocalDefault({
                 includeCookies: true
             }),
+        {
+
+        }
     ],
 });
 (async ()=>{
@@ -50,9 +56,11 @@ const server = new ApolloServer<ApolloContext>({
     app.use(
         '/graphql',
         cors<cors.CorsRequest>(),
+        cookieParser(),
         bodyParser.json(),
+        GqlAppBuilderExpressMiddleware,
         expressMiddleware(server, {
-            context: async ctx => ctx,
+            context: ctx => (ctx.req as any).injector,
         }),
     );
     const origin = Env.SERVER_ORIGIN;
