@@ -1,6 +1,7 @@
+import {ApolloServerPlugin} from '@apollo/server/src/externalTypes/plugins';
 import {Request, Response, RequestHandler} from 'express';
 import {DocumentNode, GraphQLResolveInfo, GraphQLScalarType} from 'graphql';
-import {container, DependencyContainer, inject, InjectionToken, instancePerContainerCachingFactory} from 'tsyringe';
+import {container, DependencyContainer, InjectionToken} from 'tsyringe';
 import {v4 as uuid4} from 'uuid';
 import {DatabaseConnectionService} from '@/app/common/database/databaseConnectionService';
 import {Env} from '@/env';
@@ -8,22 +9,22 @@ import {Resolvers} from '@/generated-models';
 import {createLogger, loggerEnvUtil} from '@/utils/createLogger';
 import {isEmpty} from '@/utils/tools';
 
+
 export class InjectorWrapper {
-   constructor(private injector: DependencyContainer, private onDestroyCallback: (p: OnDestroy[]) => void) {}
+   constructor(private injector: DependencyContainer) {}
    resolve<T>(injectionToken: InjectionToken) {
-       this.injector.afterResolution(injectionToken, (token, result) => {
-           if ((token as any).prototype instanceof Object && 'onDestroy' in (token as any).prototype) {
-               this.onDestroyCallback(Array.isArray(result) ? result : [result])
-           }
-       }, {frequency: 'Once'})
+
        return this.injector.resolve<T>(injectionToken)
    }
 }
-
+export type GqlAppBuilderContext = {
+    injector: DependencyContainer
+}
 export type  GqlAppBuilderMiddleware =  (injector: InjectorWrapper, parent: any, args: any, info: GraphQLResolveInfo) => void | null | undefined | Promise<void | null | undefined | GqlAppBuilderMiddlewareCallback>
 export type  GqlAppBuilderMiddlewareCallback = (resolveData: any, resolveError: any) => void | null | undefined | Promise<any>
 export const REQUEST = Symbol('REQUEST');
 export const RESPONSE = Symbol('RESPONSE');
+export const DESTROYABLE = Symbol('DESTROYABLE');
 export const REQ_KEY = Symbol('REQ_KEY');
 
 export interface GqlAppBuilderModule {
@@ -83,10 +84,11 @@ export class GqlAppBuilder{
                             throw Error('gqlAppBuilder build error. (already exist resolver field)');
                         }
 
-                        resolvers[typeName][fieldName] = async (parent: any, args: any, injector: InjectorWrapper, info: GraphQLResolveInfo) => {
+                        resolvers[typeName][fieldName] = async (parent: any, args: any, ctx: GqlAppBuilderContext, info: GraphQLResolveInfo) => {
                             const callbacks: GqlAppBuilderMiddlewareCallback[] = []
                             let resolveData: any;
                             let resolveError: any;
+                            const injector = new InjectorWrapper(ctx.injector)
                             try {
                                 for (const middleware of middlewares) {
                                     const cb = await middleware(injector, parent, args, info)
@@ -151,6 +153,15 @@ export const logMiddleware: GqlAppBuilderMiddleware = (injector, parent, args, i
     });
 }
 
+export const dbMiddleware: GqlAppBuilderMiddleware = async (injector) => {
+    return async (resolveData, resolveError) => {
+        if(resolveError) {
+            const dbConnectionService = injector.resolve<DatabaseConnectionService>(DatabaseConnectionService)
+            dbConnectionService.errorOccurred()
+        }
+    }
+}
+
 export const orderByIdArray = (arr: any[], idArr: ReadonlyArray<string|number>, getIdFn: (item: any) => string|number = item => item.id) => {
     const map: {[k:string]: any} = {};
     arr.forEach(item => map[getIdFn(item)] = item);
@@ -159,38 +170,39 @@ export const orderByIdArray = (arr: any[], idArr: ReadonlyArray<string|number>, 
 
 export const genGraphqlErrorCode = (code: string) => ({extensions: {code}})
 
-
-export const GqlAppBuilderExpressMiddleware: RequestHandler = (req, res, next) => {
-    if (req.method.toLowerCase() === 'post' && req.body?.operationName !== 'IntrospectionQuery') {
-        const reqKey = uuid4().replace(/-/g, '');
-        const injector = container.createChildContainer()
-        injector.register<Request>(REQUEST, {useValue: req})
-            .register<Response>(RESPONSE, {useValue: res})
-            .register<string>(REQ_KEY, {useValue: reqKey})
+export const gqlAppBuilderPlugin: ApolloServerPlugin<GqlAppBuilderContext> = {
+    async requestDidStart(requestContext) {
+        const {injector} = requestContext.contextValue;
+        const req = injector.resolve<Request>(REQUEST)
+        const reqKey = injector.resolve<string>(REQ_KEY)
+        if (Env.NODE_ENV === 'development' && req.body?.operationName === 'IntrospectionQuery') {
+            return;
+        }
         gqlQueryLogger.info('GQL called.', {
             reqKey,
             query: req.body?.query,
             params: req.body?.variables
         })
 
-        const destroyableArr:OnDestroy[] = []
-        const injectorWrapper = new InjectorWrapper(injector, arr => {
-            for (const destroyable of arr) {
-                if (destroyableArr.indexOf(destroyable) < 0) {
-                    destroyableArr.push(destroyable)
-                }
-            }
-        });
-        const databaseConnectionService = injectorWrapper.resolve<DatabaseConnectionService>(DatabaseConnectionService);
-        injectorWrapper.resolve<DatabaseConnectionService>(DatabaseConnectionService);
-        injectorWrapper.resolve<DatabaseConnectionService>(DatabaseConnectionService);
-        injectorWrapper.resolve<DatabaseConnectionService>(DatabaseConnectionService);
-        (req as any).injector = injectorWrapper
-        next()
+        return  {
+            async willSendResponse(r){
+                injector.dispose()
+            },
+
+        }
+    },
+}
+export const gqlAppBuilderContextMapper = async ({req, res}: {
+    req: Request
+    res: Response
+}): Promise<GqlAppBuilderContext> => {
+    const reqKey = uuid4().replace(/-/g, '');
+    const injector = container.createChildContainer()
+    injector.register<Request>(REQUEST, {useValue: req})
+        .register<Response>(RESPONSE, {useValue: res})
+        .register<string>(REQ_KEY, {useValue: reqKey})
+    return {
+        injector
     }
-    next()
 }
 
-export interface OnDestroy {
-    onDestroy();
-}

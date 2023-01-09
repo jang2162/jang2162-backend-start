@@ -51,7 +51,6 @@ export type MutationAuthenticationArgs = {
 
 export type MutationInsertTempPostArgs = {
   content: Scalars['String'];
-  regDate: Scalars['Date'];
   title: Scalars['String'];
   writerId: Scalars['Int'];
 };
@@ -231,7 +230,7 @@ export interface DatetimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   authentication?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationAuthenticationArgs, 'id' | 'pw'>>;
-  insertTempPost?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInsertTempPostArgs, 'content' | 'regDate' | 'title' | 'writerId'>>;
+  insertTempPost?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInsertTempPostArgs, 'content' | 'title' | 'writerId'>>;
   insertTempUser?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInsertTempUserArgs, 'birth' | 'name'>>;
   invalidate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

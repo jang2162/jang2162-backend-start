@@ -32,7 +32,6 @@ extend type Mutation {
     insertTempPost(
         title: String!
         content: String!
-        regDate: Date!
         writerId: Int!
     ): Void
 }

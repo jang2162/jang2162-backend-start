@@ -1,6 +1,6 @@
 import {Base64} from 'js-base64';
 import {Knex} from 'knex';
-import {CursorPageInput, OffsetPageInput} from '../generated-models';
+import {CursorPageInput, OffsetPageInput} from '@/generated-models';
 
 
 export enum SortType {

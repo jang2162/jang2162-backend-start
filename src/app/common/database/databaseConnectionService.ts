@@ -1,25 +1,13 @@
-import {Request} from 'express';
 import {Knex} from 'knex';
-import {inject, Lifecycle, scoped} from 'tsyringe';
+import {Disposable, Lifecycle, scoped} from 'tsyringe';
 import {getTransaction} from '@/transaction';
-import {OnDestroy, REQUEST} from '@/utils/gqlAppBuilder';
 
 
 @scoped(Lifecycle.ContainerScoped)
-export class DatabaseConnectionService implements OnDestroy {
+export class DatabaseConnectionService implements Disposable {
     private transactionInfo?: { trx: Knex.Transaction, release: (err: boolean) => void};
     private err = false;
-    constructor() {
-        console.log(1234234234);
-    }
-
-    async onDestroy() {
-        if (this.transactionInfo) {
-            await this.transactionInfo.release(this.err);
-        }
-    }
-
-
+    constructor() {}
 
     async release(){
         if (this.transactionInfo) {
@@ -27,8 +15,8 @@ export class DatabaseConnectionService implements OnDestroy {
         }
     }
 
-    setError(error: boolean) {
-        this.err = error;
+    errorOccurred() {
+        this.err = true;
     }
 
     async getConn() {
@@ -37,8 +25,9 @@ export class DatabaseConnectionService implements OnDestroy {
         }
         return this.transactionInfo.trx;
     }
-    isTransactionExist() {
-        return this.transactionInfo.trx;
+
+    async dispose() {
+        await this.release()
     }
 }
 

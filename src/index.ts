@@ -11,12 +11,10 @@ import {application} from 'application';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express, {Request, Response} from 'express';
-import {container, DependencyContainer} from 'tsyringe';
-import {v4 as uuid4} from 'uuid';
+import express from 'express';
 import {Env} from './env';
 import {createLogger, loggerEnvUtil} from './utils/createLogger';
-import {GqlAppBuilderExpressMiddleware, InjectorWrapper, REQ_KEY, REQUEST, RESPONSE} from '@/utils/gqlAppBuilder';
+import {GqlAppBuilderContext, gqlAppBuilderPlugin, gqlAppBuilderContextMapper} from '@/utils/gqlAppBuilder';
 
 
 const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', {
@@ -46,9 +44,7 @@ const server = new ApolloServer({
             : ApolloServerPluginLandingPageLocalDefault({
                 includeCookies: true
             }),
-        {
-
-        }
+        gqlAppBuilderPlugin
     ],
 });
 (async ()=>{
@@ -58,9 +54,8 @@ const server = new ApolloServer({
         cors<cors.CorsRequest>(),
         cookieParser(),
         bodyParser.json(),
-        GqlAppBuilderExpressMiddleware,
-        expressMiddleware(server, {
-            context: ctx => (ctx.req as any).injector,
+        expressMiddleware<GqlAppBuilderContext>(server, {
+            context: gqlAppBuilderContextMapper,
         }),
     );
     const origin = Env.SERVER_ORIGIN;

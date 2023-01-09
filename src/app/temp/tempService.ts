@@ -15,20 +15,19 @@ const postDataList: TempPost[] = []
 const userDataList: TempUser[] = []
 
 @injectable()
+@scoped(Lifecycle.ContainerScoped)
 export class TempService {
-
     private postDataLoader = new DataLoader<number, TempPost>(async keys => keys.map(key => postDataList.find(item => item.postId === key)))
     private userDataLoader = new DataLoader<number, TempUser>(async keys => keys.map(key => userDataList.find(item => item.userId === key)))
     private userPostsDataLoader = new DataLoader<number, TempPost[]>(async keys => {
-        const posts = postDataList.filter(item => keys.indexOf(item.writerId) > 0)
-        return keys.map(key => [])
+        const posts = postDataList.filter(item => keys.indexOf(item.writerId) >= 0)
+        return keys.map(key => posts.filter(item => item.writerId === key))
     })
 
     constructor(
-        private db: DatabaseConnectionService,
+        @inject(DatabaseConnectionService) private db: DatabaseConnectionService,
         @inject(AuthInfoService) private authInfoService: AuthInfoService,
     ) {}
-
 
     selectUsers() {
         return userDataList;
@@ -47,7 +46,7 @@ export class TempService {
     }
 
     insertTempUser({name, birth}: MutationInsertTempUserArgs) {
-        throw new Error()
+        // throw new Error()
         userDataList.push({
             id: '', // for Test
             posts:[], // for Test
@@ -58,7 +57,7 @@ export class TempService {
         })
     }
 
-    insertTempPost({title, writerId, content, regDate}: MutationInsertTempPostArgs) {
+    insertTempPost({title, writerId, content}: MutationInsertTempPostArgs) {
         postDataList.push({
             id: '', // for Test
             writer: {id:'', userId: 0, posts: [], birth: new Date(), name: ''}, // for Test
@@ -66,13 +65,12 @@ export class TempService {
             postId: userIdInc++,
             title,
             content,
-            regDate,
+            regDate: new Date(),
             writerId,
         })
     }
 
     selectUserPosts(userId: number) {
-
-
+        return this.userPostsDataLoader.load(userId)
     }
 }
