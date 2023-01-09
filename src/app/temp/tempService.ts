@@ -11,25 +11,28 @@ import {
 } from '@/generated-models';
 
 
-const postIdInc = 1;
+let postIdInc = 1;
 let userIdInc = 1;
 const postDataList: TempPost[] = []
 const userDataList: TempUser[] = []
 
 @autoInjectable()
 export class TempService {
-
-    private postDataLoader = new DataLoader<number, TempPost>(async keys => postDataList.filter(item => keys.indexOf(item.postId) > 0))
-    private userDataLoader = new DataLoader<number, TempUser>(async keys => userDataList.filter(item => keys.indexOf(item.userId) > 0))
+    private postDataLoader = new DataLoader<number, TempPost>(async keys => keys.map(key => postDataList.find(item => key === item.postId)))
+    private userDataLoader = new DataLoader<number, TempUser>(async keys => keys.map(key => userDataList.find(item => key === item.userId)))
     private userPostsDataLoader = new DataLoader<number, TempPost[]>(async keys => {
+        console.log(keys);
         const posts = postDataList.filter(item => keys.indexOf(item.writerId) > 0)
-        return keys.map(key => [])
+        return keys.map(key => posts.filter(item => key === item.postId))
+    }, {
+        batchScheduleFn: callback => setTimeout(callback, 1000)
     })
 
     constructor(
         private db: DatabaseConnectionService,
         @inject(AuthInfoService) private authInfoService: AuthInfoService
-    ) {}
+    ) {
+    }
 
 
     selectUsers() {
@@ -64,7 +67,7 @@ export class TempService {
             id: '', // for Test
             writer: {id:'', userId: 0, posts: [], birth: new Date(), name: ''}, // for Test
 
-            postId: userIdInc++,
+            postId: postIdInc++,
             title,
             content,
             regDate,
@@ -73,7 +76,6 @@ export class TempService {
     }
 
     selectUserPosts(userId: number) {
-
-
+        return this.userPostsDataLoader.load(userId)
     }
 }

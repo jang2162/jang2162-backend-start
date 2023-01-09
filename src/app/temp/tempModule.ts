@@ -1,4 +1,4 @@
-import {TempService} from '@/app/temp/TempService';
+import {TempService} from '@/app/temp/tempService';
 import {GqlAppBuilderModule} from '@/utils/gqlAppBuilder';
 
 export const tempModule: GqlAppBuilderModule = {
@@ -12,15 +12,18 @@ export const tempModule: GqlAppBuilderModule = {
         Mutation: {
             insertTempUser: (injector, parent, args) => injector.resolve<TempService>(TempService).insertTempUser(args),
             insertTempPost: (injector, parent, args) => injector.resolve<TempService>(TempService).insertTempPost(args),
-
         },
         TempPost: {
             id: (injector, parent) => parent.postId.toString(),
             writer: (injector, {writerId}) => injector.resolve<TempService>(TempService).selectUserById(writerId)
         },
         TempUser: {
+
             id: (injector, parent) => parent.userId.toString(),
-            posts:  (injector, parent) => injector.resolve<TempService>(TempService).selectUserPosts(parent.userId)
+            posts: (injector, parent) => {
+                console.log(2222);
+                return injector.resolve<TempService>(TempService).selectUserPosts(parent.userId)
+            }
 
         }
     }

@@ -15,7 +15,7 @@ export class AuthInfoService {
     private readonly payload: any = null;
 
     constructor(
-        private authService: AuthService,
+        @inject(AuthService) private authService: AuthService,
         @inject(REQUEST) private req: Request,
         @inject(RESPONSE) private res: Response
     ) {

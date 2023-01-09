@@ -9,6 +9,7 @@ import {
 } from '@apollo/server/plugin/landingPage/default';
 import {application} from 'application';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import {Env} from './env';
@@ -51,6 +52,7 @@ const server = new ApolloServer<ApolloContext>({
         '/graphql',
         cors<cors.CorsRequest>(),
         bodyParser.json(),
+        cookieParser(),
         expressMiddleware(server, {
             context: async ctx => ctx,
         }),
