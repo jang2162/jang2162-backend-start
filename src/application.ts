@@ -2,8 +2,7 @@ import {loadFiles} from '@graphql-tools/load-files';
 import {authModule} from '@/app/common/auth/authModule';
 import {initModule} from '@/app/common/init/initModule';
 import {tempModule} from '@/app/temp/tempModule';
-import {dbMiddleware, logMiddleware} from '@/utils/apolloUtil';
-import {GqlAppBuilder} from '@/utils/gqlAppBuilder';
+import {logMiddleware, GqlAppBuilder} from '@/utils/gqlAppBuilder';
 
 
 export const application = new GqlAppBuilder({
@@ -14,9 +13,6 @@ export const application = new GqlAppBuilder({
         tempModule
     ],
     middlewares: {
-        '*': {
-            '*': [dbMiddleware]
-        },
         'Query': {
             '*': [logMiddleware]
         },

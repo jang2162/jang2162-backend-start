@@ -1,15 +1,15 @@
 import {Request, Response} from 'express';
 import {GraphQLError} from 'graphql';
 import jwt from 'jsonwebtoken';
-import {autoInjectable, inject} from 'tsyringe';
+import {injectable, inject} from 'tsyringe';
 import {v4 as uuid4} from 'uuid';
 import {AuthService, IAccessToken} from '@/app/common/auth/authService';
 import {ROLE_USER, RoleService} from '@/app/common/auth/roleService';
 import {Env} from '@/env';
-import {genGraphqlErrorCode} from '@/utils/apolloUtil';
+import {genGraphqlErrorCode} from '@/utils/gqlAppBuilder';
 import {GqlAppBuilderMiddleware, REQUEST, RESPONSE} from '@/utils/gqlAppBuilder';
 
-@autoInjectable()
+@injectable()
 export class AuthInfoService {
     private readonly err: number = -1;
     private readonly payload: any = null;
@@ -100,7 +100,7 @@ export class AuthInfoService {
 export const authFilterMiddleware = {
     role(roles: string | string[]): GqlAppBuilderMiddleware {
         return async injector => {
-            const authInfoService =injector.resolve<AuthInfoService>(AuthInfoService);
+            const authInfoService = injector.resolve<AuthInfoService>(AuthInfoService);
             const roleService = injector.resolve<RoleService>(RoleService);
             const payload = authInfoService.getInfo();
             if (!await roleService.checkRole(roles, payload.rol)) {

@@ -13,7 +13,7 @@ import {
 import {ROLE_USER} from '@/app/common/auth/roleService';
 import {Env} from '@/env';
 import {getTransaction} from '@/transaction';
-import {genGraphqlErrorCode} from '@/utils/apolloUtil';
+import {genGraphqlErrorCode} from '@/utils/gqlAppBuilder';
 
 export interface IAccessToken {
     uid: number,

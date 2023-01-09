@@ -32,10 +32,10 @@ export class Env {
     static readonly LOG_DB_FILE_LEVEL = envLogLevel(process.env.LOG_DB_FILE_LEVEL, Env.LOG_DB_LEVEL)
     static readonly LOG_DB_FILE_DIR = envString(process.env.LOG_DB_FILE_DIR, Env.LOG_DEFAULT_FILE_DIR)
 
-    static readonly LOG_APOLLO_LEVEL = envLogLevel(process.env.LOG_APOLLO_LEVEL, Env.LOG_DEFAULT_LEVEL)
-    static readonly LOG_APOLLO_CONSOLE_LEVEL = envLogLevel(process.env.LOG_APOLLO_CONSOLE_LEVEL, Env.LOG_APOLLO_LEVEL)
-    static readonly LOG_APOLLO_FILE_LEVEL = envLogLevel(process.env.LOG_APOLLO_FILE_LEVEL, Env.LOG_APOLLO_LEVEL)
-    static readonly LOG_APOLLO_FILE_DIR = envString(process.env.LOG_APOLLO_FILE_DIR, Env.LOG_DEFAULT_FILE_DIR)
+    static readonly LOG_GQL_LEVEL = envLogLevel(process.env.LOG_GQL_LEVEL, Env.LOG_DEFAULT_LEVEL)
+    static readonly LOG_GQL_CONSOLE_LEVEL = envLogLevel(process.env.LOG_GQL_CONSOLE_LEVEL, Env.LOG_GQL_LEVEL)
+    static readonly LOG_GQL_FILE_LEVEL = envLogLevel(process.env.LOG_GQL_FILE_LEVEL, Env.LOG_GQL_LEVEL)
+    static readonly LOG_GQL_FILE_DIR = envString(process.env.LOG_GQL_FILE_DIR, Env.LOG_DEFAULT_FILE_DIR)
 
     static readonly LOG_APOLLO_ERROR_LEVEL = envLogLevel(process.env.LOG_APOLLO_ERROR_LEVEL, Env.LOG_DEFAULT_LEVEL)
     static readonly LOG_APOLLO_ERROR_CONSOLE_LEVEL = envLogLevel(process.env.LOG_APOLLO_ERROR_CONSOLE_LEVEL, Env.LOG_APOLLO_ERROR_LEVEL)

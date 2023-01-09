@@ -1,8 +1,6 @@
 import DataLoader from 'dataloader';
-import {Request, Response} from 'express';
-import {autoInjectable, inject} from 'tsyringe';
+import {injectable, inject, Lifecycle, scoped} from 'tsyringe';
 import {AuthInfoService} from '@/app/common/auth/authInfoService';
-import {AuthService} from '@/app/common/auth/authService';
 import {DatabaseConnectionService} from '@/app/common/database/databaseConnectionService';
 import {
     MutationInsertTempPostArgs,
@@ -16,10 +14,11 @@ let userIdInc = 1;
 const postDataList: TempPost[] = []
 const userDataList: TempUser[] = []
 
-@autoInjectable()
+@injectable()
 export class TempService {
-    private postDataLoader = new DataLoader<number, TempPost>(async keys => keys.map(key => postDataList.find(item => key === item.postId)))
-    private userDataLoader = new DataLoader<number, TempUser>(async keys => keys.map(key => userDataList.find(item => key === item.userId)))
+
+    private postDataLoader = new DataLoader<number, TempPost>(async keys => keys.map(key => postDataList.find(item => item.postId === key)))
+    private userDataLoader = new DataLoader<number, TempUser>(async keys => keys.map(key => userDataList.find(item => item.userId === key)))
     private userPostsDataLoader = new DataLoader<number, TempPost[]>(async keys => {
         console.log(keys);
         const posts = postDataList.filter(item => keys.indexOf(item.writerId) > 0)
@@ -30,9 +29,8 @@ export class TempService {
 
     constructor(
         private db: DatabaseConnectionService,
-        @inject(AuthInfoService) private authInfoService: AuthInfoService
-    ) {
-    }
+        @inject(AuthInfoService) private authInfoService: AuthInfoService,
+    ) {}
 
 
     selectUsers() {
