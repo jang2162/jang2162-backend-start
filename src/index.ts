@@ -29,7 +29,7 @@ const logger = createLogger<{path: any, code: any}>('APOLLO_ERROR', {
 });
 const app = express();
 const httpServer = createServer(app);
-const server = new ApolloServer({
+const server = new ApolloServer<GqlAppBuilderContext>({
     ...(application.build()),
     formatError: error => {
         logger.error(error.message, {

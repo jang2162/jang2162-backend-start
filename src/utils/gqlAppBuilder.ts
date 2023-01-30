@@ -129,7 +129,7 @@ const gqlQueryLogger = createLogger<{reqKey:string, query: string, params?: any}
         Env.LOG_GQL_FILE_DIR
     ),
     consoleFormat: ({ level, message, subData, timestamp }) => `${timestamp} [GQL_QUERY] ${level}: #${subData.reqKey}# ${message} \n${subData.query} ${
-        !isEmpty(subData.params) ? `=> (Params: ${JSON.stringify(subData.params)})` : ''
+        subData?.params && !isEmpty(subData.params) ? `=> (Params: ${JSON.stringify(subData.params)})` : ''
     }`
 })
 
