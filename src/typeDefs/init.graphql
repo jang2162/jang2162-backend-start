@@ -4,6 +4,11 @@ type Mutation
 
 extend type Query {
     nowDate: Date
+    nowDateNN: Date!
+    nowDateArr: [Date]
+    nowDateArrNN: [Date]!
+    nowDateNNArrNN: [Date!]!
+    nowDateNNArr: [Date!]
     nowDatetime: Datetime
     nowTimestamp: Timestamp
 }

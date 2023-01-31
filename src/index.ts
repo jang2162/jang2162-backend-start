@@ -7,13 +7,13 @@ import {ApolloServerPluginLandingPageDisabled} from '@apollo/server/plugin/disab
 import {
     ApolloServerPluginLandingPageLocalDefault
 } from '@apollo/server/plugin/landingPage/default';
-import {application} from 'application';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
+import {application} from './application';
 import {Env} from './env';
-import {createLogger, loggerEnvUtil} from './utils/createLogger';
+import {createLogger, loggerEnvUtil} from '@/utils/createLogger';
 import {GqlAppBuilderContext, gqlAppBuilderPlugin, gqlAppBuilderContextMapper} from '@/utils/gqlAppBuilder';
 
 
@@ -51,7 +51,10 @@ const server = new ApolloServer<GqlAppBuilderContext>({
     await server.start();
     app.use(
         '/graphql',
-        cors<cors.CorsRequest>(),
+        cors<cors.CorsRequest>({
+            origin: Env.CORS_ORIGIN,
+            credentials: Env.CORS_CREDENTIALS
+        }),
         cookieParser(),
         bodyParser.json(),
         expressMiddleware<GqlAppBuilderContext>(server, {

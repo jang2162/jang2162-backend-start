@@ -12,6 +12,11 @@ export const initModule: GqlAppBuilderModule = {
         Timestamp: TimestampScalar,
         Query: {
             nowDate: () => new Date(),
+            nowDateNN: () => new Date(),
+            nowDateArr: () => [new Date()],
+            nowDateArrNN: () => [new Date()],
+            nowDateNNArrNN: () => [new Date()],
+            nowDateNNArr: () => [new Date()],
             nowDatetime: () => new Date(),
             nowTimestamp: () => new Date()
         }

@@ -4,6 +4,8 @@ dotenv.config({path: '../.env'});
 
 export class Env {
     static readonly NODE_ENV = envUtil.string(process.env.NODE_ENV, 'development')
+    static readonly CORS_ORIGIN = envUtil.string(process.env.CORS_ORIGIN, undefined)
+    static readonly CORS_CREDENTIALS = envUtil.bool(process.env.CORS_CREDENTIALS, false)
     static readonly SERVER_ORIGIN = envUtil.string(process.env.SERVER_ORIGIN, 'http://localhost:4200')
     static readonly SERVER_PORT = envUtil.int(process.env.SERVER_PORT, 4200)
     static readonly JWT_ISSUER = envUtil.string(process.env.JWT_ISSUER, 'APP')

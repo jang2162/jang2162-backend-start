@@ -31,10 +31,16 @@ function envFloatErr(value: string | undefined): number {
     return parseFloat(value);
 }
 function envBool(value: string | undefined, defaultValue?: boolean): boolean {
-    if (value && ['true', 'false'].indexOf(value.toLowerCase()) > 0) {
-        return value.toLowerCase() === 'true'
+    if (value) {
+        if (['true', 'false'].indexOf(value.toLowerCase()) >= 0) {
+            return value.toLowerCase() === 'true'
+        }
+        throw new Error('invalid boolean value environment given.');
+    } else if (defaultValue !== undefined){
+        return defaultValue;
+    } else {
+        throw new Error('Empty environment given.');
     }
-    throw new Error('invalid boolean value environment given.');
 }
 
 function envLogLevel(value: string | undefined, defaultValue: LogLevel): LogLevel {

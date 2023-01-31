@@ -12,5 +12,5 @@ generates:
       customResolverFn: './utils/gqlAppBuilder#ResolveFn'
       scalars:
         Date: Date
-        DateTime: Date
+        Datetime: Date
         Timestamp: Date

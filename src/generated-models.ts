@@ -15,7 +15,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   Date: Date;
-  Datetime: any;
+  Datetime: Date;
   Timestamp: Date;
   Void: any;
 };
@@ -69,6 +69,11 @@ export type OffsetPageInput = {
 export type Query = {
   __typename?: 'Query';
   nowDate?: Maybe<Scalars['Date']>;
+  nowDateArr?: Maybe<Array<Maybe<Scalars['Date']>>>;
+  nowDateArrNN: Array<Maybe<Scalars['Date']>>;
+  nowDateNN: Scalars['Date'];
+  nowDateNNArr?: Maybe<Array<Scalars['Date']>>;
+  nowDateNNArrNN: Array<Scalars['Date']>;
   nowDatetime?: Maybe<Scalars['Datetime']>;
   nowTimestamp?: Maybe<Scalars['Timestamp']>;
   selectPostById: TempPost;
@@ -238,6 +243,11 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   nowDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  nowDateArr?: Resolver<Maybe<Array<Maybe<ResolversTypes['Date']>>>, ParentType, ContextType>;
+  nowDateArrNN?: Resolver<Array<Maybe<ResolversTypes['Date']>>, ParentType, ContextType>;
+  nowDateNN?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  nowDateNNArr?: Resolver<Maybe<Array<ResolversTypes['Date']>>, ParentType, ContextType>;
+  nowDateNNArrNN?: Resolver<Array<ResolversTypes['Date']>, ParentType, ContextType>;
   nowDatetime?: Resolver<Maybe<ResolversTypes['Datetime']>, ParentType, ContextType>;
   nowTimestamp?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
   selectPostById?: Resolver<ResolversTypes['TempPost'], ParentType, ContextType, RequireFields<QuerySelectPostByIdArgs, 'id'>>;
