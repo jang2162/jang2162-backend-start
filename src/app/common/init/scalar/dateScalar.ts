@@ -10,6 +10,7 @@ export function parseDate(value: string | dayjs.Dayjs | Date) {
             'YYYYMMDD',
             'YYYY-MM-DDTHH:mm:ss.SSS',
             'YYYY-MM-DDTHH:mm:ss',
+            'YYYY-MM-DDTHH:mm',
             'YYYY-MM-DD HH:mm:ss',
             'YYYYMMDDHHmmss',
         ], true);
