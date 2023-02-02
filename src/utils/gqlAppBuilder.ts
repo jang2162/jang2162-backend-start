@@ -24,7 +24,6 @@ export type  GqlAppBuilderMiddleware =  (injector: InjectorWrapper, parent: any,
 export type  GqlAppBuilderMiddlewareCallback = (resolveData: any, resolveError: any) => void | null | undefined | Promise<any>
 export const REQUEST = Symbol('REQUEST');
 export const RESPONSE = Symbol('RESPONSE');
-export const DESTROYABLE = Symbol('DESTROYABLE');
 export const REQ_KEY = Symbol('REQ_KEY');
 
 export interface GqlAppBuilderModule {
