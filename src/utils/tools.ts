@@ -1,3 +1,4 @@
+import {v4 as uuid4} from 'uuid';
 function _range(startOrEnd: number, end?: number, step?: number) {
     let start = 0;
     if (end === undefined) {
@@ -37,3 +38,4 @@ export const rangeIter = (startOrEnd: number, end?: number, step?: number) => {
 
 export const isEmpty = (obj: any) => Object.entries(obj).length === 0 && obj.constructor === Object;
 
+export const shortUUIDv4 = () => Buffer.from(uuid4(), 'hex').toString('base64')

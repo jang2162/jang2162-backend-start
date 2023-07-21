@@ -39,7 +39,7 @@ const server = new ApolloServer<GqlAppBuilderContext>({
         return error;
     },
     plugins: [
-        process.env.NODE_ENV === 'production'
+        Env.NODE_ENV === 'production'
             ? ApolloServerPluginLandingPageDisabled()
             : ApolloServerPluginLandingPageLocalDefault({
                 includeCookies: true
@@ -66,3 +66,5 @@ const server = new ApolloServer<GqlAppBuilderContext>({
     await new Promise<void>((resolve) => httpServer.listen(port, resolve));
     console.log(`GraphQL Server listening on ${origin ?? `'http'://localhost:${port}`}/graphql`)
 })()
+
+

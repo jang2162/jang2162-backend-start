@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import {envUtil} from '@/utils/envUtil';
+import process from "process";
 dotenv.config({path: '../.env'});
 
 export class Env {
@@ -41,4 +42,12 @@ export class Env {
     static readonly LOG_APOLLO_ERROR_CONSOLE_LEVEL = envUtil.logLevel(process.env.LOG_APOLLO_ERROR_CONSOLE_LEVEL, Env.LOG_APOLLO_ERROR_LEVEL)
     static readonly LOG_APOLLO_ERROR_FILE_LEVEL = envUtil.logLevel(process.env.LOG_APOLLO_ERROR_FILE_LEVEL, Env.LOG_APOLLO_ERROR_LEVEL)
     static readonly LOG_APOLLO_ERROR_FILE_DIR = envUtil.string(process.env.LOG_APOLLO_ERROR_FILE_DIR, Env.LOG_DEFAULT_FILE_DIR)
+
+    static readonly REDIS_URL = envUtil.stringErr(process.env.REDIS_URL)
+
+    static readonly LOG_REDIS_ERROR_LEVEL = envUtil.logLevel(process.env.LOG_REDIS_ERROR_LEVEL, Env.LOG_DEFAULT_LEVEL)
+    static readonly LOG_REDIS_ERROR_CONSOLE_LEVEL = envUtil.logLevel(process.env.LOG_REDIS_ERROR_CONSOLE_LEVEL, Env.LOG_REDIS_ERROR_LEVEL)
+    static readonly LOG_REDIS_ERROR_FILE_LEVEL = envUtil.logLevel(process.env.LOG_REDIS_ERROR_FILE_LEVEL, Env.LOG_REDIS_ERROR_LEVEL)
+    static readonly LOG_REDIS_ERROR_FILE_DIR = envUtil.string(process.env.LOG_REDIS_ERROR_FILE_DIR, Env.LOG_DEFAULT_FILE_DIR)
+
 }

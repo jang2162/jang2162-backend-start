@@ -1,6 +1,6 @@
 import {singleton} from 'tsyringe';
-import {getTransaction} from '@/transaction';
 import {selectRoles} from '@/app/common/auth/authQuery';
+import {getTransaction} from '@/transaction';
 
 export const ROLE_USER = 'ROLE_USER';
 export const ROLE_ADMIN = 'ROLE_ADMIN';
@@ -10,14 +10,12 @@ export class RoleService {
     private roleLoaded = false;
     private roleIdMapper: {[k:string]: number} = {};
 
-    async checkRole(roleName: string | string[], roleId: number | number[]) {
+    async checkRole(roleNameArr: string[], roleIdArr: number[]) {
         if (!this.roleLoaded) {
             await this.loadRole();
         }
-        const roleNameList = Array.isArray(roleName) ? roleName : [roleName];
-        const roleIdList = Array.isArray(roleId) ? roleId : [roleId];
-        for (const roleNameItem of roleNameList) {
-            if (roleIdList.indexOf(this.roleIdMapper[roleNameItem]) !== -1) {
+        for (const roleNameItem of roleNameArr) {
+            if (roleIdArr.indexOf(this.roleIdMapper[roleNameItem]) !== -1) {
                 return true;
             }
         }

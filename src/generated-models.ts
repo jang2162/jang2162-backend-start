@@ -5,77 +5,80 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export { ResolverFn };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  Date: Date;
-  Datetime: Date;
-  Timestamp: Date;
-  Void: any;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  Date: { input: Date; output: Date; }
+  Datetime: { input: Date; output: Date; }
+  Timestamp: { input: Date; output: Date; }
+  Void: { input: any; output: any; }
 };
 
 export type CursorPageInfo = {
   __typename?: 'CursorPageInfo';
-  hasMore: Scalars['Boolean'];
-  next?: Maybe<Scalars['String']>;
-  prev?: Maybe<Scalars['String']>;
-  totalCount: Scalars['Int'];
+  hasMore: Scalars['Boolean']['output'];
+  next?: Maybe<Scalars['String']['output']>;
+  prev?: Maybe<Scalars['String']['output']>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type CursorPageInput = {
-  cursor?: InputMaybe<Scalars['String']>;
-  size?: InputMaybe<Scalars['Int']>;
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  authentication?: Maybe<Scalars['String']>;
-  insertTempPost?: Maybe<Scalars['Void']>;
-  insertTempUser?: Maybe<Scalars['Void']>;
-  invalidate?: Maybe<Scalars['String']>;
-  refreshToken?: Maybe<Scalars['String']>;
+  authentication?: Maybe<Scalars['String']['output']>;
+  insertTempPost?: Maybe<Scalars['Void']['output']>;
+  insertTempUser?: Maybe<Scalars['Void']['output']>;
+  invalidate?: Maybe<Scalars['String']['output']>;
+  refreshToken?: Maybe<Scalars['String']['output']>;
 };
 
 
 export type MutationAuthenticationArgs = {
-  id: Scalars['String'];
-  pw: Scalars['String'];
+  id: Scalars['String']['input'];
+  pw: Scalars['String']['input'];
 };
 
 
 export type MutationInsertTempPostArgs = {
-  content: Scalars['String'];
-  title: Scalars['String'];
-  writerId: Scalars['Int'];
+  content: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  writerId: Scalars['Int']['input'];
 };
 
 
 export type MutationInsertTempUserArgs = {
-  birth: Scalars['Date'];
-  name: Scalars['String'];
+  birth: Scalars['Date']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type OffsetPageInput = {
-  pageIndex?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
+  pageIndex?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  nowDate?: Maybe<Scalars['Date']>;
-  nowDateArr?: Maybe<Array<Maybe<Scalars['Date']>>>;
-  nowDateArrNN: Array<Maybe<Scalars['Date']>>;
-  nowDateNN: Scalars['Date'];
-  nowDateNNArr?: Maybe<Array<Scalars['Date']>>;
-  nowDateNNArrNN: Array<Scalars['Date']>;
-  nowDatetime?: Maybe<Scalars['Datetime']>;
-  nowTimestamp?: Maybe<Scalars['Timestamp']>;
+  nowDate?: Maybe<Scalars['Date']['output']>;
+  nowDateArr?: Maybe<Array<Maybe<Scalars['Date']['output']>>>;
+  nowDateArrNN: Array<Maybe<Scalars['Date']['output']>>;
+  nowDateNN: Scalars['Date']['output'];
+  nowDateNNArr?: Maybe<Array<Scalars['Date']['output']>>;
+  nowDateNNArrNN: Array<Scalars['Date']['output']>;
+  nowDatetime?: Maybe<Scalars['Datetime']['output']>;
+  nowTimestamp?: Maybe<Scalars['Timestamp']['output']>;
+  selectMyInfo: User;
   selectPostById: TempPost;
   selectPosts: Array<TempPost>;
   selectUserById: TempUser;
@@ -84,37 +87,46 @@ export type Query = {
 
 
 export type QuerySelectPostByIdArgs = {
-  id: Scalars['Int'];
+  id: Scalars['Int']['input'];
 };
 
 
 export type QuerySelectUserByIdArgs = {
-  id: Scalars['Int'];
+  id: Scalars['Int']['input'];
 };
 
 export type TempPost = {
   __typename?: 'TempPost';
-  content: Scalars['String'];
-  id: Scalars['ID'];
-  postId: Scalars['Int'];
-  regDate: Scalars['Date'];
-  title: Scalars['String'];
+  content: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  postId: Scalars['Int']['output'];
+  regDate: Scalars['Date']['output'];
+  title: Scalars['String']['output'];
   writer: TempUser;
-  writerId: Scalars['Int'];
+  writerId: Scalars['Int']['output'];
 };
 
 export type TempUser = {
   __typename?: 'TempUser';
-  birth: Scalars['Date'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
+  birth: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
   posts: Array<TempPost>;
-  userId: Scalars['Int'];
+  userId: Scalars['Int']['output'];
+};
+
+export type User = {
+  __typename?: 'User';
+  avatar?: Maybe<Scalars['String']['output']>;
+  discordUserId: Scalars['String']['output'];
+  discriminator: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type AccessToken = {
   __typename?: 'accessToken';
-  token: Scalars['String'];
+  token: Scalars['String']['output'];
 };
 
 
@@ -177,43 +189,47 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+
+
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CursorPageInfo: ResolverTypeWrapper<CursorPageInfo>;
   CursorPageInput: CursorPageInput;
-  Date: ResolverTypeWrapper<Scalars['Date']>;
-  Datetime: ResolverTypeWrapper<Scalars['Datetime']>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
+  Date: ResolverTypeWrapper<Scalars['Date']['output']>;
+  Datetime: ResolverTypeWrapper<Scalars['Datetime']['output']>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   OffsetPageInput: OffsetPageInput;
   Query: ResolverTypeWrapper<{}>;
-  String: ResolverTypeWrapper<Scalars['String']>;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
   TempPost: ResolverTypeWrapper<TempPost>;
   TempUser: ResolverTypeWrapper<TempUser>;
-  Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
-  Void: ResolverTypeWrapper<Scalars['Void']>;
+  Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
+  User: ResolverTypeWrapper<User>;
+  Void: ResolverTypeWrapper<Scalars['Void']['output']>;
   accessToken: ResolverTypeWrapper<AccessToken>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Boolean: Scalars['Boolean'];
+  Boolean: Scalars['Boolean']['output'];
   CursorPageInfo: CursorPageInfo;
   CursorPageInput: CursorPageInput;
-  Date: Scalars['Date'];
-  Datetime: Scalars['Datetime'];
-  ID: Scalars['ID'];
-  Int: Scalars['Int'];
+  Date: Scalars['Date']['output'];
+  Datetime: Scalars['Datetime']['output'];
+  ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   Mutation: {};
   OffsetPageInput: OffsetPageInput;
   Query: {};
-  String: Scalars['String'];
+  String: Scalars['String']['output'];
   TempPost: TempPost;
   TempUser: TempUser;
-  Timestamp: Scalars['Timestamp'];
-  Void: Scalars['Void'];
+  Timestamp: Scalars['Timestamp']['output'];
+  User: User;
+  Void: Scalars['Void']['output'];
   accessToken: AccessToken;
 };
 
@@ -250,6 +266,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   nowDateNNArrNN?: Resolver<Array<ResolversTypes['Date']>, ParentType, ContextType>;
   nowDatetime?: Resolver<Maybe<ResolversTypes['Datetime']>, ParentType, ContextType>;
   nowTimestamp?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
+  selectMyInfo?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   selectPostById?: Resolver<ResolversTypes['TempPost'], ParentType, ContextType, RequireFields<QuerySelectPostByIdArgs, 'id'>>;
   selectPosts?: Resolver<Array<ResolversTypes['TempPost']>, ParentType, ContextType>;
   selectUserById?: Resolver<ResolversTypes['TempUser'], ParentType, ContextType, RequireFields<QuerySelectUserByIdArgs, 'id'>>;
@@ -280,6 +297,15 @@ export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<Resolvers
   name: 'Timestamp';
 }
 
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  discordUserId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  discriminator?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Void'], any> {
   name: 'Void';
 }
@@ -298,6 +324,7 @@ export type Resolvers<ContextType = any> = {
   TempPost?: TempPostResolvers<ContextType>;
   TempUser?: TempUserResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
+  User?: UserResolvers<ContextType>;
   Void?: GraphQLScalarType;
   accessToken?: AccessTokenResolvers<ContextType>;
 };

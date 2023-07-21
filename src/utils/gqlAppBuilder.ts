@@ -1,21 +1,20 @@
-import {ApolloServerPlugin} from '@apollo/server/src/externalTypes/plugins';
-import {Request, Response, RequestHandler} from 'express';
+import {ApolloServerPlugin} from '@apollo/server';
+import {Request, Response} from 'express';
 import {DocumentNode, GraphQLResolveInfo, GraphQLScalarType} from 'graphql';
 import {container, DependencyContainer, InjectionToken} from 'tsyringe';
-import {v4 as uuid4} from 'uuid';
 import {DatabaseConnectionService} from '@/app/common/database/databaseConnectionService';
 import {Env} from '@/env';
 import {Resolvers} from '@/generated-models';
 import {createLogger, loggerEnvUtil} from '@/utils/createLogger';
-import {isEmpty} from '@/utils/tools';
+import {isEmpty, shortUUIDv4} from '@/utils/tools';
 
 
 export class InjectorWrapper {
-   constructor(private injector: DependencyContainer) {}
-   resolve<T>(injectionToken: InjectionToken) {
+    constructor(private injector: DependencyContainer) {}
+    resolve<T>(injectionToken: InjectionToken) {
 
-       return this.injector.resolve<T>(injectionToken)
-   }
+        return this.injector.resolve<T>(injectionToken)
+    }
 }
 export type GqlAppBuilderContext = {
     injector: DependencyContainer
@@ -184,7 +183,7 @@ export const gqlAppBuilderPlugin: ApolloServerPlugin<GqlAppBuilderContext> = {
         })
 
         return  {
-            async willSendResponse(r){
+            async willSendResponse(){
                 injector.dispose()
             },
 
@@ -195,7 +194,7 @@ export const gqlAppBuilderContextMapper = async ({req, res}: {
     req: Request
     res: Response
 }): Promise<GqlAppBuilderContext> => {
-    const reqKey = uuid4().replace(/-/g, '');
+    const reqKey = shortUUIDv4();
     const injector = container.createChildContainer()
     injector.register<Request>(REQUEST, {useValue: req})
         .register<Response>(RESPONSE, {useValue: res})

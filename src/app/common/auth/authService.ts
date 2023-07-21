@@ -2,18 +2,18 @@ import {Response} from 'express';
 import {GraphQLError} from 'graphql';
 import jwt from 'jsonwebtoken'
 import {singleton} from 'tsyringe';
-import { v4 as uuid4 } from 'uuid';
 import {
     insertAuthToken,
     invalidateToken, renewAccessKey,
     selectAuthData,
-    selectRoleByUserId,
-    selectSalt
+    selectRoleByUserId
 } from '@/app/common/auth/authQuery';
-import {ROLE_USER} from '@/app/common/auth/roleService';
+import {selectUser} from '@/app/common/user/userQuery';
 import {Env} from '@/env';
+import {redisClient} from '@/redisClient';
 import {getTransaction} from '@/transaction';
 import {genGraphqlErrorCode} from '@/utils/gqlAppBuilder';
+import {shortUUIDv4} from '@/utils/tools';
 
 export interface IAccessToken {
     uid: number,
@@ -30,18 +30,18 @@ export class AuthService {
 
     constructor(){}
 
-    async authentication(response: Response, userId: number, salt: string) {
+    async authentication(response: Response, userId: number, tokenCheckValue: string) {
         const {trx, release} = await getTransaction();
         let accessToken;
         try {
-            const refreshKey = uuid4().replace(/-/g, '');
-            const accessKey = uuid4().replace(/-/g, '');
+            const refreshKey = shortUUIDv4();
+            const accessKey = shortUUIDv4();
             const roles = (await selectRoleByUserId(trx, {userId: userId})).map(item => item.roleId);
             await insertAuthToken(trx, {
                 userId,
                 refreshKey,
                 accessKey,
-                salt,
+                tokenCheckValue,
             });
             accessToken = jwt.sign({
                 uid: userId,
@@ -74,13 +74,13 @@ export class AuthService {
         let token;
         try {
             const authData = await selectAuthData(trx, {refreshKey: accessTokenPayload.rfk});
-            const salt = (await selectSalt(trx, {userId: accessTokenPayload.uid})).slat;
+            const {tokenCheckValue} = await selectUser(trx, {id: accessTokenPayload.uid});
 
-            if (!salt || !authData || authData.userId !== accessTokenPayload.uid) {
+            if (!tokenCheckValue || !authData || authData.userId !== accessTokenPayload.uid) {
                 throw new GraphQLError('', genGraphqlErrorCode('genGraphqlErrorCode'));
             }
 
-            if (authData.salt !== salt) {
+            if (authData.tokenCheckValue !== tokenCheckValue) {
                 throw new GraphQLError('', genGraphqlErrorCode('genGraphqlErrorCode'));
             }
 
@@ -92,8 +92,7 @@ export class AuthService {
                 await invalidateToken(trx, {refreshKey: accessTokenPayload.rfk});
                 throw new GraphQLError('', genGraphqlErrorCode('genGraphqlErrorCode'));
             }
-
-            const accessKey = uuid4().replace(/-/g, '');
+            const accessKey = shortUUIDv4();
             const roles = (await selectRoleByUserId(trx, {userId: accessTokenPayload.uid})).map(item => item.roleId);
             await renewAccessKey(trx, {accessKey, refreshKey: accessTokenPayload.rfk});
             token = jwt.sign({
@@ -119,6 +118,10 @@ export class AuthService {
             httpOnly: true,
             sameSite: 'lax'
         });
+        await redisClient.expire(
+            `USER:${accessTokenPayload.uid}`
+            , Env.JWT_REFRESH_EXPIRED_IN * 2
+        )
     }
 
     async invalidate(response: Response, accessTokenPayload: IAccessToken) {
@@ -131,6 +134,7 @@ export class AuthService {
                 httpOnly: true,
                 sameSite: 'lax'
             });
+            await redisClient.del(`USER:${accessTokenPayload.uid}`)
             await release(true);
         } catch (e) {
             await release(true);

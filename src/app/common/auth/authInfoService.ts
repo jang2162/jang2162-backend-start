@@ -8,6 +8,7 @@ import {ROLE_USER, RoleService} from '@/app/common/auth/roleService';
 import {Env} from '@/env';
 import {genGraphqlErrorCode} from '@/utils/gqlAppBuilder';
 import {GqlAppBuilderMiddleware, REQUEST, RESPONSE} from '@/utils/gqlAppBuilder';
+import {shortUUIDv4} from "@/utils/tools";
 
 @injectable()
 export class AuthInfoService {
@@ -40,8 +41,8 @@ export class AuthInfoService {
     }
 
     authenticationTest(id: number) {
-        const refreshKey = uuid4().replace(/-/g, '');
-        const accessKey = uuid4().replace(/-/g, '');
+        const refreshKey = shortUUIDv4();
+        const accessKey = shortUUIDv4();
         const roles = [ROLE_USER];
         const accessToken = jwt.sign({
             uid: id,
@@ -98,7 +99,7 @@ export class AuthInfoService {
 }
 
 export const authFilterMiddleware = {
-    role(roles: string | string[]): GqlAppBuilderMiddleware {
+    role(...roles: string[]): GqlAppBuilderMiddleware {
         return async injector => {
             const authInfoService = injector.resolve<AuthInfoService>(AuthInfoService);
             const roleService = injector.resolve<RoleService>(RoleService);

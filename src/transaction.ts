@@ -1,9 +1,14 @@
 import camelCase from 'camelcase';
 import knex, {Knex} from 'knex';
+import pg from 'pg';
+import Result from 'pg/lib/result';
 import {Env} from './env';
 import {createLogger, loggerEnvUtil} from './utils/createLogger';
 import {range} from './utils/tools';
 import Timeout = NodeJS.Timeout;
+pg.types.setTypeParser(20, function(val) {
+    return parseInt(val, 10)
+})
 
 interface DbLoggerSubData {
     // debug
@@ -47,10 +52,24 @@ const dbLogger = createLogger<DbLoggerSubData>('DB', {
                 : message }`
 });
 
+function convertToCamel(result: any) {
+    return Object.keys(result).reduce((prev, item) => {
+        prev[camelCase(item)] = result[item];
+        return prev
+    }, {})
+}
+
 export const knexClient = knex({
     client: 'pg',
     postProcessResponse: (result) => {
-        return camelCase(result);
+        if (result instanceof Result) {
+            result.rows = result.rows.map(row => convertToCamel(row));
+            return result
+        }else if (Array.isArray(result)) {
+            return result.map(row => convertToCamel(row));
+        } else {
+            return convertToCamel(result);
+        }
     },
     connection: {
         host: Env.DB_HOST,
