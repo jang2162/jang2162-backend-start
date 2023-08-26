@@ -1,11 +1,10 @@
-import axios from 'axios';
 import {Request, Response} from 'express';
 import {injectable, inject} from 'tsyringe';
 import {AuthInfoService} from '@/app/common/auth/authInfoService';
 import {selectUser} from '@/app/common/user/userQuery';
+import {ResolversTypes, User} from '@/generated-models';
+import {redisClient} from '@/redisClient';
 import {REQUEST, RESPONSE} from '@/utils/gqlAppBuilder';
-import {redisClient} from "@/redisClient";
-import {ResolversTypes, User} from "@/generated-models";
 
 
 @injectable()

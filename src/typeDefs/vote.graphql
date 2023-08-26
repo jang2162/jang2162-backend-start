@@ -1,0 +1,39 @@
+extend type Subscription {
+    someoneVote: VoteDataType
+    voteInfoChange: VoteInfoType
+}
+
+extend type Mutation {
+    updateSelectOptions(voteId: String!, options: [SelectOptionInput!]!): Void
+    vote(voteData: VoteDataInput!): Void
+}
+
+extend type Query {
+    getVoteInfo: VoteInfoType
+}
+
+input SelectOptionInput {
+    color: String!
+    label: String!
+}
+
+type SelectOptionType {
+    color: String!
+    label: String!
+}
+type VoteInfoType {
+    selectOptions: [SelectOptionType!]!
+    voteId: String!
+}
+
+input VoteDataInput {
+    voteId: String!
+    user: String!
+    idx: Int!
+}
+
+type VoteDataType {
+    voteId: String!
+    user: String!
+    idx: Int!
+}

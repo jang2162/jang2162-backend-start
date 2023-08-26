@@ -3,6 +3,7 @@ import {authModule} from '@/app/common/auth/authModule';
 import {initModule} from '@/app/common/init/initModule';
 import {userModule} from '@/app/common/user/userModule';
 import {tempModule} from '@/app/temp/tempModule';
+import {voteModule} from '@/app/vote/voteModule';
 import {logMiddleware, GqlAppBuilder, dbMiddleware} from '@/utils/gqlAppBuilder';
 
 export const application = new GqlAppBuilder({
@@ -11,6 +12,7 @@ export const application = new GqlAppBuilder({
         initModule,
         authModule,
         userModule,
+        voteModule,
         tempModule
     ],
     middlewares: {

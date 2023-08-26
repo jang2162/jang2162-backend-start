@@ -1,7 +1,4 @@
-import dayjs from 'dayjs';
-import {GraphQLError, GraphQLScalarType, Kind} from 'graphql';
-
-
+import { GraphQLScalarType } from 'graphql';
 
 export const VoidScalar = new GraphQLScalarType({
     name: 'Void',
@@ -9,14 +6,14 @@ export const VoidScalar = new GraphQLScalarType({
     description: 'Represents NULL values',
 
     serialize() {
-        return null
+        return null;
     },
 
     parseValue() {
-        return null
+        return null;
     },
 
     parseLiteral() {
-        return null
-    }
-})
+        return null;
+    },
+});

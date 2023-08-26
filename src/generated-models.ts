@@ -42,6 +42,8 @@ export type Mutation = {
   insertTempUser?: Maybe<Scalars['Void']['output']>;
   invalidate?: Maybe<Scalars['String']['output']>;
   refreshToken?: Maybe<Scalars['String']['output']>;
+  updateSelectOptions?: Maybe<Scalars['Void']['output']>;
+  vote?: Maybe<Scalars['Void']['output']>;
 };
 
 
@@ -63,6 +65,17 @@ export type MutationInsertTempUserArgs = {
   name: Scalars['String']['input'];
 };
 
+
+export type MutationUpdateSelectOptionsArgs = {
+  options: Array<SelectOptionInput>;
+  voteId: Scalars['String']['input'];
+};
+
+
+export type MutationVoteArgs = {
+  voteData: VoteDataInput;
+};
+
 export type OffsetPageInput = {
   pageIndex?: InputMaybe<Scalars['Int']['input']>;
   size?: InputMaybe<Scalars['Int']['input']>;
@@ -70,6 +83,7 @@ export type OffsetPageInput = {
 
 export type Query = {
   __typename?: 'Query';
+  getVoteInfo?: Maybe<VoteInfoType>;
   nowDate?: Maybe<Scalars['Date']['output']>;
   nowDateArr?: Maybe<Array<Maybe<Scalars['Date']['output']>>>;
   nowDateArrNN: Array<Maybe<Scalars['Date']['output']>>;
@@ -93,6 +107,23 @@ export type QuerySelectPostByIdArgs = {
 
 export type QuerySelectUserByIdArgs = {
   id: Scalars['Int']['input'];
+};
+
+export type SelectOptionInput = {
+  color: Scalars['String']['input'];
+  label: Scalars['String']['input'];
+};
+
+export type SelectOptionType = {
+  __typename?: 'SelectOptionType';
+  color: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  someoneVote?: Maybe<VoteDataType>;
+  voteInfoChange?: Maybe<VoteInfoType>;
 };
 
 export type TempPost = {
@@ -122,6 +153,25 @@ export type User = {
   discriminator: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type VoteDataInput = {
+  idx: Scalars['Int']['input'];
+  user: Scalars['String']['input'];
+  voteId: Scalars['String']['input'];
+};
+
+export type VoteDataType = {
+  __typename?: 'VoteDataType';
+  idx: Scalars['Int']['output'];
+  user: Scalars['String']['output'];
+  voteId: Scalars['String']['output'];
+};
+
+export type VoteInfoType = {
+  __typename?: 'VoteInfoType';
+  selectOptions: Array<SelectOptionType>;
+  voteId: Scalars['String']['output'];
 };
 
 export type AccessToken = {
@@ -203,12 +253,18 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   OffsetPageInput: OffsetPageInput;
   Query: ResolverTypeWrapper<{}>;
+  SelectOptionInput: SelectOptionInput;
+  SelectOptionType: ResolverTypeWrapper<SelectOptionType>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Subscription: ResolverTypeWrapper<{}>;
   TempPost: ResolverTypeWrapper<TempPost>;
   TempUser: ResolverTypeWrapper<TempUser>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
   User: ResolverTypeWrapper<User>;
   Void: ResolverTypeWrapper<Scalars['Void']['output']>;
+  VoteDataInput: VoteDataInput;
+  VoteDataType: ResolverTypeWrapper<VoteDataType>;
+  VoteInfoType: ResolverTypeWrapper<VoteInfoType>;
   accessToken: ResolverTypeWrapper<AccessToken>;
 };
 
@@ -224,12 +280,18 @@ export type ResolversParentTypes = {
   Mutation: {};
   OffsetPageInput: OffsetPageInput;
   Query: {};
+  SelectOptionInput: SelectOptionInput;
+  SelectOptionType: SelectOptionType;
   String: Scalars['String']['output'];
+  Subscription: {};
   TempPost: TempPost;
   TempUser: TempUser;
   Timestamp: Scalars['Timestamp']['output'];
   User: User;
   Void: Scalars['Void']['output'];
+  VoteDataInput: VoteDataInput;
+  VoteDataType: VoteDataType;
+  VoteInfoType: VoteInfoType;
   accessToken: AccessToken;
 };
 
@@ -255,9 +317,12 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   insertTempUser?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationInsertTempUserArgs, 'birth' | 'name'>>;
   invalidate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updateSelectOptions?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationUpdateSelectOptionsArgs, 'options' | 'voteId'>>;
+  vote?: Resolver<Maybe<ResolversTypes['Void']>, ParentType, ContextType, RequireFields<MutationVoteArgs, 'voteData'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  getVoteInfo?: Resolver<Maybe<ResolversTypes['VoteInfoType']>, ParentType, ContextType>;
   nowDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   nowDateArr?: Resolver<Maybe<Array<Maybe<ResolversTypes['Date']>>>, ParentType, ContextType>;
   nowDateArrNN?: Resolver<Array<Maybe<ResolversTypes['Date']>>, ParentType, ContextType>;
@@ -271,6 +336,17 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   selectPosts?: Resolver<Array<ResolversTypes['TempPost']>, ParentType, ContextType>;
   selectUserById?: Resolver<ResolversTypes['TempUser'], ParentType, ContextType, RequireFields<QuerySelectUserByIdArgs, 'id'>>;
   selectUsers?: Resolver<Array<ResolversTypes['TempUser']>, ParentType, ContextType>;
+};
+
+export type SelectOptionTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['SelectOptionType'] = ResolversParentTypes['SelectOptionType']> = {
+  color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  label?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  someoneVote?: SubscriptionResolver<Maybe<ResolversTypes['VoteDataType']>, "someoneVote", ParentType, ContextType>;
+  voteInfoChange?: SubscriptionResolver<Maybe<ResolversTypes['VoteInfoType']>, "voteInfoChange", ParentType, ContextType>;
 };
 
 export type TempPostResolvers<ContextType = any, ParentType extends ResolversParentTypes['TempPost'] = ResolversParentTypes['TempPost']> = {
@@ -310,6 +386,19 @@ export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Void';
 }
 
+export type VoteDataTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['VoteDataType'] = ResolversParentTypes['VoteDataType']> = {
+  idx?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  voteId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type VoteInfoTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['VoteInfoType'] = ResolversParentTypes['VoteInfoType']> = {
+  selectOptions?: Resolver<Array<ResolversTypes['SelectOptionType']>, ParentType, ContextType>;
+  voteId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type AccessTokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['accessToken'] = ResolversParentTypes['accessToken']> = {
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -321,11 +410,15 @@ export type Resolvers<ContextType = any> = {
   Datetime?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  SelectOptionType?: SelectOptionTypeResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   TempPost?: TempPostResolvers<ContextType>;
   TempUser?: TempUserResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Void?: GraphQLScalarType;
+  VoteDataType?: VoteDataTypeResolvers<ContextType>;
+  VoteInfoType?: VoteInfoTypeResolvers<ContextType>;
   accessToken?: AccessTokenResolvers<ContextType>;
 };
 

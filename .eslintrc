@@ -41,5 +41,5 @@
       }
     }]
   },
-  "ignorePatterns": ["generated-models.ts", "knexfile.ts", "node_modules/**", "dist/**"]
+  "ignorePatterns": ["generated-models.ts", "node_modules/**", "dist/**"]
 }

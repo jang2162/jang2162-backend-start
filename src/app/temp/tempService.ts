@@ -9,7 +9,8 @@ import {
 } from '@/generated-models';
 
 
-const postIdInc = 1;
+let postIdInc: number;
+postIdInc = 1;
 let userIdInc = 1;
 const postDataList: TempPost[] = []
 const userDataList: TempUser[] = []

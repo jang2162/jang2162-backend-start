@@ -1,12 +1,17 @@
 version: '3.9'
 
 services:
+  redis:
+    container_name: backend-start-redis
+    image: redis
+    ports:
+      - "6379:6379"
   postgres:
     container_name: backend-start-postgres
     image: postgres
     environment:
       POSTGRES_USER: backend-start
       POSTGRES_PASSWORD: backend-start
-      PGDATA: /data/postgres
+      PGDATA: /data/postgres-backend-start
     ports:
-      - "5432:5432"
+      - "5433:5432"

@@ -1,5 +1,5 @@
 import {TempService} from '@/app/temp/tempService';
-import {GqlAppBuilderModule, REQUEST} from '@/utils/gqlAppBuilder';
+import {GqlAppBuilderModule} from '@/utils/gqlAppBuilder';
 
 export const tempModule: GqlAppBuilderModule = {
     resolvers: {
